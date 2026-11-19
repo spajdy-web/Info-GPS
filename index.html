@@ -90,6 +90,40 @@ const SEED_STOPS=[
  {id:'ba-zeleznicna',name:'Železničná',city:'Bratislava',platforms:[[48.1472988,17.2097241],[48.1476857,17.2092591]],osm:['1538558369','481081495']},
  {id:'ba-stn-vrakuna',name:'Stn. Vrakuňa',city:'Bratislava',platforms:[[48.1444909,17.2122934],[48.1439288,17.2129466]],osm:['1538558283','1988390414']}
 ];
+// Doplnkové zastávky: Vajnorská radiála, Šoltésovej/Nivy a úsek N33 po Dlhé diely.
+// Sú to len nezávislé GPS body – nie definícia trasy.
+// Zdroj: OpenStreetMap/OMA.sk, ODbL; pri DMS je presnosť zaokrúhlená na sekundy.
+const ADDITIONAL_STOPS=[
+ {id:'ba-vajnorska',name:'Vajnorská',city:'Bratislava',platforms:[[48.1852519,17.1695717],[48.1847222,17.1691667]]},
+ {id:'ba-jurajov-dvor',name:'Jurajov dvor',city:'Bratislava',platforms:[[48.1827778,17.1636111],[48.1822222,17.1619444]]},
+ {id:'ba-magnetova',name:'Magnetová',city:'Bratislava',platforms:[[48.1797222,17.155],[48.1794444,17.1530556]]},
+ {id:'ba-odborarska',name:'Odborárska',city:'Bratislava',platforms:[[48.1763889,17.1447222],[48.1761111,17.145]]},
+ {id:'ba-kuchajda',name:'Kuchajda',city:'Bratislava',platforms:[[48.1713889,17.1408333],[48.1719444,17.1411111]]},
+ {id:'ba-miu-nove-mesto',name:'MiÚ Nové Mesto',city:'Bratislava',platforms:[[48.1697222,17.1386111],[48.1683333,17.1380556]]},
+ {id:'ba-nova-doba',name:'Nová doba',city:'Bratislava',platforms:[[48.165,17.1344444],[48.1644444,17.1341667]]},
+ {id:'ba-ceska',name:'Česká',city:'Bratislava',platforms:[[48.1619444,17.1316667],[48.1613889,17.1313889]]},
+ {id:'ba-trnavske-myto',name:'Trnavské mýto',city:'Bratislava',platforms:[[48.1577778,17.1272222],[48.1575,17.1269444]]},
+ {id:'ba-krizna',name:'Krížna',city:'Bratislava',platforms:[[48.1544444,17.1255556],[48.1547222,17.125]]},
+ {id:'ba-soltesovej',name:'Šoltésovej',city:'Bratislava',platforms:[[48.1509343,17.125754],[48.15,17.125]]},
+ {id:'ba-maly-trh',name:'Malý trh',city:'Bratislava',platforms:[[48.1472222,17.1238889],[48.1480556,17.1247222]]},
+ {id:'ba-culenova',name:'Čulenova',city:'Bratislava',platforms:[[48.1444444,17.1233333],[48.1438889,17.1225]]},
+ {id:'ba-autobusova-stanica',name:'Autobusová stanica',city:'Bratislava',platforms:[[48.1458333,17.1263889],[48.1466667,17.1286111]]},
+ {id:'ba-safarikovo-nam',name:'Šafárikovo nám.',city:'Bratislava',platforms:[[48.1413889,17.1172222],[48.1408333,17.1161111]]},
+ {id:'ba-nam-l-stura',name:'Nám. Ľ. Štúra',city:'Bratislava',platforms:[[48.1397222,17.1105556],[48.14,17.11]]},
+ {id:'ba-most-snp',name:'Most SNP',city:'Bratislava',platforms:[[48.1394444,17.1052778],[48.1402778,17.1038889]]},
+ {id:'ba-chatam-sofer',name:'Chatam Sófer',city:'Bratislava',platforms:[[48.1408333,17.0925],[48.1419444,17.0905556]]},
+ {id:'ba-kralovske-udolie',name:'Kráľovské údolie',city:'Bratislava',platforms:[[48.1430556,17.0844444],[48.1425,17.0855556]]},
+ {id:'ba-lanfranconi',name:'Lanfranconi',city:'Bratislava',platforms:[[48.1447222,17.0783333],[48.1455556,17.0775]]},
+ {id:'ba-botanicka-zahrada',name:'Botanická záhrada',city:'Bratislava',platforms:[[48.1477778,17.0722222],[48.1480556,17.0719444]]},
+ {id:'ba-riviera',name:'Riviéra',city:'Bratislava',platforms:[[48.1497222,17.0627778],[48.1494444,17.0627778]]},
+ {id:'ba-janotova',name:'Janotova',city:'Bratislava',platforms:[[48.1491667,17.0580556],[48.1488889,17.0572222]]},
+ {id:'ba-pri-podchode',name:'Pri podchode',city:'Bratislava',platforms:[[48.1491667,17.0561111],[48.1494444,17.0563889]]},
+ {id:'ba-hany-melickovej',name:'Hany Meličkovej',city:'Bratislava',platforms:[[48.1497222,17.0533333],[48.1494444,17.0541667]]},
+ {id:'ba-tomankova',name:'Tománkova',city:'Bratislava',platforms:[[48.1516667,17.0508333],[48.1511111,17.0513889]]},
+ {id:'ba-matejkova',name:'Matejkova',city:'Bratislava',platforms:[[48.1516667,17.0480556]]},
+ {id:'ba-zs-majernikova',name:'ZŠ Majerníkova',city:'Bratislava',platforms:[[48.1542795,17.0458719],[48.1548357,17.0461507]]},
+ {id:'ba-dlhe-diely',name:'Dlhé diely',city:'Bratislava',platforms:[[48.1572222,17.045],[48.1577778,17.0441667]]},
+];
 const $=id=>document.getElementById(id);
 const isSecure=window.isSecureContext;
 const storeKey='gps-info-v02-stops',settingsKey='gps-info-v02-settings';
@@ -98,7 +132,7 @@ const state={screen:'home',mode:'off',watch:null,position:null,heading:null,spee
 let customStops=[];
 try{const v=JSON.parse(localStorage.getItem(storeKey)||'[]');if(Array.isArray(v))customStops=v.filter(validStop).slice(0,200);}catch{}
 function validStop(s){return s&&typeof s.id==='string'&&typeof s.name==='string'&&s.name.length<=70&&s.name.length>0&&Array.isArray(s.platforms)&&s.platforms.length>0&&s.platforms.every(p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=90&&Math.abs(p[1])<=180);}
-function allStops(){return [...SEED_STOPS,...customStops];}
+function allStops(){return [...SEED_STOPS,...ADDITIONAL_STOPS,...customStops];}
 const rad=n=>n*Math.PI/180;
 function hav(a,b){const lat1=rad(a.lat),lat2=rad(b.lat),dLat=lat2-lat1,dLon=rad(b.lon-a.lon),v=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;return 12742017.6*Math.asin(Math.min(1,Math.sqrt(v)));}
 function stopDistance(stop,point){return Math.min(...stop.platforms.map(([lat,lon])=>hav({lat,lon},point)));}
