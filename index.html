@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#08141c">
+  <meta name="description" content="GPS informačný systém – dve predpokladané nasledujúce zastávky bez zadania trasy.">
+  <style>
+:root{color-scheme:dark;--bg:#08141c;--surface:#10232e;--surface2:#132a36;--muted:#8ca5af;--text:#effbf8;--cyan:#67eee5;--lime:#b9f46f;--border:#25404b;--warning:#ffc76a;--shadow:0 20px 55px #0003;font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 85% -12%,#1d4341 0,transparent 45%),var(--bg);color:var(--text);min-height:100svh;-webkit-font-smoothing:antialiased}button,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:focus-visible,summary:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}button:disabled{opacity:.55;cursor:wait}[hidden]{display:none!important}.app{max-width:900px;margin:auto;min-height:100svh;padding:0 clamp(14px,3.6vw,34px);display:flex;flex-direction:column}header.topbar{height:88px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);gap:8px}.brand{display:flex;align-items:center;gap:13px}.brand-icon{display:grid;place-items:center;background:var(--cyan);color:#092329;border-radius:12px;width:43px;height:43px;font-size:32px;font-weight:950;line-height:1;transform:skewX(-5deg)}.brand-name{display:block;font-size:21px;letter-spacing:-.8px;font-weight:850;white-space:nowrap}.brand-light{font-weight:380;color:#b3cbd1}.brand-sub{display:block;color:var(--muted);font-size:9px;font-weight:750;letter-spacing:1.7px;margin-top:4px}.top-actions{display:flex;align-items:center;gap:9px}.live-indicator{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:1px;border:1px solid #33505d;border-radius:999px;padding:10px 12px;color:#b9cbd3;white-space:nowrap}.live-indicator i{width:7px;height:7px;border-radius:100%;background:#8a9299}.live-indicator.on i{background:var(--lime);box-shadow:0 0 12px var(--lime)}.live-indicator.demo i{background:var(--warning);box-shadow:0 0 10px var(--warning)}.icon-button{border:1px solid #33505d;color:var(--text);background:transparent;width:40px;height:40px;border-radius:12px;font-size:24px}.hero-heading{padding:34px 0 24px}.eyebrow{font-size:10px;letter-spacing:2px;font-weight:850;color:var(--cyan)}h1{font-size:clamp(27px,5vw,44px);line-height:1.08;letter-spacing:-1.4px;margin:11px 0 10px;font-weight:800}.hero-heading p{color:var(--muted);font-size:14px;max-width:620px;line-height:1.6;margin:0}.stop-stack{display:grid;gap:10px}.current-card{background:#10252c;border:1px solid #2e6559;border-radius:18px;padding:17px 22px}.current-marker{font-size:10px;letter-spacing:1.7px;font-weight:850;color:#a0e3d4;display:flex;align-items:center;gap:10px}.dot{width:8px;height:8px;border-radius:100%;background:#8dcbb7}.current-content{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:10px}.current-name{font-size:clamp(20px,4vw,28px);font-weight:730;letter-spacing:-.5px;min-width:0;overflow-wrap:anywhere}.current-distance{white-space:nowrap;color:#a5c2bc;font-size:12px}.next-card{border-radius:20px;padding:24px 24px 21px;min-width:0}.next-card.primary{background:linear-gradient(125deg,#b9f46f,#7de6b1);color:#0b2525;box-shadow:0 13px 36px #8dda9525}.next-card-top{display:flex;justify-content:space-between;align-items:center}.overline{font-weight:900;font-size:11px;letter-spacing:1.9px;display:flex;align-items:center;gap:12px}.small-number{width:30px;height:30px;border:1px solid currentColor;border-radius:50%;display:grid;place-items:center;font-size:11px;letter-spacing:0}.direction-mark{font-size:30px;font-weight:750}.primary h2{font-size:clamp(32px,7vw,55px);line-height:1.02;letter-spacing:-1.8px;overflow-wrap:anywhere;margin:22px 0 22px;font-weight:860}.next-bottom{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;font-weight:650}.chip{border:1px solid #27564988;border-radius:999px;padding:7px 10px;font-size:10px;letter-spacing:.8px;white-space:nowrap}.next-card.secondary{background:#132a36;border:1px solid #2e4f5c;padding-top:20px;padding-bottom:24px}.secondary .overline{color:var(--cyan)}.second-line{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-top:14px}.second-line h2{font-size:clamp(23px,4.5vw,32px);margin:0;overflow-wrap:anywhere;letter-spacing:-.6px}.second-distance{color:var(--muted);white-space:nowrap;font-size:13px}.dashboard-strip{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);border-radius:16px;margin-top:16px;background:#0e2029}.metric{padding:17px 20px;min-width:0}.metric+.metric{border-left:1px solid var(--border)}.metric-label{font-size:10px;color:#8ca9b4;letter-spacing:1.4px;font-weight:780;white-space:nowrap}.metric strong{display:inline-block;font-size:29px;margin-top:7px;letter-spacing:-.8px}.metric-unit{font-size:12px;margin-left:5px;color:#b4c5cb}.message{display:flex;align-items:center;gap:12px;background:#12222a;border:1px solid #28404b;color:#b6cad3;font-size:13px;line-height:1.45;padding:13px 16px;border-radius:12px;margin-top:15px}.message-icon{font-size:23px;color:var(--cyan);flex-shrink:0}.message.warn{border-color:#695536;color:#e8c990}.message.warn .message-icon{color:#ffc76a}.controls{display:flex;gap:11px;margin-top:15px}.btn{border:0;border-radius:13px;font-weight:760;padding:16px 18px;min-height:54px;display:inline-flex;align-items:center;justify-content:center;gap:10px}.btn-primary{flex:1;background:var(--cyan);color:#083136}.btn-primary:hover{background:#92fff4}.btn-outline{flex:0 0 37%;background:transparent;color:var(--text);border:1px solid #3d5a64}.btn-outline:hover{background:#17313c}.demo-controls{display:flex;align-items:center;justify-content:space-between;gap:9px;margin-top:12px;flex-wrap:wrap}.demo-badge{color:#e7bf70;font-size:11px;font-weight:850;letter-spacing:1px}.demo-buttons{display:flex;gap:8px}.btn-mini{font-size:12px;min-height:38px;padding:9px 13px;background:#21343e;color:#d3ebee;border:1px solid #38535e}.btn-forward{background:#d1ed8b;color:#1d342a}.advanced{margin-top:19px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);color:#bed4db}.advanced summary{padding:17px 0;cursor:pointer;font-weight:680;font-size:13px;list-style:none;display:flex;justify-content:space-between}.advanced summary::-webkit-details-marker{display:none}.advanced summary span{color:var(--cyan)}.details-body{padding:0 0 20px}.details-row{padding:9px 0;border-bottom:1px solid #29404a;display:flex;align-items:center;justify-content:space-between;font-size:12px;gap:12px}.details-row>span{color:#8da8b4}.details-row strong{text-align:right;font-weight:600;overflow-wrap:anywhere}.details-body p{font-size:12px;line-height:1.5;color:#8ca5b0;margin-top:15px}footer{display:flex;justify-content:space-between;gap:10px;color:#718d99;font-size:10px;line-height:1.6;padding:26px 0 20px;margin-top:auto;flex-wrap:wrap}.settings-dialog{position:fixed;inset:auto;max-width:min(92vw,480px);width:100%;max-height:min(88svh,800px);overflow:auto;background:#112731;color:var(--text);border:1px solid #45616c;border-radius:20px;padding:0;box-shadow:0 30px 100px #000b}.settings-dialog::backdrop{background:#000b;backdrop-filter:blur(6px)}.settings-dialog form{margin:0}.dialog-header{display:flex;justify-content:space-between;align-items:center;padding:22px 24px;border-bottom:1px solid var(--border)}.dialog-header h2{margin:0;font-size:22px}.close-dialog{font-size:28px;color:#dceceb;background:transparent;border:0}.dialog-content{padding:24px;max-height:70svh;overflow:auto}.field-label,.field-title{display:block;font-size:14px;font-weight:760;margin-bottom:13px}.dialog-content select{width:100%;padding:13px;background:#203843;border:1px solid #506973;border-radius:10px;color:var(--text)}.help{font-size:12px;line-height:1.6;color:#a5bfc7;margin:10px 0 15px}.help code{word-break:break-all;color:#d5f3cc}.toggle-row{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:20px 0;cursor:pointer}.toggle-row strong{font-size:14px;display:block}.toggle-row small{display:block;color:#96aeb8;font-size:12px;line-height:1.5;margin-top:4px}.toggle-row input{width:20px;height:20px;accent-color:var(--cyan)}.dialog-content hr{border:0;border-top:1px solid var(--border);margin:20px 0}.upload-label{display:block;text-align:center;border:1px dashed #61858a;padding:15px;border-radius:12px;cursor:pointer;font-size:13px;font-weight:750}.clear-custom{background:transparent;color:#d6a79d;border:0;padding:4px 0;font-size:12px;text-decoration:underline}.dialog-save{width:calc(100% - 48px);margin:0 24px 24px}@media(min-width:730px){.stop-stack{grid-template-columns:1fr 1fr;gap:14px}.current-card{grid-column:1/3}.next-card.primary{grid-column:1/3}.secondary{grid-column:1/3}.hero-heading{padding-top:36px}.next-card.primary{padding:24px 30px 22px}}@media(min-width:800px) and (max-height:720px){.hero-heading{padding:18px 0 14px}.primary h2{margin:12px 0 12px}.metric{padding:10px 20px}.next-card{padding-top:14px!important;padding-bottom:14px!important}.current-card{padding-top:12px;padding-bottom:12px}.controls{margin-top:8px}}@media(max-width:420px){header.topbar{height:74px}.brand-name{font-size:18px}.brand-sub{font-size:8px;letter-spacing:1px}.brand-icon{width:35px;height:35px;font-size:27px}.top-actions{gap:6px}.live-indicator{padding:8px;font-size:9px}.icon-button{width:34px;height:35px;font-size:21px}.hero-heading{padding:22px 0 17px}.current-card{padding:15px 17px}.current-content{flex-wrap:wrap}.next-card{padding:20px 18px}.primary h2{margin:20px 0}.metric{padding:12px 9px}.metric-label{font-size:8px;letter-spacing:.7px}.metric strong{font-size:25px}.metric-unit{font-size:10px}.controls .btn{font-size:13px;padding:12px}.secondary h2{font-size:23px}.second-distance{font-size:11px}}
+
+</style>
+  <title>GPS InfoSystem</title>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="brand-icon" aria-hidden="true">▰</div><div><span class="brand-name">GPS<span class="brand-light">InfoSystem</span></span><span class="brand-sub">AUTOMATICKÁ DETEKCIA ZASTÁVOK</span></div></div>
+    <div class="top-actions">
+      <span class="live-indicator" id="liveIndicator"><i></i><span id="modeLabel">NEAKTÍVNE</span></span>
+      <button class="icon-button" id="settingsBtn" aria-label="Nastavenia" title="Nastavenia">⚙</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero-heading"><div class="eyebrow" id="eyebrow">INTELIGENTNÝ ZASTÁVKOVÝ ASISTENT</div><h1 id="mainHeading">Kam pokračujeme?</h1><p id="subtitle">Sleduj polohu a predpokladaj nasledujúce zastávky podľa smeru a cestnej siete.</p></div>
+
+    <section class="stop-stack" aria-label="Zastávky">
+      <article class="current-card">
+        <div class="current-marker"><span class="dot"></span> AKTUÁLNA ZASTÁVKA</div>
+        <div class="current-content"><div class="current-name" id="currentName">—</div><span class="current-distance" id="currentDistance">Čaká na GPS</span></div>
+      </article>
+      <article class="next-card primary" id="primaryCard">
+        <div class="next-card-top"><span class="overline"><span class="small-number">01</span> NASLEDUJE</span><span class="direction-mark" aria-hidden="true">↗</span></div>
+        <h2 id="nextName">Zatiaľ neznáma</h2>
+        <div class="next-bottom"><span id="nextDistance">Zapni sledovanie polohy</span><span class="chip" id="nextConfidence">PREDIKCIA</span></div>
+      </article>
+      <article class="next-card secondary" id="secondaryCard">
+        <div class="next-card-top"><span class="overline"><span class="small-number">02</span> POTOM</span></div>
+        <div class="second-line"><h2 id="secondName">—</h2><span class="second-distance" id="secondDistance">—</span></div>
+      </article>
+    </section>
+
+    <div class="dashboard-strip" aria-label="Telemetria">
+      <div class="metric"><span class="metric-label">RÝCHLOSŤ</span><div><strong id="speedVal">—</strong><span class="metric-unit">km/h</span></div></div>
+      <div class="metric"><span class="metric-label">SMER</span><div><strong id="headingVal">—</strong><span class="metric-unit">°</span></div></div>
+      <div class="metric"><span class="metric-label">GPS PRESNOSŤ</span><div><strong id="accuracyVal">—</strong><span class="metric-unit">m</span></div></div>
+    </div>
+
+    <div class="message" id="messageBox" role="status" aria-live="polite"><span class="message-icon" id="messageIcon">◎</span><div id="messageText">Pripravené na spustenie. Na načítanie reálnych zastávok je potrebný internet.</div></div>
+
+    <div class="controls">
+      <button id="gpsBtn" class="btn btn-primary"><span id="gpsBtnIcon">◎</span><span id="gpsBtnText">Spustiť GPS</span></button>
+      <button id="demoBtn" class="btn btn-outline">Vyskúšať demo</button>
+    </div>
+    <div class="demo-controls" id="demoControls" hidden><span class="demo-badge">TESTOVACÍ REŽIM • NIE GPS</span><div class="demo-buttons"><button class="btn btn-mini" id="demoReset">↺ Od začiatku</button><button class="btn btn-mini btn-forward" id="demoNext">+ 75 m →</button></div></div>
+
+    <details class="advanced"><summary>Diagnostika a informácie <span>⌄</span></summary><div class="details-body"><div class="details-row"><span>Databáza</span><strong id="dataStatus">nenačítaná</strong></div><div class="details-row"><span>Polohy zastávok</span><strong id="stopCount">—</strong></div><div class="details-row"><span>Cestné úseky</span><strong id="roadCount">—</strong></div><div class="details-row"><span>Režim</span><strong id="diagnosticMode">vypnutý</strong></div><div class="details-row"><span>GPS pozícia</span><strong id="positionText">—</strong></div><p>Predikcia je orientačná. Bez zvolenej trasy nevie systém vopred určiť odbočenie na križovatke. Dopravné značenie a bezpečnosť jazdy majú vždy prednosť.</p></div></details>
+  </main>
+
+  <footer><span>GPS InfoSystem · prototyp 0.1.0</span><span>OpenStreetMap © prispievatelia · ODbL</span></footer>
+</div>
+
+<dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsTitle"><form method="dialog"><div class="dialog-header"><h2 id="settingsTitle">Nastavenia</h2><button class="close-dialog" aria-label="Zavrieť" value="cancel">×</button></div><div class="dialog-content"><label class="field-label" for="radiusSelect">Vzdialenosť rozpoznania zastávky</label><select id="radiusSelect"><option value="50">50 metrov</option><option value="75" selected>75 metrov</option><option value="100">100 metrov</option></select><p class="help">Opustenie zastávky sa rozpozná s odstupom navyše, aby GPS neprepínalo sem a tam.</p><label class="toggle-row"><span><strong>Neuspávať obrazovku</strong><small>Pokiaľ to mobilný prehliadač umožňuje.</small></span><input type="checkbox" id="wakeToggle"></label><hr><strong class="field-title">Vlastné zastávky</strong><p class="help">Doplň ďalšie mestá: nahraj JSON zoznam <code>[{"name":"...","lat":49.0,"lon":18.9}]</code> alebo GeoJSON bodov. Zastávky z OpenStreetMap sa načítavajú automaticky kdekoľvek na Slovensku.</p><label class="upload-label" for="stopsFile">+ Nahrať JSON / GeoJSON</label><input id="stopsFile" type="file" accept=".json,.geojson,application/json" hidden><p class="help" id="customCount">Vlastné zastávky: 0</p><button type="button" class="clear-custom" id="clearCustom">Vymazať vlastné zastávky</button><hr><p class="help">Používa polohu iba vo vašom prehliadači. Dopyty do OpenStreetMap odosielajú GPS súradnice stredu vyhľadávanej oblasti verejnému serveru Overpass.</p></div><button class="btn btn-primary dialog-save" value="close">Hotovo</button></form></dialog>
+<script type="module">
+// GPS InfoSystem — smerovo orientovaný graf ciest, GPS map matching a zastávky.
+// ESM bez knižníc: ľahko testovateľná a prenositeľná logika.
+const R = 6371008.8;
+const radians = d => d * Math.PI / 180;
+function meters(a,b) {
+  const dLat=radians(b.lat-a.lat), dLon=radians(b.lon-a.lon);
+  const s=Math.sin(dLat/2)**2+Math.cos(radians(a.lat))*Math.cos(radians(b.lat))*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.min(1,Math.sqrt(s)));
+}
+function bearing(a,b) {
+  const x=Math.sin(radians(b.lon-a.lon))*Math.cos(radians(b.lat));
+  const y=Math.cos(radians(a.lat))*Math.sin(radians(b.lat))-Math.sin(radians(a.lat))*Math.cos(radians(b.lat))*Math.cos(radians(b.lon-a.lon));
+  return (Math.atan2(x,y)*180/Math.PI+360)%360;
+}
+function angleDiff(a,b) {return Math.abs(((a-b+540)%360)-180);}
+function xy(p,lat0){return {x:p.lon*111320*Math.cos(radians(lat0)),y:p.lat*111320};}
+function project(p,a,b) {
+  const la=(p.lat+a.lat+b.lat)/3, p0=xy(p,la), a0=xy(a,la), b0=xy(b,la);
+  const dx=b0.x-a0.x,dy=b0.y-a0.y, l2=dx*dx+dy*dy;
+  const t=l2?Math.max(0,Math.min(1,((p0.x-a0.x)*dx+(p0.y-a0.y)*dy)/l2)):0;
+  const qx=a0.x+t*dx,qy=a0.y+t*dy;
+  return {t, distance:Math.hypot(p0.x-qx,p0.y-qy),side:(dx*(p0.y-qy)-dy*(p0.x-qx)),offset:Math.hypot(p0.x-qx,p0.y-qy)};
+}
+class Heap {
+  constructor(){this.a=[];}
+  push(pair){const a=this.a; a.push(pair);let i=a.length-1;while(i){let j=(i-1)>>1;if(a[j][0]<=pair[0])break;a[i]=a[j];i=j;}a[i]=pair;}
+  pop(){const a=this.a,top=a[0],last=a.pop();if(a.length){let i=0;while(true){let j=i*2+1;if(j>=a.length)break;if(j+1<a.length&&a[j+1][0]<a[j][0])j++;if(a[j][0]>=last[0])break;a[i]=a[j];i=j;}a[i]=last;}return top;}
+  get length(){return this.a.length;}
+}
+const ROUTABLE = new Set(['motorway','motorway_link','trunk','trunk_link','primary','primary_link','secondary','secondary_link','tertiary','tertiary_link','residential','unclassified','living_street','service','busway','road']);
+const pedestrianOnly=new Set(['footway','pedestrian','path','steps','cycleway','track','bridleway']);
+function buildNetwork(ways, stops){
+  const segments=[],graph=new Map();
+  function edge(from,to,len,seg,forward){if(!graph.has(from))graph.set(from,[]);graph.get(from).push({to,len,seg,forward});}
+  for(const w of ways){
+    const tags=w.tags||{},type=tags.highway;
+    if(!ROUTABLE.has(type)||pedestrianOnly.has(type)||tags.access==='private'||tags.bus==='no'||tags.motor_vehicle==='no'&&tags.bus!=='yes')continue;
+    const pts=w.geometry||[],ids=w.nodes||pts.map((_,i)=>`${w.id}:${i}`);
+    if(pts.length<2)continue;
+    const oneway=tags.oneway==='yes'||tags.oneway==='1'||tags.junction==='roundabout';
+    const backwards=tags.oneway==='-1';
+    for(let i=0;i<pts.length-1;i++){
+      const a=pts[i],b=pts[i+1],len=meters(a,b);
+      if(len<0.35||len>650)continue;
+      const s={id:`${w.id}:${i}`,wayId:w.id,u:String(ids[i]),v:String(ids[i+1]),a,b,len,fwd:!backwards,rev:!oneway,road:type};
+      if(backwards){s.fwd=false;s.rev=true;}
+      segments.push(s);
+      if(s.fwd)edge(s.u,s.v,len,s,true);
+      if(s.rev)edge(s.v,s.u,len,s,false);
+    }
+  }
+  const normalized=stops.filter(s=>Number.isFinite(s.lat)&&Number.isFinite(s.lon)&&s.name).map(s=>({...s,id:String(s.id)}));
+  const network={segments,graph,stops:normalized};
+  for(const stop of normalized) stop.snaps=nearestSegments(network,stop,3,80);
+  return network;
+}
+function nearestSegments(network,point,count=4,maxDist=130,heading=null){
+  const matches=[];
+  for(const seg of network.segments){
+    // Fast geographic reject before detailed Cartesian projection.
+    const midLat=(seg.a.lat+seg.b.lat)/2, midLon=(seg.a.lon+seg.b.lon)/2;
+    if(Math.abs(point.lat-midLat)>0.006+seg.len/110000||Math.abs(point.lon-midLon)>0.01+seg.len/75000)continue;
+    const p=project(point,seg.a,seg.b);
+    if(p.distance>maxDist)continue;
+    let score=p.distance;
+    if(heading!==null){
+      const f=bearing(seg.a,seg.b), d=Math.min(seg.fwd?angleDiff(heading,f):180,seg.rev?angleDiff(heading,(f+180)%360):180);
+      score+=Math.min(60,d*0.6);
+    }
+    matches.push({seg,t:p.t,d:p.distance,side:p.side,score});
+  }
+  return matches.sort((a,b)=>a.score-b.score).slice(0,count);
+}
+function distanceGraph(network,anchor,heading,max=3200){
+  const snaps=nearestSegments(network,anchor,3,85,heading),dist=new Map(),heap=new Heap();
+  const seeds=[];
+  const add=(node,value)=>{if(value<(dist.get(node)??Infinity)){dist.set(node,value);heap.push([value,node]);}};
+  for(const s of snaps){
+    const {seg,t}=s,base=s.d*1.2;
+    const fBearing=bearing(seg.a,seg.b);
+    if(seg.fwd){const err=heading===null?0:angleDiff(heading,fBearing);const penalty=heading===null?0:err>110?340:err>65?120:err*0.34;add(seg.v,base+(1-t)*seg.len+penalty);seeds.push({seg,forward:true,t,penalty:base+penalty});}
+    if(seg.rev){const err=heading===null?0:angleDiff(heading,(fBearing+180)%360);const penalty=heading===null?0:err>110?340:err>65?120:err*0.34;add(seg.u,base+t*seg.len+penalty);seeds.push({seg,forward:false,t,penalty:base+penalty});}
+  }
+  while(heap.length){const [d,node]=heap.pop();if(d!==dist.get(node)||d>max)continue;
+    for(const e of network.graph.get(node)||[]){const nd=d+e.len;if(nd<=(max+100)&&nd<(dist.get(e.to)??Infinity))add(e.to,nd);}
+  }
+  return {dist,seeds,snaps};
+}
+function routeStop(stop,from,heading,network){
+  let best=null;
+  for(const snap of stop.snaps||[]){const {seg,t,d,side}=snap;
+    for(const forward of [true,false]){
+      if(forward&&!seg.fwd||!forward&&!seg.rev)continue;
+      // OSM môže vykresliť zastávku priamo na osi cesty. Malý odstup je neurčitý.
+      const signed=forward?side:-side;
+      const sideClass=Math.abs(signed)<seg.len*2.5?'unknown':signed<0?'right':'left';
+      // Stranu cesty nikdy nezamlčujeme: protismerná má výraznú penalizáciu.
+      const sidePenalty=sideClass==='left'?400:sideClass==='unknown'?15:0;
+      const node=forward?seg.u:seg.v;
+      const fraction=forward?t:1-t;
+      let routeDistance=(from.dist.get(node)??Infinity)+fraction*seg.len;
+      for(const seed of from.seeds){
+        if(seed.seg.id!==seg.id||seed.forward!==forward)continue;
+        const delta=forward?t-seed.t:seed.t-t;
+        if(delta>=-0.01)routeDistance=Math.min(routeDistance,Math.max(0,delta)*seg.len+seed.penalty);
+      }
+      if(!Number.isFinite(routeDistance))continue;
+      const direction=bearing(forward?seg.a:seg.b,forward?seg.b:seg.a);
+      // Ak je zastávka na odlišnom úseku siete, smer aktuálneho pohybu sa už nemusí zhodovať.
+      const rank=routeDistance+d*1.3+sidePenalty;
+      if(!best||rank<best.rank)best={stop,roadDistance:routeDistance,airDistance:meters(stop,from.anchor),side:sideClass,direction,snap,rank,confidence:sideClass==='right'?'vysoká':sideClass==='unknown'?'stredná':'nízka'};
+    }
+  }
+  return best;
+}
+function findAhead(network,point,heading,{maxRoad=2700,exclude=[],minRoad=0}={}){
+  if(!network.segments.length||heading===null)return [];
+  const from=distanceGraph(network,point,heading,maxRoad+100);
+  from.anchor=point;
+  const excluded=new Set(exclude.map(String));
+  return network.stops.map(stop=>excluded.has(stop.id)?null:routeStop(stop,from,heading,network))
+    .filter(x=>x&&x.roadDistance>=minRoad&&x.roadDistance<=maxRoad&&x.side!=='left'&&!(x.roadDistance<850&&angleDiff(x.direction,heading)>115)&&!(x.airDistance>35&&x.roadDistance<1400&&angleDiff(bearing(point,x.stop),heading)>105))
+    .sort((a,b)=>a.rank-b.rank);
+}
+function chooseNextTwo(network,point,heading,excluded=[]){
+  const rank=findAhead(network,point,heading,{exclude:excluded});
+  if(!rank.length)return {next:[],rank};
+  const first=rank[0];
+  const start=first.snap.seg;
+  const t=first.snap.t;
+  const p={lat:start.a.lat+(start.b.lat-start.a.lat)*t,lon:start.a.lon+(start.b.lon-start.a.lon)*t};
+  const secondRank=findAhead(network,p,first.direction,{exclude:[...excluded,first.stop.id],minRoad:28,maxRoad:2700});
+  const second=secondRank.find(x=>x.stop.name!==first.stop.name&&meters(x.stop,first.stop)>48)||null;
+  return {next:[first,second].filter(Boolean),rank};
+}
+function readOverpass(json,additional=[]){
+  const ways=[],stops=[],uniq=new Set();
+  for(const el of json.elements||[]){
+    if(el.type==='way'&&el.tags?.highway&&Array.isArray(el.geometry)){ways.push(el);continue;}
+    if(!el.tags?.name)continue;
+    const tags=el.tags;
+    if(tags.highway!=='bus_stop'&&!(tags.public_transport==='platform'&&(tags.bus==='yes'||tags.trolleybus==='yes')))continue;
+    const lat=el.lat??el.center?.lat,lon=el.lon??el.center?.lon;
+    if(!Number.isFinite(lat)||!Number.isFinite(lon))continue;
+    const key=`${tags.name.toLowerCase()}-${lat.toFixed(4)}-${lon.toFixed(4)}`;
+    if(uniq.has(key))continue;uniq.add(key);
+    stops.push({id:`osm:${el.type}:${el.id}`,name:tags.name,lat,lon,source:'OSM'});
+  }
+  for(const x of additional){if(Number.isFinite(x.lat)&&Number.isFinite(x.lon)&&x.name)stops.push({...x,source:'vlastné'});}
+  return buildNetwork(ways,stops);
+}
+function normalizeImported(data){
+  let items=[];
+  if(Array.isArray(data))items=data;
+  else if(data?.type==='FeatureCollection')items=data.features.map(f=>({id:f.id??f.properties?.id,name:f.properties?.name??f.properties?.stop_name,lon:f.geometry?.coordinates?.[0],lat:f.geometry?.coordinates?.[1]}));
+  return items.map((s,i)=>({id:String(s.id??`custom-${i}`),name:String(s.name??s.stop_name??'').trim(),lat:Number(s.lat??s.stop_lat),lon:Number(s.lon??s.stop_lon)})).filter(s=>s.name&&Number.isFinite(s.lat)&&Number.isFinite(s.lon)&&Math.abs(s.lat)<=90&&Math.abs(s.lon)<=180);
+}
+
+
+const $=id=>document.getElementById(id);
+const isSecure=window.isSecureContext;
+const cacheKey='gis-custom-stops-v1', radiusKey='gis-radius-v1', wakeKey='gis-wake-v1';
+const cfg={radius:Number(localStorage.getItem(radiusKey))||75,wakeWanted:localStorage.getItem(wakeKey)==='true'};
+const state={mode:'off',watch:null,position:null,previous:null,heading:null,speed:null,accuracy:null,network:null,dataCenter:null,loading:false,loadedAt:0,lastCalc:0,current:null,lastStop:null,loadGeneration:0,wakeLock:null,demoMeters:0,custom:[],error:null,retryAfter:0};
+try{state.custom=normalizeImported(JSON.parse(localStorage.getItem(cacheKey)||'[]'));}catch{state.custom=[];}
+const fmt=m=>Number.isFinite(m)?Math.round(m)>=1000?(m/1000).toFixed(1)+' km':Math.round(m)+' m':'—';
+const cityHint=p=>!p?'':meters(p,{lat:48.1486,lon:17.1077})<19000?'Bratislava':meters(p,{lat:49.2231,lon:18.7394})<13000?'Žilina':meters(p,{lat:49.0665,lon:18.9234})<13000?'Martin':'aktuálna oblasť';
+const radiusExit=()=>cfg.radius+Math.max(40,cfg.radius*0.6);
+const alertMsg=(message,type='normal')=>{$('messageText').textContent=message;$('messageIcon').textContent=type==='warn'?'!':'◎';$('messageBox').classList.toggle('warn',type==='warn');};
+
+function renderBase(){
+  $('modeLabel').textContent=state.mode==='gps'?'GPS AKTÍVNE':state.mode==='demo'?'DEMO':'NEAKTÍVNE';
+  $('liveIndicator').className='live-indicator '+(state.mode==='gps'?'on':state.mode==='demo'?'demo':'');
+  $('gpsBtnText').textContent=state.mode==='gps'?'Zastaviť GPS':'Spustiť GPS';
+  $('gpsBtnIcon').textContent=state.mode==='gps'?'■':'◎';
+  $('demoBtn').textContent=state.mode==='demo'?'Ukončiť demo':'Vyskúšať demo';
+  $('demoControls').hidden=state.mode!=='demo';
+  $('accuracyVal').textContent=Number.isFinite(state.accuracy)?Math.round(state.accuracy):'—';
+  $('headingVal').textContent=Number.isFinite(state.heading)?Math.round(state.heading):'—';
+  $('speedVal').textContent=Number.isFinite(state.speed)?Math.round(state.speed*3.6):'—';
+  $('diagnosticMode').textContent=state.mode==='gps'?'Skutočné GPS':state.mode==='demo'?'Simulované':'Vypnutý';
+  $('positionText').textContent=state.position?state.position.lat.toFixed(5)+', '+state.position.lon.toFixed(5):'—';
+  $('stopCount').textContent=state.network?state.network.stops.length.toLocaleString('sk-SK'):'—';
+  $('roadCount').textContent=state.network?state.network.segments.length.toLocaleString('sk-SK'):'—';
+  $('dataStatus').textContent=state.loading?'Načítavam…':state.network?(state.mode==='demo'?'Ukážkové dáta':`OpenStreetMap · ${cityHint(state.dataCenter)}`):'nenačítaná';
+  $('eyebrow').textContent=state.mode==='demo'?'SIMULÁCIA · ILUSTRAČNÉ ZASTÁVKY':state.mode==='gps'?'ŽIVÁ DETEKCIA Z GPS':'INTELIGENTNÝ ZASTÁVKOVÝ ASISTENT';
+  $('mainHeading').textContent=state.mode==='demo'?'Testovacia jazda':state.mode==='gps'?'Nasledujúce zastávky':'Kam pokračujeme?';
+  $('subtitle').textContent=state.mode==='demo'?'Stláčaj +75 m a sleduj prepínanie aktuálnej a dvoch nasledujúcich zastávok. Názvy sú vymyslené.':state.mode==='gps'?'Poradie je odhad podľa cestnej siete a smeru jazdy; na križovatkách sa môže zmeniť.':'Sleduj polohu a predpokladaj nasledujúce zastávky podľa smeru a cestnej siete.';
+}
+function renderStops(current,next=[]){
+  $('currentName').textContent=current?.stop.name||'—';
+  $('currentDistance').textContent=current?`V oblasti zastávky · ${fmt(current.airDistance)}`:state.lastStop?`Posledná: ${state.lastStop.name}`:state.mode==='off'?'Čaká na GPS':'Mimo zastávky';
+  const [one,two]=next;
+  $('nextName').textContent=one?.stop.name||(state.loading?'Načítavam zastávky…':state.heading===null?'Zisťujem smer jazdy…':state.mode==='off'?'Zatiaľ neznáma':'Bez spoľahlivej predikcie');
+  $('nextDistance').textContent=one?`Približne ${fmt(one.roadDistance)} po cestnej sieti`:state.mode==='off'?'Zapni sledovanie polohy':'Sleduj ďalší pohyb';
+  $('nextConfidence').textContent=one?(one.side==='right'?'ODHAD · PRAVÁ STRANA':'ODHAD · STRANA NEISTÁ'):'PREDIKCIA';
+  $('secondName').textContent=two?.stop.name||'—';
+  $('secondDistance').textContent=two?`+ ${fmt(two.roadDistance)} od prvej`:'—';
+}
+function demoNetwork(){
+  const lat=48.15500,lon=17.06000;
+  const places=[{id:'demo-a',name:'Prvá zastávka',lat:lat-0.00009,lon:lon+0.0018},{id:'demo-b',name:'Druhá zastávka',lat:lat-0.00009,lon:lon+0.0032},{id:'demo-c',name:'Tretia zastávka',lat:lat-0.00009,lon:lon+0.0048},{id:'demo-d',name:'Konečná',lat:lat-0.00009,lon:lon+0.0062},{id:'demo-opp',name:'Protismerná',lat:lat+0.00009,lon:lon+0.0025}];
+  const geom=Array.from({length:9},(_,i)=>({lat,lon:lon+i*0.0009}));
+  const ways=[{id:'demo-road',tags:{highway:'residential'},nodes:geom.map((_,i)=>i),geometry:geom}];
+  return buildNetwork(ways,places);
+}
+function putDemoFix(){
+  const lat=48.155,lon=17.06;
+  const movingLon=lon+state.demoMeters/1000/74.2;
+  state.position={lat,lon:movingLon,time:Date.now()};
+  state.heading=90;state.speed=10;state.accuracy=5;
+  calculate(true);
+}
+function startDemo(){
+  stopGps(false);
+  state.mode='demo';state.current=null;state.lastStop=null;state.demoMeters=0;
+  state.network=demoNetwork();state.dataCenter=null;state.loading=false;
+  putDemoFix();renderBase();if(cfg.wakeWanted)requestWake();
+  alertMsg('Demo: +75 m posunie simulované vozidlo. Protismernú zastávku systém nemá zobrazovať.');
+}
+function stopDemo(){
+  state.mode='off';state.network=null;state.position=null;state.heading=null;state.speed=null;state.accuracy=null;state.current=null;state.lastStop=null;
+  renderBase();renderStops(null,[]);releaseWake();alertMsg('Demo ukončené. Na jazdu zapni skutočné GPS.');
+}
+function getHeading(fix){
+  const gpsHeading=fix.coords.heading;
+  if(Number.isFinite(gpsHeading)&&gpsHeading>=0&&Number.isFinite(fix.coords.speed)&&fix.coords.speed>=1.8)return gpsHeading;
+  if(state.previous){
+    const last=state.previous,delta=meters(last,fix);
+    const age=(fix.time-last.time)/1000;
+    if(age>0&&age<35&&delta>=12&&fix.coords.accuracy<80&&last.accuracy<80)return bearing(last,fix);
+  }
+  return state.heading;
+}
+function handlePosition(pos){
+  if(state.mode!=='gps')return;
+  const c=pos.coords;
+  const fix={lat:c.latitude,lon:c.longitude,time:pos.timestamp||Date.now(),coords:c,accuracy:c.accuracy};
+  if(!Number.isFinite(fix.lat)||!Number.isFinite(fix.lon))return;
+  const newHeading=getHeading(fix);
+  // Reálne GPS môžu meniť kurz počas státia. Uchovávame posledný platný kurz počas prejazdu zastávkou.
+  if(newHeading!==null)state.heading=newHeading;
+  state.speed=Number.isFinite(c.speed)?Math.max(0,c.speed):state.previous?meters(state.previous,fix)/Math.max(1,(fix.time-state.previous.time)/1000):null;
+  state.position=fix;state.accuracy=c.accuracy;
+  if(!state.previous||meters(state.previous,fix)>5||fix.time-state.previous.time>9000)state.previous=fix;
+  renderBase();
+  if(fix.accuracy>130){renderStops(null,[]);alertMsg(`GPS má presnosť iba približne ${fmt(fix.accuracy)}. Počkám na presnejšiu polohu.`,'warn');return;}
+  if((!state.network||!state.dataCenter||meters(state.dataCenter,fix)>770)&&Date.now()>state.retryAfter){loadArea(fix);}
+  calculate(false);
+}
+function calculate(force=false){
+  if(!state.position||!state.network||state.loading&&state.mode!=='demo')return;
+  if(!force&&Date.now()-state.lastCalc<2300)return;
+  state.lastCalc=Date.now();
+  const pos=state.position,heading=state.heading;
+  if(heading===null){renderStops(null,[]);if(!state.loading)alertMsg('GPS funguje. Pohni sa aspoň 12 metrov, aby som vedel určiť smer jazdy.');return;}
+  try{
+    const nearby=findAhead(state.network,pos,heading,{maxRoad:500});
+    let current=state.current?{...state.current,airDistance:meters(state.current.stop,pos)}:null;
+    if(current&&current.airDistance>radiusExit())current=null;
+    if(!current){current=nearby.find(x=>x.airDistance<=cfg.radius&&x.roadDistance<=Math.max(115,cfg.radius+50)&&x.side!=='left')||null;}
+    if(state.current&&(!current||state.current.stop.id!==current.stop.id))state.lastStop={id:state.current.stop.id,name:state.current.stop.name,lat:state.current.stop.lat,lon:state.current.stop.lon,time:Date.now()};
+    state.current=current;
+    if(state.lastStop&&meters(pos,state.lastStop)>200)state.lastStop=null;
+    const excludes=[current?.stop.id,state.lastStop?.id].filter(Boolean);
+    const result=chooseNextTwo(state.network,pos,heading,excludes);
+    let next=result.next;
+    // Pri vchode do zastávky nesmie "nasledujúca" ukazovať aktuálnu platformu.
+    next=next.filter(x=>x.stop.id!==current?.stop.id);
+    renderStops(current,next);
+    if(state.mode==='demo')return;
+    if(state.loading)alertMsg('Aktualizujem okolitú cestnú sieť. Zobrazené sú posledné načítané zastávky.');
+    else if(!next.length)alertMsg('Nenašla sa dostatočne spoľahlivá zastávka v smere jazdy. Pokračuj v jazde alebo skontroluj diagnostiku.','warn');
+    else alertMsg(`Automatický odhad pre ${cityHint(pos)}. Na križovatke sa poradie môže zmeniť.`);
+  }catch(err){alertMsg('Chyba výpočtu predikcie: '+err.message,'warn');console.error(err);}
+}
+function overpassQuery(point){
+  const lat=point.lat.toFixed(6),lon=point.lon.toFixed(6),r=1550,roads=1800;
+  return `[out:json][timeout:33];(node(around:${r},${lat},${lon})["highway"="bus_stop"]["name"];nwr(around:${r},${lat},${lon})["public_transport"="platform"]["bus"="yes"]["name"];nwr(around:${r},${lat},${lon})["public_transport"="platform"]["trolleybus"="yes"]["name"];);out center;way(around:${roads},${lat},${lon})["highway"~"^(primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|residential|unclassified|living_street|service|busway|trunk|trunk_link|motorway|motorway_link|road)$"];out geom;`;
+}
+async function loadArea(point){
+  if(state.loading||state.mode!=='gps')return;
+  state.loading=true;state.error=null;const generation=++state.loadGeneration;
+  if(state.dataCenter&&meters(state.dataCenter,point)>770)renderStops(null,[]);
+  renderBase();alertMsg('Načítavam zastávky a cestnú sieť z OpenStreetMap…');
+  const query=overpassQuery(point),endpoints=['https://overpass.private.coffee/api/interpreter','https://overpass-api.de/api/interpreter'];
+  let error=null;
+  for(const server of endpoints){
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),37000);
+    try{
+      const response=await fetch(server+'?data='+encodeURIComponent(query),{signal:controller.signal});
+      if(!response.ok)throw new Error(`Server vrátil ${response.status}`);
+      const data=await response.json();
+      if(generation!==state.loadGeneration||state.mode!=='gps')return;
+      const network=readOverpass(data,state.custom.filter(x=>meters(x,point)<2000));
+      if(network.segments.length===0)throw new Error('Žiadne cestné úseky');
+      state.network=network;state.dataCenter={lat:point.lat,lon:point.lon};state.loadedAt=Date.now();state.retryAfter=0;state.current=null;state.lastCalc=0;
+      state.loading=false;renderBase();calculate(true);
+      if(network.stops.length===0)alertMsg('Cesty sú načítané, ale v tejto oblasti sa nenašli autobusové zastávky.','warn');
+      return;
+    }catch(e){error=e;console.warn('Overpass:',server,e);}finally{clearTimeout(timer);}
+  }
+  if(generation!==state.loadGeneration||state.mode!=='gps')return;
+  state.loading=false;state.error=error;state.retryAfter=Date.now()+60000;
+  renderBase();
+  alertMsg('Nepodarilo sa načítať dáta z verejných serverov OpenStreetMap. Skontroluj internet; ďalší pokus automaticky najskôr o minútu, alebo GPS vypni a zapni. '+(error?.message||''),'warn');
+}
+function stopGps(setOff=true){
+  if(state.watch!==null){navigator.geolocation.clearWatch(state.watch);state.watch=null;}
+  state.loadGeneration++;state.loading=false;
+  if(setOff){releaseWake();state.mode='off';state.network=null;state.position=null;state.previous=null;state.heading=null;state.speed=null;state.accuracy=null;state.current=null;state.lastStop=null;renderStops(null,[]);renderBase();alertMsg('GPS zastavené. Polohu už nesledujem.');}
+}
+async function startGps(){
+  if(!('geolocation' in navigator)){alertMsg('Tento prehliadač nepodporuje GPS.','warn');return;}
+  if(!isSecure){alertMsg('GPS potrebuje zabezpečenú stránku HTTPS (napríklad GitHub Pages).','warn');return;}
+  if(state.mode==='demo')stopDemo();
+  state.mode='gps';state.retryAfter=0;state.network=null;state.current=null;state.lastStop=null;state.previous=null;state.heading=null;state.position=null;state.lastCalc=0;state.dataCenter=null;state.speed=null;state.accuracy=null;
+  renderBase();renderStops(null,[]);
+  alertMsg('Žiadam o GPS polohu. Povoľ prístup k polohe v prehliadači.');
+  try{state.watch=navigator.geolocation.watchPosition(handlePosition,err=>{
+    if(state.mode!=='gps')return;
+    const message=err.code===1?'Poloha bola zamietnutá. Povoľ polohu pre túto stránku v nastaveniach prehliadača.':err.code===2?'GPS polohu momentálne nemožno zistiť.': 'GPS odpovedá príliš pomaly. Skontroluj polohu a signál.';
+    alertMsg(message,'warn');
+    if(err.code===1)stopGps();
+  },{enableHighAccuracy:true,maximumAge:1000,timeout:23000});}
+  catch(e){stopGps();alertMsg(e.message,'warn');}
+  if(cfg.wakeWanted)await requestWake();
+}
+async function releaseWake(){if(state.wakeLock){const lock=state.wakeLock;state.wakeLock=null;try{await lock.release();}catch{}}}
+async function requestWake(){
+  if(state.mode==='off'||!cfg.wakeWanted||state.wakeLock||!('wakeLock' in navigator)||document.visibilityState!=='visible')return;
+  try{state.wakeLock=await navigator.wakeLock.request('screen');state.wakeLock.addEventListener('release',()=>{state.wakeLock=null;});}
+  catch(e){alertMsg('Prehliadač nepovolil udržanie obrazovky zapnutej. Nastav dlhší čas zhasínania v telefóne.','warn');}
+}
+function bind(){
+  $('gpsBtn').addEventListener('click',()=>{if(state.mode==='gps')stopGps();else startGps();});
+  $('demoBtn').addEventListener('click',()=>{state.mode==='demo'?stopDemo():startDemo();});
+  $('demoNext').addEventListener('click',()=>{state.demoMeters=Math.min(620,state.demoMeters+75);putDemoFix();});
+  $('demoReset').addEventListener('click',()=>{state.demoMeters=0;state.current=null;state.lastStop=null;putDemoFix();});
+  $('settingsBtn').addEventListener('click',()=>$('settingsDialog').showModal());
+  $('radiusSelect').value=String(cfg.radius);
+  $('radiusSelect').addEventListener('change',e=>{cfg.radius=Number(e.target.value);localStorage.setItem(radiusKey,String(cfg.radius));state.lastCalc=0;calculate(true);});
+  $('wakeToggle').checked=cfg.wakeWanted;
+  $('wakeToggle').addEventListener('change',async e=>{cfg.wakeWanted=e.target.checked;localStorage.setItem(wakeKey,String(cfg.wakeWanted));if(cfg.wakeWanted)await requestWake();else await releaseWake();});
+  $('customCount').textContent=`Vlastné zastávky: ${state.custom.length}`;
+  $('stopsFile').addEventListener('change',async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    try{
+      const imported=normalizeImported(JSON.parse(await file.text()));
+      if(!imported.length)throw Error('Súbor neobsahuje zastávky s názvom a GPS súradnicami.');
+      // Zachovaj viacero miest a nevytváraj duplicitné IDs z rôznych súborov.
+      state.custom=[...state.custom,...imported.map((s,i)=>({...s,id:`local:${Date.now()}:${i}`}))];
+      localStorage.setItem(cacheKey,JSON.stringify(state.custom));
+      $('customCount').textContent=`Vlastné zastávky: ${state.custom.length}`;
+      alertMsg(`Importovaných ${imported.length} zastávok. Pri ďalšom GPS načítaní sa pridajú k OpenStreetMap.`);
+    }catch(err){alertMsg('Import zastávok: '+err.message,'warn');}
+    e.target.value='';
+  });
+  $('clearCustom').addEventListener('click',()=>{state.custom=[];localStorage.removeItem(cacheKey);$('customCount').textContent='Vlastné zastávky: 0';alertMsg('Vlastné zastávky boli vymazané.');});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&cfg.wakeWanted)requestWake();});
+  renderBase();renderStops(null,[]);
+}
+bind();
+
+</script>
+</body>
+</html>
