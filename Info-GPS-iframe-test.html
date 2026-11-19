@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101923">
+  <title>GPS InfoSystem — test iMHD iframe</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#101923;color:#e6eef6}
+    .app{height:100dvh;display:flex;flex-direction:column;gap:10px;padding:12px;padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+    h1{font-size:16px;margin:0}
+    p{font-size:12px;line-height:1.5;color:#abc1d3;margin:0}
+    .bar{display:flex;gap:7px;flex-wrap:wrap}
+    input{width:100%;min-width:0;background:#192e40;color:white;border:1px solid #3d6075;border-radius:8px;padding:10px;font-size:12px}
+    button,a.action{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;background:#1b9bea;color:#07131c;border:0;border-radius:8px;padding:10px 12px;font-weight:650;font-size:12px}
+    a.action{background:#344a60;color:white}
+    .frame{position:relative;flex:1;min-height:220px;border:1px solid #3d6075;border-radius:12px;overflow:hidden;background:#f2f2f2}
+    iframe{width:100%;height:100%;border:0;background:white}
+    .notice{font-size:11px;color:#b9c9d8}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>GPS InfoSystem · experiment iMHD iframe</h1>
+    <p>Vlož URL konkrétnej odchodovej tabule z iMHD. Je to len skúška vloženia pôvodnej stránky, nie sťahovanie jej dát. Ukážková URL môže patriť inej zastávke.</p>
+    <input id="url" aria-label="URL odchodovej tabule" type="url" value="https://imhd.sk/ba/online-zastavkova-tabula?st=370" spellcheck="false">
+    <div class="bar">
+      <button type="button" id="show">Skúsiť zobraziť</button>
+      <a class="action" id="original" target="_blank" rel="noopener noreferrer" href="https://imhd.sk/ba/online-zastavkova-tabula?st=370">Otvoriť na iMHD</a>
+    </div>
+    <div class="frame"><iframe id="board" title="Virtuálna zastávková tabuľa iMHD" src="https://imhd.sk/ba/online-zastavkova-tabula?st=370" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+    <p class="notice">Ak je vložený panel prázdny alebo Chrome zobrazí odmietnutie pripojenia, stránka pravdepodobne nepovoľuje vloženie z inej domény. Klikni na „Otvoriť na iMHD“ a porovnaj výsledok. Samotné načítanie rámca nemožno spoľahlivo programovo overiť z inej domény.</p>
+  </div>
+  <script>
+    'use strict';
+    const input=document.getElementById('url'),iframe=document.getElementById('board'),link=document.getElementById('original');
+    document.getElementById('show').addEventListener('click',()=>{
+      try{
+        const url=new URL(input.value.trim());
+        if(url.protocol!=='https:'||url.hostname!=='imhd.sk'||!url.pathname.includes('online-zastavkova-tabula'))throw Error('Použi URL odchodovej tabule z imhd.sk');
+        iframe.src=url.href;link.href=url.href;
+      }catch(err){alert(err.message)}
+    });
+  </script>
+</body>
+</html>
