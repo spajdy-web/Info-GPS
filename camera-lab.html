@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a1520">
+<meta name="description" content="GPSInfo Camera Lab 0.1 — experimentálne rozpoznávanie svetelných signálov zo SIMT bez GPS.">
+<title>GPSInfo · Camera Lab 0.1</title>
+<style>
+:root{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color-scheme:dark;--bg:#0a1520;--card:#142736;--border:#315061;--muted:#94b0be;--text:#f0f8fc;--blue:#3aa7ff;--safe:#58d29b}
+*{box-sizing:border-box}body{margin:0;color:var(--text);background:radial-gradient(ellipse at 88% -25%,#173e58,transparent 55%),var(--bg)}button,select,input{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.55}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #6cdeed;outline-offset:3px}button:active{transform:scale(.99)}[hidden]{display:none!important}
+.app{max-width:850px;margin:auto;padding:14px 14px calc(26px + env(safe-area-inset-bottom))}header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.brand{display:flex;align-items:center;gap:9px}.logo{display:grid;place-items:center;width:35px;height:35px;border-radius:10px;background:linear-gradient(140deg,#2b93e9,#49dbd3);color:#031822;font-weight:1000;font-size:18px}.brand strong{font-size:17px;letter-spacing:-.5px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.2px}.tag{border-radius:50px;border:1px solid #607888;padding:6px 9px;font-size:10px;color:#b9d4df;white-space:nowrap}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.btn{border-radius:12px;padding:11px 13px;min-height:44px;color:#e3f3fb;border:1px solid #446479;background:#20374a;font-weight:700;font-size:12px}.btn.main{background:#1688ef;border-color:#43b9ff;color:white}.btn.danger{border-color:#9e5d67;background:#3c2833}.btn.active{border-color:#6cdaff;box-shadow:0 0 0 1px #4cacdf inset;background:#17405b}.btn .mark{margin-right:4px}.file-upload{display:none}
+.viewport{position:relative;overflow:hidden;background:#081018;border:1px solid #3c596a;border-radius:18px;box-shadow:0 14px 40px #0006;touch-action:none;user-select:none}.viewport canvas{display:block;width:100%;height:auto;aspect-ratio:16/9;touch-action:none}.scanbadge{position:absolute;left:11px;top:10px;background:#081722c9;border:1px solid #7f9cab66;border-radius:9px;padding:6px 9px;color:#d2e3ed;font-weight:700;font-size:10px;pointer-events:none}.viewport-tip{position:absolute;bottom:9px;left:9px;right:9px;text-align:center;background:#071621d6;color:#d4e7f4;font-size:11px;padding:8px;border-radius:9px;pointer-events:none}
+.signal{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#112634;border:1px solid #375466;border-radius:19px;padding:17px 18px;margin:12px 0}.signal-left{display:flex;gap:13px;align-items:center;min-width:0}.signal-icon{display:flex;flex-direction:column;gap:5px;padding:9px 10px;border-radius:15px;background:#08141f;border:1px solid #3c586c}.bulb{display:block;width:18px;height:18px;border-radius:50%;background:#26303a;box-shadow:inset 0 0 4px #03070d}.bulb.red.on{background:#fe565a;box-shadow:0 0 17px #ef4545}.bulb.yellow.on{background:#ffca4a;box-shadow:0 0 17px #ffcc45}.bulb.green.on{background:#54e6a3;box-shadow:0 0 17px #43e2a3}.signal-heading{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:1px}.signal-name{font-weight:900;font-size:clamp(20px,5vw,31px);letter-spacing:-.5px;line-height:1.1;margin:4px 0}.signal-sub{font-size:11px;color:#a6c1cd}.confidence{min-width:75px;text-align:right;font-variant-numeric:tabular-nums}.confidence strong{font-size:22px;display:block}.confidence small{font-size:9px;color:var(--muted);text-transform:uppercase}
+.settings{background:var(--card);border:1px solid var(--border);padding:15px;border-radius:16px;margin-top:11px}.row{display:flex;align-items:center;justify-content:space-between;gap:14px}.row +.row{margin-top:14px}.title{font-weight:800;font-size:13px}.hint{color:var(--muted);font-size:11px;line-height:1.45;margin:6px 0 0}.range{width:140px;accent-color:var(--blue)}.pill{display:inline-flex;align-items:center;gap:7px;border-radius:100px;padding:5px 9px;border:1px solid #516f7b;color:#dceff7;background:#0a2030;font-size:11px}.dot{width:8px;height:8px;border-radius:50%;background:#7f90a1}.dot.on{background:#66dfa7}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px}.metric{background:#10212e;border:1px solid #244254;border-radius:12px;padding:11px}.metric small{font-size:9px;color:var(--muted);display:block}.metric strong{font-size:16px;font-variant-numeric:tabular-nums}
+.message{background:#132837;border:1px solid #456176;border-radius:13px;padding:11px 13px;color:#c9e7f5;font-size:12px;line-height:1.45;margin-top:10px}.message.warn{border-color:#9a8262;background:#342b23;color:#ffe6b6}.message.error{border-color:#b27777;background:#422a2d;color:#ffd4d4}.footer{color:#91adbd;text-align:center;font-size:10px;margin:18px 0 0;line-height:1.5}code{background:#1b3848;padding:1px 5px;border-radius:4px}.switch{display:flex;align-items:center;gap:8px;font-size:12px}.switch input{accent-color:var(--blue);width:18px;height:18px}
+@media(max-width:490px){.app{padding:10px 9px 32px}.tag{font-size:9px}.btn{padding:9px 10px;font-size:11px;flex:1 1 auto}.controls{gap:6px}.signal{padding:13px}.signal-icon{gap:4px;padding:8px}.bulb{width:16px;height:16px}.confidence{min-width:57px}.confidence strong{font-size:20px}.metrics{gap:5px}.metric{padding:9px}.metric strong{font-size:14px}}
+</style>
+</head>
+<body>
+<main class="app">
+<header><div class="brand"><span class="logo">◉</span><div><strong>GPSInfo <span style="color:#8bd7ff">Camera Lab</span></strong><small>SEMAFORY · EXPERIMENT 0.1</small></div></div><span class="tag">GPS NIE JE POTREBNÉ</span></header>
+<div class="controls" aria-label="Zdroj obrazu">
+<button class="btn main" id="startCam" type="button"><span class="mark">▣</span> Zapnúť kameru</button>
+<button class="btn" id="demoBtn" type="button">▶ Demo signálov</button>
+<button class="btn" id="openImage" type="button">▧ Testovať obrázok</button>
+<input id="fileInput" class="file-upload" type="file" accept="image/png,image/jpeg,image/webp" aria-label="Vybrať obrázok zo SIMT">
+<button class="btn danger" id="stopBtn" type="button">■ Zastaviť</button>
+</div>
+<div class="viewport" id="view"><canvas id="frame" width="640" height="360" aria-label="Obraz s označenou oblasťou semafora"></canvas><div class="scanbadge" id="sourceLabel">NEAKTÍVNE</div><div class="viewport-tip" id="viewportTip">Zapni kameru a potiahni prstom okolo semafora. Alebo spusti demo.</div></div>
+<video id="video" autoplay playsinline muted hidden></video>
+<canvas id="raw" width="640" height="360" hidden></canvas>
+<div class="signal" role="status" aria-live="polite"><div class="signal-left"><div class="signal-icon" aria-hidden="true"><span class="bulb red" id="lampRed"></span><span class="bulb yellow" id="lampYellow"></span><span class="bulb green" id="lampGreen"></span></div><div><div class="signal-heading">Rozpoznaný signál</div><div class="signal-name" id="signalName">Neznámy</div><div class="signal-sub" id="signalDetail">Čakám na obraz</div></div></div><div class="confidence"><strong id="confidence">—</strong><small>zhoda</small></div></div>
+<div class="settings">
+<div class="row"><div><div class="title">Vyhľadávanie semafora</div><div class="hint">Označená oblasť je najspoľahlivejšia pri testovaní monitora.</div></div><span class="pill" id="roiIndicator">Nie je zvolená</span></div>
+<div class="row" style="flex-wrap:wrap"><button class="btn active" type="button" id="manualBtn">▣ Označiť ručne</button><button class="btn" type="button" id="autoBtn">✧ AI nájsť semafor</button><button class="btn" type="button" id="clearBtn">✕ Zrušiť výber</button></div>
+<p class="hint">AI režim stiahne model COCO-SSD (potrebuje internet) a skúša vyhľadávať objekty „traffic light“. Rozpoznávanie farby prebieha lokálne. Hra SIMT môže mať odlišnú grafiku od skutočných semaforov.</p>
+<div class="row" style="margin-top:15px"><div><div class="title">Citlivosť svetiel</div><div class="hint">Pri slabých svetlách zvýš citlivosť. Pri falošných detekciách ju zníž.</div></div><div style="display:flex;align-items:center;gap:8px"><input class="range" id="sensitivity" type="range" min="20" max="90" step="5" value="55"><strong id="sensitivityValue" style="font-size:13px">55</strong></div></div>
+<div class="row"><label class="switch"><input type="checkbox" id="showOverlay" checked> Zobraziť rámček semafora</label><button class="btn" id="demoNext" type="button" disabled>Ďalší demo signál ↻</button></div>
+</div>
+<div class="metrics"><div class="metric"><small>SNÍMKY / SEK.</small><strong id="fps">—</strong></div><div class="metric"><small>VSTUP</small><strong id="inputMode">Žiadny</strong></div><div class="metric"><small>ANALÝZA</small><strong id="analysisMode">Ručná</strong></div></div>
+<div class="message" id="message" role="status">Tento modul neriadi vozidlo ani nepozná, ktorý semafor platí pre daný jazdný pruh. Slúži výhradne na domáci experiment so SIMT.</div>
+<div class="footer">Video sa spracúva v tvojom prehliadači; aplikácia neposiela snímky na náš server. Pri zapnutí AI sa sťahuje model z externého CDN. <strong>Nie je to pomôcka na rozhodovanie pri skutočnej jazde.</strong></div>
+</main>
+<script>
+'use strict';
+// GPSInfo Camera Lab 0.1.0 — experiment bez GPS, zvukových a jazdných pokynov.
+// Všetka analýza pixelov sa vykonáva na tomto zariadení.
+const $=id=>document.getElementById(id),W=640,H=360;
+const canvas=$('frame'),ctx=canvas.getContext('2d',{willReadFrequently:false});
+const raw=$('raw'),rawCtx=raw.getContext('2d',{willReadFrequently:true});
+const state={source:'off',stream:null,image:null,mode:'manual',roi:null,drag:null,sensitivity:55,overlay:true,signal:'unknown',conf:0,candidateHistory:[],lastFrame:0,frames:0,fpsTime:0,fps:0,demoIndex:0,demoSince:0,lastAi:0,aiBusy:false,model:null,aiLoading:false,aiMisses:0};
+const colors={red:'#ff5d66',yellow:'#ffd15a',green:'#59e6a1',unknown:'#a1b6c6'};
+function alertMsg(message,type='normal'){$('message').textContent=message;$('message').className='message '+(type==='normal'?'':type);}
+function clamp(n,a,b){return Math.max(a,Math.min(b,n));}
+function normalizedRect(r){const x=clamp(r.x,0,1),y=clamp(r.y,0,1);return {x,y,w:clamp(r.w,0,1-x),h:clamp(r.h,0,1-y)};}
+function resetSignal(){state.signal='unknown';state.conf=0;state.candidateHistory=[];renderSignal('unknown',0,'Čakám na stabilný signál');}
+function renderSignal(value,confidence,detail){const names={red:'ČERVENÁ',yellow:'ŽLTÁ',green:'ZELENÁ',unknown:'Neznámy'}; $('signalName').textContent=names[value];$('signalName').style.color=colors[value];$('confidence').textContent=value==='unknown'?'—':Math.round(confidence*100)+' %';$('signalDetail').textContent=detail;for(const c of ['Red','Yellow','Green'])$('lamp'+c).classList.toggle('on',c.toLowerCase()===value);}
+function setRoi(roi){state.roi=roi?normalizedRect(roi):null;state.candidateHistory=[];$('roiIndicator').textContent=state.roi?'Oblasť vybraná':'Nie je zvolená';if(!state.roi)resetSignal();}
+function setMode(mode){state.mode=mode;$('manualBtn').classList.toggle('active',mode==='manual');$('autoBtn').classList.toggle('active',mode==='auto');$('analysisMode').textContent=mode==='auto'?'AI + farba':'Ručná';}
+function stopMedia(){if(state.stream){for(const t of state.stream.getTracks())t.stop();state.stream=null;}const v=$('video');v.pause();v.srcObject=null;state.image?.close?.();state.image=null;}
+function stopAll(){stopMedia();state.source='off';state.lastFrame=0;$('inputMode').textContent='Žiadny';$('sourceLabel').textContent='NEAKTÍVNE';$('demoNext').disabled=true;$('viewportTip').hidden=false;rawCtx.clearRect(0,0,W,H);ctx.clearRect(0,0,W,H);drawIdle();resetSignal();alertMsg('Kamera je vypnutá. Môžeš spustiť demo, vybrať obrázok alebo zapnúť kameru.');}
+function drawIdle(){ctx.fillStyle='#08121c';ctx.fillRect(0,0,W,H);ctx.strokeStyle='#234155';ctx.lineWidth=2;ctx.strokeRect(46,35,W-92,H-70);ctx.fillStyle='#83a5b8';ctx.font='bold 20px system-ui';ctx.textAlign='center';ctx.fillText('GPSInfo Camera Lab',W/2,H/2-9);ctx.font='14px system-ui';ctx.fillText('Kamera · obrázok · demo',W/2,H/2+24);ctx.textAlign='start';}
+async function startCamera(){stopMedia();state.source='off';resetSignal();if(!navigator.mediaDevices?.getUserMedia){alertMsg('Kamera vyžaduje zabezpečenú HTTPS stránku v podporovanom prehliadači.','error');return;}alertMsg('Žiadam o prístup k zadnej kamere…');try{const stream=await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720},frameRate:{ideal:20,max:30}}});state.stream=stream;const v=$('video');v.srcObject=stream;await v.play();state.source='camera';state.lastFrame=0;$('sourceLabel').textContent='ŽIVÁ KAMERA';$('inputMode').textContent='Kamera';$('demoNext').disabled=true;$('viewportTip').hidden=false;alertMsg('Kamera beží. Potiahni prstom po obraze a označ celý semafor. Pre automatiku stlač „AI nájsť semafor“.');}catch(err){stopMedia();state.source='off';const e=err?.name||'';alertMsg(e==='NotAllowedError'?'Prístup ku kamere bol zamietnutý. Povoľ ho v Chrome.':e==='NotFoundError'?'Kamera sa nenašla.':`Kameru sa nepodarilo zapnúť: ${err?.message||e}`,'error');}}
+function startDemo(){stopMedia();state.source='demo';state.demoIndex=0;state.demoSince=performance.now();state.lastFrame=0;$('sourceLabel').textContent='DEMO · SIMULÁCIA';$('inputMode').textContent='Demo';$('demoNext').disabled=false;$('viewportTip').hidden=true;setMode('manual');setRoi({x:297/W,y:85/H,w:65/W,h:160/H});alertMsg('Demo strieda červenú, žltú a zelenú. Toto nie je video zo SIMT – najprv tým overíme algoritmus.');}
+function demoNext(){state.demoIndex=(state.demoIndex+1)%3;state.demoSince=performance.now();state.candidateHistory=[];}
+function drawDemoScene(g,t){const grad=g.createLinearGradient(0,0,0,H);grad.addColorStop(0,'#28394f');grad.addColorStop(1,'#111e2b');g.fillStyle=grad;g.fillRect(0,0,W,H);
+ g.fillStyle='#303c48';g.fillRect(0,240,W,120);g.fillStyle='#19232d';g.fillRect(0,257,W,103);g.fillStyle='#777f88';for(let x=0;x<W;x+=120)g.fillRect(x,304,62,3);
+ for(const [x,y,w,h] of [[22,100,100,142],[133,70,72,175],[439,85,80,167],[536,114,80,138]]){g.fillStyle='#1b2b39';g.fillRect(x,y,w,h);g.fillStyle='#4d6173';for(let xx=x+13;xx<x+w-7;xx+=24)for(let yy=y+18;yy<y+h-9;yy+=28)g.fillRect(xx,yy,11,12);}
+ g.fillStyle='#5a6977';g.fillRect(328,235,7,61);g.fillStyle='#121921';g.fillRect(296,82,67,160);g.fillStyle='#36414d';g.fillRect(301,88,57,150);g.fillStyle='#10161d';g.fillRect(306,93,47,141);g.strokeStyle='#7e8c9b';g.lineWidth=2;g.strokeRect(298,85,63,157);
+ const selected=['red','yellow','green'][state.demoIndex];const lamps=[['red',111,'#ff414b'],['yellow',160,'#ffcd42'],['green',211,'#3be68b']];
+ for(const [c,y,color] of lamps){g.beginPath();g.arc(329,y,20,0,Math.PI*2);g.fillStyle='#0c1419';g.fill();g.beginPath();g.arc(329,y,14,0,Math.PI*2);g.fillStyle=c===selected?color:'#27313a';g.fill();if(c===selected){g.shadowColor=color;g.shadowBlur=22;g.beginPath();g.arc(329,y,9,0,Math.PI*2);g.fillStyle=color;g.fill();g.shadowBlur=0;}}
+ g.textAlign='left';g.font='bold 13px system-ui';g.fillStyle='#b5d2e4';g.fillText('VIRTUÁLNA KRIŽOVATKA · TEST',18,28);g.font='12px system-ui';g.fillStyle='#acc0d1';g.fillText('ČERVENÁ → ŽLTÁ → ZELENÁ',18,49);}
+function drawCover(g,src,sw,sh){const scale=Math.max(W/sw,H/sh),cropW=W/scale,cropH=H/scale;g.drawImage(src,(sw-cropW)/2,(sh-cropH)/2,cropW,cropH,0,0,W,H);}
+function frameSource(now){rawCtx.clearRect(0,0,W,H);if(state.source==='demo'){if(now-state.demoSince>=3400)demoNext();drawDemoScene(rawCtx,now);return true;}if(state.source==='camera'){const v=$('video');if(v.readyState<2||!v.videoWidth)return false;drawCover(rawCtx,v,v.videoWidth,v.videoHeight);return true;}if(state.source==='image'&&state.image){drawCover(rawCtx,state.image,state.image.width,state.image.height);return true;}return false;}
+// Pure image-signal classifier. Results are experimental: it does NOT identify which lane owns a signal.
+function analyzeTrafficLight(imageData,rect,sensitivity=55){if(!rect)return {signal:'unknown',confidence:0,scores:[0,0,0],reason:'Bez oblasti'};const w=imageData.width,h=imageData.height,d=imageData.data;
+ const x0=clamp(Math.round(rect.x*w),0,w-1),y0=clamp(Math.round(rect.y*h),0,h-1),x1=clamp(Math.round((rect.x+rect.w)*w),x0+1,w),y1=clamp(Math.round((rect.y+rect.h)*h),y0+1,h);
+ const rw=x1-x0,rh=y1-y0;if(rw<10||rh<20)return {signal:'unknown',confidence:0,scores:[0,0,0],reason:'Príliš malý výber'};
+ const minBright=clamp(158-(sensitivity-55)*.9,100,200),scores=[0,0,0];
+ // Vertical position serves as weak evidence: top red, middle amber, bottom green.
+ for(let y=y0;y<y1;y+=1){const yy=(y-y0)/rh;for(let x=x0;x<x1;x+=1){const xx=(x-x0)/rw;if(xx<.12||xx>.88)continue;const j=(y*w+x)*4,r=d[j],g=d[j+1],b=d[j+2],max=Math.max(r,g,b),min=Math.min(r,g,b);if(max<minBright||max-min<50)continue;
+ const isRed=r>g*1.44&&r>b*1.45&&r>minBright;
+ const isYellow=r>minBright&&g>minBright*.69&&r>b*1.5&&g>b*1.45&&r>g*.88;
+ const isGreen=g>minBright*.8&&g>r*1.24&&g>b*1.14;
+ if(isRed&&yy<.46)scores[0]+=1;
+ else if(isYellow&&yy>.20&&yy<.79)scores[1]+=1;
+ else if(isGreen&&yy>.51)scores[2]+=1;
+ }}
+ const ordered=scores.map((n,i)=>({n,i})).sort((a,b)=>b.n-a.n),first=ordered[0],other=ordered[1];
+ const minHits=Math.max(7,Math.floor(rw*rh*.0014));
+ if(first.n<minHits||first.n<other.n*1.25+3)return {signal:'unknown',confidence:0,scores,reason:'Nedostatočne jasný signál'};
+ const strength=clamp(first.n/(Math.max(16,rw*rh*.028)),0,1),margin=clamp((first.n-other.n)/Math.max(1,first.n),0,1);
+ const confidence=clamp(.28+.4*strength+.32*margin,.3,.99);
+ return {signal:['red','yellow','green'][first.i],confidence,scores,reason:'Farebné pixely v polohe svetla'};
+}
+function stableSignal(result){state.candidateHistory.push(result.signal);if(state.candidateHistory.length>5)state.candidateHistory.shift();const counts={red:0,yellow:0,green:0,unknown:0};for(const s of state.candidateHistory)counts[s]++;const winner=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];if(winner[0]!=='unknown'&&winner[1]>=3){state.signal=winner[0];state.conf=result.signal===state.signal?result.confidence:Math.max(.45,state.conf*.9);return {value:state.signal,confidence:state.conf,detail:'Stabilné meranie · '+winner[1]+'/'+state.candidateHistory.length+' snímok'};}if(counts.unknown>=3||state.candidateHistory.length>=5){state.signal='unknown';return {value:'unknown',confidence:0,detail:result.reason};}return {value:'unknown',confidence:0,detail:'Overujem signál…'};}
+function drawOutline(){if(!state.overlay)return;const r=state.drag?state.drag:state.roi;if(!r)return;const rect=normalizedRect(r);if(rect.w<.001||rect.h<.001)return;ctx.save();ctx.lineWidth=3;ctx.strokeStyle=state.mode==='auto'?'#f5c66d':'#52caff';ctx.setLineDash([10,6]);ctx.strokeRect(rect.x*W,rect.y*H,rect.w*W,rect.h*H);ctx.fillStyle='#2dbbff18';ctx.fillRect(rect.x*W,rect.y*H,rect.w*W,rect.h*H);ctx.setLineDash([]);ctx.font='bold 12px system-ui';ctx.fillStyle='#e0f5ff';ctx.fillText(state.mode==='auto'?'AI SEMAFOR':'VYBRANÝ SEMAFOR',rect.x*W+4,Math.max(15,rect.y*H-8));ctx.restore();}
+function updateFps(now){state.frames++;if(!state.fpsTime)state.fpsTime=now;if(now-state.fpsTime>1500){state.fps=state.frames*1000/(now-state.fpsTime);$('fps').textContent=state.fps.toFixed(1);state.frames=0;state.fpsTime=now;}}
+function tick(now){requestAnimationFrame(tick);if(now-state.lastFrame<210)return;state.lastFrame=now;
+ if(!frameSource(now))return;ctx.clearRect(0,0,W,H);ctx.drawImage(raw,0,0,W,H);
+ if(state.source==='camera'||state.source==='image'||state.source==='demo'){
+ if(state.mode==='auto'&&state.model&&!state.aiBusy&&state.source!=='demo'&&now-state.lastAi>1700)runAi(now);
+ if(state.roi){const im=rawCtx.getImageData(0,0,W,H),result=analyzeTrafficLight(im,state.roi,state.sensitivity),st=stableSignal(result);renderSignal(st.value,st.confidence,st.detail);}else renderSignal('unknown',0,'Potiahni prstom okolo semafora');
+ drawOutline();updateFps(now);
+ }}
+function pointerPos(event){const bound=canvas.getBoundingClientRect();return {x:clamp((event.clientX-bound.left)/bound.width,0,1),y:clamp((event.clientY-bound.top)/bound.height,0,1)};}
+canvas.addEventListener('pointerdown',e=>{if(state.source==='off')return;setMode('manual');const p=pointerPos(e);state.drag={x:p.x,y:p.y,w:0,h:0};canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!state.drag)return;const p=pointerPos(e),anchor=state.drag._anchor||{x:state.drag.x,y:state.drag.y};state.drag={x:Math.min(anchor.x,p.x),y:Math.min(anchor.y,p.y),w:Math.abs(p.x-anchor.x),h:Math.abs(p.y-anchor.y),_anchor:anchor};});
+canvas.addEventListener('pointerup',e=>{if(!state.drag)return;const p=pointerPos(e),a=state.drag._anchor||{x:state.drag.x,y:state.drag.y},rect={x:Math.min(a.x,p.x),y:Math.min(a.y,p.y),w:Math.abs(p.x-a.x),h:Math.abs(p.y-a.y)};state.drag=null;if(rect.w<.02||rect.h<.04){alertMsg('Označ celý semafor potiahnutím prsta – nie iba ťuknutím.','warn');return;}setRoi(rect);$('viewportTip').hidden=true;alertMsg('Oblasť semafora je vybraná. Rozpoznávam farbu a overujem ju na viacerých snímkach.');});
+canvas.addEventListener('pointercancel',()=>state.drag=null);
+function loadScript(src){return new Promise((resolve,reject)=>{const el=document.createElement('script');el.src=src;el.async=true;el.onload=resolve;el.onerror=()=>reject(new Error('Nedostupná knižnica: '+src));document.head.append(el);});}
+async function enableAi(){if(state.source==='off'){alertMsg('Najprv zapni kameru alebo načítaj obrázok.','warn');return;}if(state.source==='demo'){alertMsg('V syntetickom deme testuj ručný výber. AI je určená pre kameru a obrázky.','warn');return;}setMode('auto');if(state.model){alertMsg('AI je aktívna. Hľadám semafor v obraze…');return;}if(state.aiLoading)return;state.aiLoading=true;$('autoBtn').disabled=true;alertMsg('Sťahujem AI model (vyžaduje internet). Prvé načítanie môže trvať dlhšie…');try{if(!window.tf)await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js');if(!window.cocoSsd)await loadScript('https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js');await tf.ready();state.model=await cocoSsd.load({base:'lite_mobilenet_v2'});state.aiMisses=0;state.lastAi=0;alertMsg('AI model je pripravený. Detekcia semafora nemusí pri hre SIMT fungovať; vtedy ho označ ručne.');}catch(err){setMode('manual');alertMsg('AI model sa nepodarilo načítať: '+err.message+'. Ručné označenie funguje aj bez neho.','warn');}finally{state.aiLoading=false;$('autoBtn').disabled=false;}}
+async function runAi(now){state.lastAi=now;if(state.aiBusy||!state.model)return;state.aiBusy=true;try{const results=await state.model.detect(raw,8,.35);if(state.mode!=='auto')return;const objects=results.filter(v=>v.class==='traffic light').sort((a,b)=>b.score-a.score);if(objects.length){const b=objects[0].bbox;setRoi({x:clamp((b[0]-b[2]*.08)/W,0,1),y:clamp((b[1]-b[3]*.06)/H,0,1),w:clamp(b[2]*1.16/W,.02,1),h:clamp(b[3]*1.12/H,.03,1)});state.aiMisses=0;$('viewportTip').hidden=true;}else{state.aiMisses++;if(state.aiMisses>=3){setRoi(null);$('viewportTip').textContent='AI semafor nezachytila. Potiahni prstom okolo neho.';$('viewportTip').hidden=false;}}}catch(err){console.warn('AI detection:',err);alertMsg('Rozpoznávanie modelom zlyhalo: '+err.message,'warn');setMode('manual');}finally{state.aiBusy=false;}}
+$('startCam').addEventListener('click',startCamera);
+$('demoBtn').addEventListener('click',startDemo);
+$('stopBtn').addEventListener('click',stopAll);
+$('demoNext').addEventListener('click',demoNext);
+$('openImage').addEventListener('click',()=>$('fileInput').click());
+$('fileInput').addEventListener('change',async e=>{const f=e.target.files?.[0];e.target.value='';if(!f)return;if(f.size>12*1024*1024){alertMsg('Obrázok musí mať maximálne 12 MB.','warn');return;}try{const img=await createImageBitmap(f);stopMedia();state.image=img;state.source='image';state.lastFrame=0;$('sourceLabel').textContent='OBRÁZOK ZO SÚBORU';$('inputMode').textContent='Obrázok';$('demoNext').disabled=true;$('viewportTip').hidden=false;setRoi(null);alertMsg('Obrázok je načítaný. Potiahni prstom okolo semafora.');}catch(err){alertMsg('Obrázok sa nepodarilo otvoriť: '+err.message,'error');}});
+$('manualBtn').addEventListener('click',()=>{setMode('manual');alertMsg('Ručný režim. V obraze vyznač semafor potiahnutím prsta.');});
+$('autoBtn').addEventListener('click',enableAi);
+$('clearBtn').addEventListener('click',()=>{setMode('manual');setRoi(null);$('viewportTip').hidden=false;alertMsg('Výber zrušený. Označ ďalší semafor.');});
+$('sensitivity').addEventListener('input',e=>{state.sensitivity=Number(e.target.value);$('sensitivityValue').textContent=String(state.sensitivity);state.candidateHistory=[];});
+$('showOverlay').addEventListener('change',e=>state.overlay=e.target.checked);
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&state.source==='camera')renderSignal('unknown',0,'Obraz na pozadí nemusí byť dostupný');});
+window.addEventListener('pagehide',stopMedia);
+drawIdle();requestAnimationFrame(tick);
+// Exposed only for locally reproducible regression tests; no data leaves this page.
+window.CameraLabTest={analyzeTrafficLight,stableSignal,drawDemoScene,get state(){return state;}};
+</script>
+</body>
+</html>
