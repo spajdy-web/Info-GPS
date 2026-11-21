@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08131d">
-<meta name="description" content="GPS InfoSystem — offline databáza zastávok a živá poloha, verzia 0.5.2">
-<title>GPS InfoSystem · 0.5.2</title>
+<meta name="description" content="GPS InfoSystem — offline databáza zastávok a živá poloha, verzia 0.5.3">
+<title>GPS InfoSystem · 0.5.3</title>
 
 <style>
 :root{color-scheme:dark;--bg:#07121b;--panel:#102432;--panel2:#0f202c;--line:rgba(162,211,233,.14);--text:#f3f9fc;--muted:#91a8b7;--blue:#2795f8;--aqua:#61e2dd;--safe:#99ebad;--shadow:0 18px 52px rgba(0,0,0,.18);font-family:Inter,'Segoe UI',Roboto,system-ui,-apple-system,sans-serif}*{box-sizing:border-box}html,body{padding:0;margin:0;min-height:100%;background:var(--bg);color:var(--text)}body{background:radial-gradient(ellipse 80% 45% at 96% -10%,#123d50 0%,transparent 68%),var(--bg);-webkit-font-smoothing:antialiased}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--aqua);outline-offset:3px}[hidden]{display:none!important}.wrap{max-width:700px;margin:0 auto;padding:0 20px calc(112px + env(safe-area-inset-bottom))}header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:25px 0 19px;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:12px}.brandmark{height:40px;width:40px;display:grid;place-items:center;color:#041722;background:linear-gradient(145deg,#4be7ef,#159af8);font-size:23px;font-weight:800;border-radius:12px;transform:rotate(-3deg)}.brandname{font-size:21px;letter-spacing:-.8px;font-weight:800;line-height:1.15}.brandname span{font-weight:400}.subbrand{font-size:9px;letter-spacing:2.6px;color:var(--muted);margin-top:3px}.live{border:1px solid var(--line);padding:10px 11px;border-radius:60px;color:var(--muted);font-size:10px;letter-spacing:.6px;white-space:nowrap}.live-dot{display:inline-block;border-radius:50%;width:8px;height:8px;background:#71808d;margin-right:6px}.live.active .live-dot{background:#a7ed73;box-shadow:0 0 16px #a7ed73}.live.demo .live-dot{background:#fbb35c}main{padding-top:26px}.eyebrow{font-size:11px;letter-spacing:3px;color:#75d2df;text-transform:uppercase;font-weight:700}.page-title{font-size:clamp(28px,6vw,42px);line-height:1.12;letter-spacing:-1.1px;font-weight:750;margin:11px 0 9px}.description{font-size:14px;line-height:1.6;color:var(--muted);margin:0 0 24px}.nearest{background:linear-gradient(135deg,#1689ef,#55abff 67%,#83cdff);color:#061a2d;border-radius:28px;box-shadow:0 20px 52px #007ee822;padding:28px 26px 26px;position:relative;min-height:247px;overflow:hidden}.nearest:after{content:"";width:230px;height:230px;border:1px solid #fff4;border-radius:50%;position:absolute;right:-132px;top:-112px;pointer-events:none}.nearhead{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;gap:11px;opacity:.85}.pillno{width:34px;height:34px;border-radius:50%;border:1.5px solid #092d4b;display:grid;place-items:center;letter-spacing:0;font-size:12px;flex-shrink:0}.near-title{display:flex;gap:12px;align-items:center;margin-top:34px}.near-title h2{font-size:clamp(35px,7vw,51px);letter-spacing:-1.6px;line-height:1.12;margin:0;overflow-wrap:anywhere;font-weight:800}.stopcheck{border-radius:100%;border:2px solid #073052;width:45px;height:45px;flex:0 0 45px;display:grid;place-items:center;background:#e5fff0;color:#063a33;font-size:29px;font-weight:900}.nearfoot{font-weight:650;margin-top:24px;font-size:15px;display:flex;justify-content:space-between;align-items:center;gap:10px}.nearfoot small{font-size:11px;color:#163c5a;font-weight:700}.other-heading{font-size:11px;color:#88b5ca;letter-spacing:2.3px;font-weight:700;margin:24px 0 12px}.other{border:1px solid var(--line);background:linear-gradient(145deg,#152b3a,#0c202c);border-radius:22px;padding:19px 20px;display:flex;align-items:center;gap:15px;min-height:94px;margin:11px 0}.other-number{border:1px solid #49b5d8;color:#7edbf1;border-radius:50%;width:35px;height:35px;display:grid;place-items:center;font-size:12px;flex-shrink:0}.other h3{margin:0;font-size:21px;letter-spacing:-.35px;font-weight:650}.other .distance{margin-left:auto;color:#a6c7d8;font-size:13px;white-space:nowrap}.stats{margin-top:24px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:#0c2330;border:1px solid var(--line);border-radius:20px;overflow:hidden}.stat{padding:17px 12px;min-width:0}.stat:not(:last-child){border-right:1px solid var(--line)}.stat-label{font-size:10px;letter-spacing:1.2px;color:var(--muted);text-transform:uppercase}.stat-value{font-size:24px;font-weight:760;margin:10px 0 0;font-variant-numeric:tabular-nums}.stat-value small{font-size:11px;font-weight:500;color:var(--muted)}.note{border:1px solid #4da3c43f;border-radius:18px;padding:13px 15px;font-size:13px;line-height:1.55;color:#b6cfda;background:#0d2531;margin-top:18px}.note strong{color:#e7f6fe}.status-bottom{font-size:11px;line-height:1.5;color:#7894a4;margin:16px 0}.panel{background:linear-gradient(145deg,#102635,#0b1d2a);border:1px solid var(--line);padding:20px;border-radius:22px;margin:15px 0}.panel h3{margin:0 0 12px;font-size:17px}.panel p{color:var(--muted);font-size:13px;line-height:1.55}.field{display:block;margin:18px 0}.field label{display:block;color:#b8d6e4;font-size:13px;font-weight:650;margin:0 0 7px}.field input,.field select{width:100%;background:#071a27;border:1px solid #52708878;color:var(--text);border-radius:12px;padding:13px 14px;min-height:47px}.field input::placeholder{color:#688394}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.toggle{display:flex;align-items:center;justify-content:space-between;gap:18px;color:#dcebf2;font-size:14px}.toggle input{accent-color:var(--blue);width:21px;height:21px}.btn{background:#228ff0;color:white;border:0;border-radius:13px;padding:13px 16px;font-weight:700}.btn.secondary{background:#213d51;color:#d4f3ff;border:1px solid #5fa6be60}.btn.danger{background:#662f38;color:#ffe8e8}.btn:disabled{opacity:.5;cursor:not-allowed}.actions-row{display:flex;gap:8px;flex-wrap:wrap}.route-list{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#0f2430;margin:20px 0}.route-stop{display:grid;grid-template-columns:35px minmax(0,1fr) auto;align-items:center;gap:13px;padding:17px;border-bottom:1px solid var(--line)}.route-stop:last-child{border-bottom:0}.route-stop.active{background:#113e61}.route-index{background:#17364b;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;color:#89d7ff;font-size:12px}.route-stop.active .route-index{background:#258df9;color:white}.route-name{font-size:16px;font-weight:650}.route-distance{font-size:12px;color:#b6c7d1}.tiny{color:#93aab8;font-size:12px;line-height:1.6}.mapwrap{border:1px solid var(--line);border-radius:23px;overflow:hidden;position:relative;background:#112c35;min-height:calc(100dvh - 275px)}#map{min-height:calc(100dvh - 275px);height:calc(100dvh - 275px);z-index:1}.mapoverlay{position:absolute;z-index:480;bottom:13px;left:12px;right:12px;display:flex;justify-content:center;pointer-events:none}.map-message{background:#07141deb;color:#eaf7ff;border:1px solid #728fa66d;padding:11px 14px;border-radius:13px;font-size:12px;box-shadow:0 8px 25px #0009;max-width:85%;pointer-events:auto}.map-fallback{min-height:calc(100dvh - 275px);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;background:radial-gradient(circle at 35% 42%,#214757,#102933 62%,#0d1a26)}.map-fallback svg{width:100%;height:100%;position:absolute;inset:0}.map-fallback p{position:absolute;top:10px;color:#d5edf9;z-index:2;background:#0c2131d9;padding:10px 14px;border-radius:12px;font-size:11px}.gps-pin{height:22px;width:22px;border:4px solid white;border-radius:50%;background:#1087f7;box-shadow:0 0 0 9px #2598ff5c,0 3px 10px #0006}.leaflet-container{background:#123141;font:inherit}.leaflet-control-attribution{font-size:9px!important}.leaflet-control-container .leaflet-top{display:none}.pin{height:28px;width:28px;border-radius:50%;background:#132b43;border:2px solid #85c9f9;display:grid;place-items:center;color:#e8f7ff;box-shadow:0 5px 14px #0005;font-weight:800;font-size:11px}.pin.top{background:#1e91ef;border:3px solid #e6f9ff}.pin.in{background:#2bc18a;color:#043529;border-color:#effff8}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#092232;color:#e7f5fb}.leaflet-popup-content{font-size:14px}.bottomnav{position:fixed;z-index:500;bottom:0;left:0;right:0;background:#0c1b27f7;backdrop-filter:blur(16px);border-top:1px solid #5b8fa24a;padding:6px max(6px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right));display:flex;justify-content:center;gap:3px}.nav-inner{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));max-width:700px;width:100%;gap:3px}.navbtn{background:transparent;color:#94acba;border:0;border-radius:14px;padding:11px 2px 10px;display:flex;align-items:center;flex-direction:column;gap:5px;min-width:0}.navbtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.navbtn span{font-size:10px}.navbtn.sel{background:#153a56;color:#72c5ff}.navbtn.tracking{color:#9cf3b1}.navbtn.demo{color:#ffc073}.feedback{position:fixed;bottom:calc(93px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);padding:11px 16px;border-radius:15px;background:#112d3c;color:#d1f6ff;border:1px solid #83bcd34d;box-shadow:0 10px 30px #0009;z-index:600;max-width:min(92vw,580px);font-size:13px;text-align:center}.demo-controls{position:fixed;z-index:505;bottom:calc(78px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);display:flex;gap:9px;background:#0c1e2ef8;padding:9px 12px;border-radius:15px;border:1px solid #6fa3b04d;max-width:96vw;align-items:center;box-shadow:0 9px 34px #0009}.demo-controls span{font-size:11px;color:#ffcc88}.demo-controls .btn{padding:8px 11px;font-size:12px;white-space:nowrap}.meta-footer{font-size:11px;color:#577384;display:flex;justify-content:space-between;gap:10px;margin:20px 0}.meta-footer a{color:#8cbccb}.empty{font-size:14px;color:#c6dbe8}.error{color:#ffc4a7}.custom-item{padding:11px 0;border-bottom:1px solid #7ea0b52c;display:flex;gap:12px;align-items:center;justify-content:space-between}.custom-item:last-child{border-bottom:0}.custom-item small{color:var(--muted)}.custom-item button{font-size:12px;padding:8px 11px}.badge{font-size:10px;letter-spacing:.8px;border-radius:40px;border:1px solid #5a8099;padding:5px 9px;color:#bce3ef}.map-legend{margin:12px 2px;color:#9ab7c8;font-size:12px}.map-controls{position:absolute;bottom:59px;right:12px;z-index:490;display:flex;gap:7px}.map-controls button{width:44px;height:44px;border:1px solid #7793a8;border-radius:13px;background:#102e42e8;color:white;font-size:21px}.map-controls button:disabled{opacity:.45}@media(max-width:400px){.wrap{padding-left:14px;padding-right:14px}.brandname{font-size:18px}.brandmark{width:36px;height:36px}.live{font-size:9px;padding:9px 8px}.nearest{padding:24px 21px}.near-title h2{font-size:35px}.other h3{font-size:18px}.navbtn span{font-size:9px}.stat{padding:14px 8px}.stat-value{font-size:21px}}@media(min-width:750px){.mapwrap,#map,.map-fallback{height:58vh;min-height:430px}}@media(prefers-reduced-motion:no-preference){.live.active .live-dot{animation:pulse 2s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 1px #a7ed73}}}
@@ -312,6 +312,19 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
  .destination-card strong{font-size:15px}
  .destination-time-values .destination-estimate{font-size:17px}
 }
+
+/* GPSInfo 0.5.3 — väčší cieľ, číslo linky a voliteľný skutočný dot-matrix displej. */
+.destination-title{display:flex;align-items:center;gap:9px;min-width:0;overflow:hidden}
+.destination-title[hidden],.destination-dot-sign[hidden]{display:none!important}
+.destination-title .destination-line{display:inline-grid;place-items:center;flex:0 0 auto;max-width:84px;overflow-wrap:anywhere;padding:5px 7px;border:1px solid #64cbf9;background:#236487;color:#e9faff;border-radius:7px;font-size:clamp(13px,3.7vw,19px);font-weight:950;line-height:1.15;letter-spacing:.2px}
+.destination-title strong,#screen-home .destination-card .destination-title strong{flex:1;min-width:0;font-size:clamp(22px,6vw,30px);line-height:1.08;letter-spacing:-.6px;font-weight:850;overflow-wrap:anywhere}
+.destination-card .destination-label{margin-bottom:3px}
+.destination-dot-sign{min-width:0;width:100%;padding:5px 6px;border-radius:8px;border:1px solid #314d4b;overflow:hidden}
+.destination-dot-sign.flipdot{background:#191d1b;border-color:#696044}
+.destination-dot-sign.lcd{background:#082a27;border-color:#398675}
+.destination-dot-sign canvas{display:block;max-width:100%}
+#screen-home.with-route-footer{padding-bottom:180px}
+@media(max-width:390px){.destination-title .destination-line{padding:4px 5px;font-size:13px}.destination-title strong,#screen-home .destination-card .destination-title strong{font-size:22px}.destination-title{gap:6px}}
 </style>
 </head>
 <body>
@@ -338,7 +351,7 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
 <iframe id="imhdFrame" class="departures-frame" title="Odchodová tabuľa iMHD" loading="eager"></iframe>
 <div class="departures-foot">Nezmenená stránka iMHD · <a id="departuresLink" href="https://imhd.sk/ba/online-zastavkova-tabula" target="_blank" rel="noopener noreferrer">Otvoriť na iMHD</a></div></div>
 </div>
-<div id="routeProgressFooter" class="route-progress-footer" hidden><div class="route-nav-arrows"><button type="button" id="routePrevBtn" aria-label="Predchádzajúca zastávka" title="Späť o zastávku">↑</button><button type="button" id="routeNextBtn" aria-label="Nasledujúca zastávka" title="Ďalej o zastávku">↓</button></div><div class="destination-card"><div class="destination-label">CIEĽ</div><strong id="routeDestinationName">—</strong><div class="destination-arrival"><span>Plánovaný príchod</span><div id="routeDestinationTimes" class="destination-time-values"><b id="routeDestinationTime">—:—</b><b id="routeDestinationEstimate" class="destination-estimate" hidden>—:—</b></div></div></div></div>
+<div id="routeProgressFooter" class="route-progress-footer" hidden><div class="route-nav-arrows"><button type="button" id="routePrevBtn" aria-label="Predchádzajúca zastávka" title="Späť o zastávku">↑</button><button type="button" id="routeNextBtn" aria-label="Nasledujúca zastávka" title="Ďalej o zastávku">↓</button></div><div class="destination-card"><div class="destination-label">CIEĽ</div><div class="destination-title" id="routeDestinationTitle"><span class="destination-line" id="routeDestinationLine" hidden></span><strong id="routeDestinationName">—</strong></div><div class="destination-dot-sign" id="routeDestinationDots" hidden role="img" aria-label="Cieľ na bodovom displeji"><canvas id="routeDestinationCanvas" aria-hidden="true"></canvas></div><div class="destination-arrival"><span>Plánovaný príchod</span><div id="routeDestinationTimes" class="destination-time-values"><b id="routeDestinationTime">—:—</b><b id="routeDestinationEstimate" class="destination-estimate" hidden>—:—</b></div></div></div></div>
 <div class="stats"><div class="stat"><div class="stat-label">RÝCHLOSŤ</div><div class="stat-value" id="speed">—<small> km/h</small></div></div><div class="stat"><div class="stat-label">SMER</div><div class="stat-value" id="heading">—<small> °</small></div></div><div class="stat"><div class="stat-label">GPS PRESNOSŤ</div><div class="stat-value" id="accuracy">—<small> m</small></div></div></div>
 <div class="note" id="infoBox"><strong>Pripravené.</strong> Ťukni na GPS v spodnej lište a povoľ polohu. Táto verzia zatiaľ nezaručuje správne poradie zastávok podľa smeru jazdy.</div>
 <div class="status-bottom" id="lastFix">Zastávky: 7 predinštalovaných · poloha sa nesleduje</div>
@@ -397,10 +410,10 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
   <button type="button" class="btn secondary sound-preview" id="soundPreviewBtn">▶ Vyskúšať ding-dong</button>
   <p class="tiny sound-help">Hlasitosť v aplikácii je nezávislá od hlasitosti médií na telefóne. Prehrávanie pri zamknutom displeji nie je v prehliadači zaručené.</p>
 </div>
-<div class="panel"><h3>Panel a carousel</h3><label class="toggle"><span><strong>Zobraziť ovládanie carouselu</strong><br><small class="tiny">Nadpis „Ďalšie zastávky / Odchody“ a ručné prepínanie. Predvolene skryté; automatické striedanie zostáva zapnuté.</small></span><input type="checkbox" id="showCarouselControls"></label></div><div class="panel"><h3>Databáza zastávok</h3><p>Bratislavské zastávky sa dajú doplniť z oficiálneho GTFS DPB (stop_id, platform_code, zóny). Pri prvom načítaní sa archív uloží do prehliadača. Pri neúspechu môžeš získať ZIP <a href="https://www.arcgis.com/sharing/rest/content/items/aba12fd2cbac4843bc7406151bc66106/data" target="_blank" rel="noopener noreferrer">z oficiálneho zdroja</a> a nahrať ho v Zastávkach. Nezadané zóny zostanú neznáme.</p><p>Predinštalované zastávky aj vlastné body môžeš upraviť v sekcii Zastávky. Zmeny zostávajú uložené v tomto prehliadači.</p><div class="actions-row"><button class="btn secondary" id="exportStopsBtn">↓ Export zálohy JSON</button><button class="btn secondary" id="importStopsBtn">↑ Import zálohy</button><input id="importStopsFile" type="file" accept=".json,application/json" hidden></div><button class="btn secondary reset-button" id="restoreDefaultsBtn">Obnoviť predvolené zastávky</button></div>
+<div class="panel"><h3>Panel a carousel</h3><label class="toggle"><span><strong>Zobraziť ovládanie carouselu</strong><br><small class="tiny">Nadpis „Ďalšie zastávky / Odchody“ a ručné prepínanie. Predvolene skryté; automatické striedanie zostáva zapnuté.</small></span><input type="checkbox" id="showCarouselControls"></label><div class="field"><label for="destinationDisplayStyle">Vzhľad cieľového displeja</label><select id="destinationDisplayStyle"><option value="classic">Klasický (veľký text)</option><option value="flipdot">Flip-dot (jantárové bodky)</option><option value="lcd">Bodový LCD (zelené body)</option></select><p class="range-hint">Číslo linky sa zobrazí pred cieľom, ak je v trase vyplnené. Bodový displej používa skutočne vykreslené body a funguje aj offline.</p></div></div><div class="panel"><h3>Databáza zastávok</h3><p>Bratislavské zastávky sa dajú doplniť z oficiálneho GTFS DPB (stop_id, platform_code, zóny). Pri prvom načítaní sa archív uloží do prehliadača. Pri neúspechu môžeš získať ZIP <a href="https://www.arcgis.com/sharing/rest/content/items/aba12fd2cbac4843bc7406151bc66106/data" target="_blank" rel="noopener noreferrer">z oficiálneho zdroja</a> a nahrať ho v Zastávkach. Nezadané zóny zostanú neznáme.</p><p>Predinštalované zastávky aj vlastné body môžeš upraviť v sekcii Zastávky. Zmeny zostávajú uložené v tomto prehliadači.</p><div class="actions-row"><button class="btn secondary" id="exportStopsBtn">↓ Export zálohy JSON</button><button class="btn secondary" id="importStopsBtn">↑ Import zálohy</button><input id="importStopsFile" type="file" accept=".json,application/json" hidden></div><button class="btn secondary reset-button" id="restoreDefaultsBtn">Obnoviť predvolené zastávky</button></div>
 <div class="panel"><h3>Správanie počas jazdy</h3><p>Systém prednostne vyberá zastávky približne do ±45° od GPS smeru. Pri státí uchová posledný spoľahlivý smer. Po opustení zastávky ju krátko vynechá, aby sa nevrátila na panel. Pri neznámom smere sa zobrazujú najbližšie body podľa vzdialenosti.</p></div><div class="panel"><h3>Test bez jazdy</h3><p>Simulácia postupne prejde cez sedem vložených zastávok. Údaje sú jasne označené ako DEMO a nesmú sa zamieňať so skutočnou polohou.</p><div class="actions-row"><button class="btn secondary" id="startDemo">Spustiť demo</button><button class="btn secondary" id="stopDemo" hidden>Ukončiť demo</button></div></div><div class="panel"><h3>Odchodové tabule · experiment</h3><p>V sekcii Zastávky → ✎ upraviť môžeš ku konkrétnej zastávke pridať URL odchodovej tabule iMHD. Panel potom po 30 sekundách strieda ďalšie zastávky a originálnu tabuľu v iframe. Do 100 m pred zastávkou podrží odchody (ak je URL nastavená), potom ich vypne podľa nastavenej vzdialenosti po prejazde. Žiadne odchody automaticky nesťahujeme ani nezobrazujeme v našom dizajne.</p></div>
-<div class="panel"><h3>Verzia 0.5.2</h3><p>36 pôvodných zastávok + import DPB GTFS · úpravy a zálohy · offline GPS výpočty · monochromatická vektorová mapa · demo režim.</p><p class="tiny">Zastávky: OpenStreetMap/OMA.sk (ODbL). Mapa: OpenFreeMap / OpenStreetMap © prispievatelia. Na načítanie mapového podkladu je potrebný internet.</p></div></section>
-<div class="meta-footer" style="display:none"><span>GPS InfoSystem · 0.5.2</span><span>Údaje: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap / ODbL</a></span></div>
+<div class="panel"><h3>Verzia 0.5.3</h3><p>36 pôvodných zastávok + import DPB GTFS · úpravy a zálohy · offline GPS výpočty · monochromatická vektorová mapa · demo režim.</p><p class="tiny">Zastávky: OpenStreetMap/OMA.sk (ODbL). Mapa: OpenFreeMap / OpenStreetMap © prispievatelia. Na načítanie mapového podkladu je potrebný internet.</p></div></section>
+<div class="meta-footer" style="display:none"><span>GPS InfoSystem · 0.5.3</span><span>Údaje: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap / ODbL</a></span></div>
 </main>
 </div>
 <dialog id="stopDialog" class="stop-dialog" aria-labelledby="stopDialogTitle">
@@ -490,7 +503,7 @@ const $=id=>document.getElementById(id);
 const isSecure=window.isSecureContext;
 const storeKey='gps-info-v02-stops',settingsKey='gps-info-v02-settings';
 const saved=(()=>{try{return JSON.parse(localStorage.getItem(settingsKey))||{};}catch{return {};}})();
-const state={carouselSlide:'stops',carouselChangedAt:Date.now(),carouselStopId:null,carouselHeldStopId:null,enteredStopId:null,exitTicks:0,arrivedPoint:null,passedStops:new Map(),headingAt:0,headingQuality:false,mapFailure:null,mapAttempt:0,mapFallbackStyle:0,mapLoadWatch:null,screen:'home',mode:'off',watch:null,position:null,heading:null,speed:null,accuracy:null,range:[10,20,30,50,75,100].includes(saved.range)?saved.range:75,leaveDistance:[30,50,75,100,125].includes(saved.leaveDistance)?saved.leaveDistance:50,showCarouselControls:saved.showCarouselControls===true,minArrivalDistance:null,carouselHoldMinDistance:null,carouselDismissedStopId:null,wakeWanted:!!saved.wake,soundEnabled:saved.soundEnabled!==false,soundVolume:Number.isFinite(saved.soundVolume)?Math.min(100,Math.max(0,Math.round(saved.soundVolume/5)*5)):50,wakeLock:null,gpsError:null,map:null,mapMarkers:[],meMarker:null,mapFocus:true,mapBackScreen:"home",mapLoading:false,demoIndex:0,lastFix:null,toastTimer:0};
+const state={carouselSlide:'stops',carouselChangedAt:Date.now(),carouselStopId:null,carouselHeldStopId:null,enteredStopId:null,exitTicks:0,arrivedPoint:null,passedStops:new Map(),headingAt:0,headingQuality:false,mapFailure:null,mapAttempt:0,mapFallbackStyle:0,mapLoadWatch:null,screen:'home',mode:'off',watch:null,position:null,heading:null,speed:null,accuracy:null,range:[10,20,30,50,75,100].includes(saved.range)?saved.range:75,leaveDistance:[30,50,75,100,125].includes(saved.leaveDistance)?saved.leaveDistance:50,showCarouselControls:saved.showCarouselControls===true,destinationDisplayStyle:['classic','flipdot','lcd'].includes(saved.destinationDisplayStyle)?saved.destinationDisplayStyle:'classic',minArrivalDistance:null,carouselHoldMinDistance:null,carouselDismissedStopId:null,wakeWanted:!!saved.wake,soundEnabled:saved.soundEnabled!==false,soundVolume:Number.isFinite(saved.soundVolume)?Math.min(100,Math.max(0,Math.round(saved.soundVolume/5)*5)):50,wakeLock:null,gpsError:null,map:null,mapMarkers:[],meMarker:null,mapFocus:true,mapBackScreen:"home",mapLoading:false,demoIndex:0,lastFix:null,toastTimer:0};
 let customStops=[];
 try{const v=JSON.parse(localStorage.getItem(storeKey)||'[]');if(Array.isArray(v))customStops=v.filter(validStop).slice(0,200);}catch{}
 function validStop(s){return s&&typeof s.id==='string'&&typeof s.name==='string'&&s.name.length<=70&&s.name.length>0&&Array.isArray(s.platforms)&&s.platforms.length>0&&s.platforms.every(p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=90&&Math.abs(p[1])<=180)&&(!s.platformDetails||(Array.isArray(s.platformDetails)&&s.platformDetails.length===s.platforms.length&&s.platformDetails.every(x=>x&&typeof x.id==='string'&&typeof x.name==='string'&&x.name.length<=70)));}
@@ -677,7 +690,7 @@ function refreshCarousel(rank){
 }
 
 function statusText(){if(state.mode==='demo')return 'DEMO';if(state.mode==='gps')return 'GPS AKTÍVNE';return 'GPS VYPNUTÉ';}
-function persistSettings(){try{localStorage.setItem(settingsKey,JSON.stringify({range:state.range,wake:state.wakeWanted,soundEnabled:state.soundEnabled,soundVolume:state.soundVolume,leaveDistance:state.leaveDistance,showCarouselControls:state.showCarouselControls}));}catch{}}
+function persistSettings(){try{localStorage.setItem(settingsKey,JSON.stringify({range:state.range,wake:state.wakeWanted,soundEnabled:state.soundEnabled,soundVolume:state.soundVolume,leaveDistance:state.leaveDistance,showCarouselControls:state.showCarouselControls,destinationDisplayStyle:state.destinationDisplayStyle}));}catch{}}
 // Zvuková notifikácia: jeden gong pri potvrdenom vjazde, bez opakovania pri ďalších GPS fixoch.
 const chimeElement=()=>document.getElementById('arrivalChime');
 function syncSoundSettings(){
@@ -944,6 +957,9 @@ function routeSchedule(route,epoch){
 function formatRouteClock(epoch){if(!Number.isFinite(epoch))return '—:—';const d=new Date(epoch);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 function formatRouteDelta(diffMs){
  const absSeconds=diffMs<0?Math.ceil(-diffMs/1000):Math.floor(diffMs/1000);
+ // Nad hodinu už netreba vypisovať trojciferný počet minút.
+ // „ZOSTÁVA“ / „OD PLÁNU“ vo farebnom štítku určujú smer rozdielu.
+ if(absSeconds>3600)return '>'+Math.floor(absSeconds/3600)+' h';
  const min=Math.floor(absSeconds/60),sec=absSeconds%60;
  return (diffMs<0?'−':'')+String(min).padStart(2,'0')+':'+String(sec).padStart(2,'0');
 }
@@ -985,9 +1001,86 @@ async function calculateRoadTimes(){
   if(i<draft.steps.length-1)await new Promise(resolve=>setTimeout(resolve,250));
  }
  roadCalculationBusy=false;$('routeRoadCalculate').disabled=false;
- if(routeDraft===draft){renderRouteSteps();setText('routeRoadStatus',`${completed} / ${total} úsekov vypočítaných po cestách.`+(failed?' '+failed+' úsekov zlyhalo – zadaj ručne alebo skús neskôr.':'')+' Odhad pre auto, nie oficiálny CP MHD.');}
+ if(routeDraft===draft){renderRouteSteps();setText('routeRoadStatus',`${completed} / ${total} úsekov vypočítaných po cestách.`+(failed?' '+failed+' úsekov zlyhalo – zadaj ručne alebo skús neskôr.':'')+' Automobilový odhad po cestách, ktorý môžeš ručne upraviť.');}
 }
 function renderRouteTimeMode(){if(!routeDraft)return;$('routeRoadControls').hidden=routeDraft.timeMode!=='road';renderRouteSteps();}
+
+// Cieľový displej bez závislosti od web fontov / sieťových obrázkov.
+// V dot režimoch vzorkujeme text na malú mriežku a kreslíme fyzické body,
+// nie iba text s bodkovaným CSS filtrom. Funguje aj pre slovenskú diakritiku.
+let destinationSignSignature='';
+function drawDestinationSign(line,name,style){
+ if(style==='classic'||!currentActiveRoute())return;
+ const host=$('routeDestinationDots'),canvas=$('routeDestinationCanvas');
+ if(host.hidden||host.clientWidth<50)return;
+ const width=Math.max(60,Math.round(host.clientWidth));
+ const dpr=Math.min(2,window.devicePixelRatio||1);
+ const raw=document.createElement('canvas'),c=raw.getContext('2d',{willReadFrequently:true});
+ let font=Math.min(31,Math.max(23,Math.round(width*.092)));
+ const prefix=line?line+'  ':'';
+ // Snažíme sa udržať číslo linky a cieľ v jednom rade. Dlhé názvy sa môžu zalomiť.
+ const maxWidth=width-20;
+ const setFont=()=>{c.font='800 '+font+'px Arial, sans-serif';};
+ setFont();
+ let rows=[prefix+name];
+ if(c.measureText(rows[0]).width>maxWidth){
+  const words=name.split(/\s+/).filter(Boolean);
+  // Preferujeme číslo linky v prvom rade (ak existuje).
+  const parts=[];
+  let first=prefix.trim();
+  for(const w of words){
+   const candidate=first?first+' '+w:w;
+   if(first&&c.measureText(candidate).width>maxWidth){parts.push(first);first=w;}else first=candidate;
+  }
+  if(first)parts.push(first);
+  rows=parts.length>1&&parts.length<=2?parts:[prefix+name];
+  // Pre neobvykle dlhé názvy zmenšíme písmo, neorežeme ho.
+  while(font>15&&rows.some(r=>{setFont();return c.measureText(r).width>maxWidth;})){font-=1;}
+  setFont();
+  if(rows.some(r=>c.measureText(r).width>maxWidth)){
+   // Posledná záloha pre súvislé dlhé názvy bez medzier.
+   rows=[prefix+name];while(font>12&&c.measureText(rows[0]).width>maxWidth){font--;setFont();}
+  }
+ }
+ const lineHeight=font+7,height=rows.length*lineHeight+9;
+ raw.width=width;raw.height=height;setFont();
+ c.fillStyle='#fff';c.textBaseline='alphabetic';
+ rows.forEach((txt,i)=>c.fillText(txt,9,(i+1)*lineHeight-5));
+ const image=c.getImageData(0,0,width,height).data;
+ canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+ canvas.style.width=width+'px';canvas.style.height=height+'px';
+ const out=canvas.getContext('2d');out.setTransform(dpr,0,0,dpr,0,0);
+ const flip=style==='flipdot',pitch=flip?3.9:3.65;
+ out.fillStyle=flip?'#191d1b':'#082a27';out.fillRect(0,0,width,height);
+ const lit=flip?'#ffbf52':'#a1f7cb',off=flip?'#30342e':'#164039';
+ // Sampling z viac než jedného pixelu zabraňuje blikajúcim dieram v ťahoch písma.
+ for(let y=pitch/2;y<height;y+=pitch){
+  for(let x=pitch/2;x<width;x+=pitch){
+   let alpha=0;
+   for(const dy of [-1,0,1])for(const dx of [-1,0,1]){
+    const px=Math.max(0,Math.min(width-1,Math.floor(x+dx))),py=Math.max(0,Math.min(height-1,Math.floor(y+dy)));
+    alpha+=image[(py*width+px)*4+3];
+   }
+   const active=alpha/9>65;
+   out.beginPath();out.arc(x,y,flip?pitch*.38:pitch*.34,0,Math.PI*2);
+   out.fillStyle=active?lit:off;out.fill();
+   if(active&&flip){out.beginPath();out.arc(x-pitch*.11,y-pitch*.12,pitch*.12,0,Math.PI*2);out.fillStyle='#ffe1a0';out.fill();}
+  }
+ }
+}
+function syncDestinationSign(line,name){
+ const mode=state.destinationDisplayStyle;
+ const dot=mode!=='classic',sign=$('routeDestinationDots');
+ $('routeDestinationTitle').hidden=dot;sign.hidden=!dot;
+ sign.classList.toggle('flipdot',mode==='flipdot');sign.classList.toggle('lcd',mode==='lcd');
+ sign.setAttribute('aria-label',(line?'Linka '+line+', ':'')+'cieľ '+name);
+ if(!dot){destinationSignSignature='';return;}
+ const width=Math.round(sign.clientWidth);
+ const key=[mode,line,name,width].join('|');
+ if(key!==destinationSignSignature){destinationSignSignature=key;drawDestinationSign(line,name,mode);}
+}
+window.addEventListener('resize',()=>{destinationSignSignature='';const route=currentActiveRoute();if(route){const dest=routeDestinationAt(route,activeRouteIndex);syncDestinationSign(route.line.trim(),dest?.stop?.name||'—');}});
+
 function updateTimeDisplays(){
  const route=currentActiveRoute(),schedule=route?routeSchedule(route,activeRouteStartEpoch):[],index=activeRouteIndex;
  const current=route?.steps[index],planned=current?((index===route.steps.length-1)?schedule[index]?.arrival:schedule[index]?.departure):null;
@@ -1009,7 +1102,11 @@ function updateTimeDisplays(){
  document.body.classList.toggle('route-in-progress',!!route);
  if(route){
   const dest=routeDestinationAt(route,index),destTime=dest?schedule[dest.index]?.arrival:null;
-  setText('routeDestinationName',dest?.stop?.name||'—');
+  const destinationName=dest?.stop?.name||'—',destinationLine=route.line.trim();
+  setText('routeDestinationName',destinationName);
+  setText('routeDestinationLine',destinationLine);
+  $('routeDestinationLine').hidden=!destinationLine;
+  syncDestinationSign(destinationLine,destinationName);
   setText('routeDestinationTime',formatRouteClock(destTime));
   const currentPlan=Number.isFinite(planned)?planned:null;
   const currentDelay=currentPlan!==null?Math.max(0,Date.now()-currentPlan):0;
@@ -1680,6 +1777,8 @@ function init(){
   $('leaveDistance').addEventListener('change',e=>{state.leaveDistance=Number(e.target.value);persistSettings();update();});
   $('showCarouselControls').checked=state.showCarouselControls;
   $('showCarouselControls').addEventListener('change',e=>{state.showCarouselControls=e.target.checked;persistSettings();update();});
+  $('destinationDisplayStyle').value=state.destinationDisplayStyle;
+  $('destinationDisplayStyle').addEventListener('change',e=>{state.destinationDisplayStyle=e.target.value;destinationSignSignature='';persistSettings();update();});
   $('range').value=state.range;
   $('range').addEventListener('change',e=>{state.range=Number(e.target.value);persistSettings();update();if(state.map&&state.mapLoaded)drawMarkers();});
   $('wakeToggle').checked=state.wakeWanted;
