@@ -1,10 +1,12 @@
-
+// ViaDeck Live - Firebase web configuration.
+// Public browser configuration (not a Firebase Admin SDK service account key).
 window.VIADECK_LIVE_CONFIG = {
-  apiKey: "DOPLN_API_KEY",
-  authDomain: "DOPLN_AUTH_DOMAIN",
-  databaseURL: "DOPLN_DATABASE_URL",
-  projectId: "DOPLN_PROJECT_ID",
-  storageBucket: "DOPLN_STORAGE_BUCKET",
-  messagingSenderId: "DOPLN_MESSAGING_SENDER_ID",
-  appId: "DOPLN_APP_ID"
+  apiKey: "AIzaSyA3Saqk70ZhnSk2vPGvoRUmHarie7EkMaA",
+  authDomain: "viadeck.firebaseapp.com",
+  databaseURL: "https://viadeck-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "viadeck",
+  storageBucket: "viadeck.firebasestorage.app",
+  messagingSenderId: "530654485371",
+  appId: "1:530654485371:web:a9ae43ea32a87363c3bbde",
+  measurementId: "G-HLRD7R3S4K"
 };
