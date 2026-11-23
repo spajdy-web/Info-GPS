@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07131e">
+<meta name="description" content="ViaDeck Live – sledovanie zdieľanej jazdy">
+<title>ViaDeck Live</title>
+<style>
+:root{font-family:Inter,'Segoe UI',Roboto,system-ui,-apple-system,sans-serif;color:#edf8fc;background:#07131e;--panel:#112838;--line:#2a4a5c;--muted:#96afbf;--cyan:#4fd6f0;--green:#a0edb7}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#07131e;color:#edf8fc}body{background:radial-gradient(ellipse 90% 35% at 90% -10%,#164459,transparent 78%),#07131e;padding-bottom:24px}
+button,input{font:inherit}button{cursor:pointer}.wrap{max-width:760px;margin:auto;padding:18px clamp(14px,4vw,30px)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:20px;border-bottom:1px solid #263f4f;margin-bottom:18px}.brand{display:flex;align-items:center;gap:11px}.logo{width:43px;height:43px;border-radius:12px;background:linear-gradient(160deg,#0a2239,#153e50);display:grid;place-items:center}.logo svg{width:31px;height:31px}.brand span{font-size:23px;font-weight:760;letter-spacing:-.8px}.brand b{color:var(--cyan)}
+.statelamp{border-radius:18px;background:#173244;border:1px solid #37596d;padding:8px 12px;font-size:12px;font-weight:750;letter-spacing:.7px;color:#b5d6e5;display:flex;gap:7px;align-items:center}.statelamp:before{content:"";width:8px;height:8px;background:#879da8;border-radius:50%}.statelamp.live{color:#b0f4cb;border-color:#337960;background:#10372b}.statelamp.live:before{background:#57ed95;box-shadow:0 0 9px #57ed95}.statelamp.offline{color:#ffcd95;border-color:#8f6739;background:#322b20}.statelamp.offline:before{background:#f0ad54}
+.status{background:#142b3a;border:1px solid #284d60;padding:13px 14px;border-radius:14px;margin-bottom:15px;color:#d1e4ed;line-height:1.45;font-size:14px}.status[hidden]{display:none}.titleline{display:flex;justify-content:space-between;gap:16px;align-items:center;border-radius:18px;padding:16px 18px;background:#122c3c;border:1px solid #335a6c;margin-bottom:14px}.micro{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#9cb9ca;font-weight:700}.linebadge{display:block;font-weight:800;font-size:30px;margin-top:4px}.route-title{text-align:right;font-size:16px;color:#dcebf2;font-weight:600;max-width:68%}.route-title strong{display:block;font-size:19px;overflow-wrap:anywhere}.next{border-radius:24px;background:linear-gradient(125deg,#2596eb,#7cc7fc);padding:22px;color:#071b2c;box-shadow:0 12px 36px rgba(14,113,187,.16)}.next h1{font-size:clamp(32px,7vw,55px);font-weight:780;letter-spacing:-1.3px;line-height:1.05;overflow-wrap:anywhere;margin:12px 0 7px}.next .micro{color:#103b58}.next .platform{min-height:19px;color:#1a4768;font-size:15px;margin:0}.nexttiming{display:flex;justify-content:space-between;align-items:center;margin-top:17px;gap:12px;padding-top:14px;border-top:1px solid #4b93c6}.time{font-size:27px;font-weight:750;white-space:nowrap;font-variant-numeric:tabular-nums}.delta{border-radius:10px;background:#f28f92;padding:7px 10px;display:flex;flex-direction:column;align-items:end;gap:1px}.delta.on{background:#99e9af}.delta .tiny{font-size:10px;font-weight:750;letter-spacing:1px}.delta .count{font-size:23px;font-weight:800;font-variant-numeric:tabular-nums}.next.completed{filter:saturate(.78)}.section{margin-top:23px}.section h2{font-size:13px;color:#a5c4d5;font-weight:700;letter-spacing:2px;margin:0 0 12px}.stops{background:#102533;border:1px solid #2e4a5c;border-radius:18px;overflow:hidden}.stop{display:flex;align-items:center;gap:13px;padding:12px 16px;border-bottom:1px solid #294252}.stop:last-child{border-bottom:0}.stop .index{width:30px;height:30px;border:1px solid #3a687d;border-radius:50%;display:grid;place-items:center;color:#afd5e6;font-size:13px;flex-shrink:0}.stop .name{flex:1;font-weight:600;overflow-wrap:anywhere}.stop .at{color:#aec1ca;font-variant-numeric:tabular-nums;font-size:14px}.stop.passed{opacity:.48}.stop.current{background:#153e56}.stop.current .index{background:#1e93c9;color:white;border-color:#49b6e5}
+.destination{background:#112d3e;border-radius:18px;border:1px solid #3a667d;padding:17px;display:flex;justify-content:space-between;align-items:center;gap:15px}.destination .dest-name{font-size:clamp(22px,5vw,30px);font-weight:750;margin:6px 0;overflow-wrap:anywhere}.desttime{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.desttime strong{font-size:25px}.desttime small{display:block;color:#a5c6d8;font-size:12px}.desttime .estimate{color:#ff8c91}.map-link{display:inline-flex;align-items:center;gap:6px;background:#1c4c65;color:#d9f4ff;border:1px solid #34728d;text-decoration:none;padding:11px 15px;border-radius:12px;font-size:13px}.muted{color:var(--muted);font-size:13px}.footer{border-top:1px solid #213b4b;margin-top:22px;padding-top:15px;display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#93afc0;flex-wrap:wrap}.empty{padding:18px;color:#a5bac6}.bad{color:#ffd2ae}.is-hidden{display:none!important}
+@media(max-width:390px){.wrap{padding:12px}.brand span{font-size:20px}.next{padding:17px}.destination{padding:14px}.nexttiming .time{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="brand"><div class="logo"><svg viewBox="0 0 60 60" fill="none" aria-hidden="true"><path d="M10 18L43 8V26L16 36Z" fill="#5be5f0"/><path d="M8 25L43 14V37L9 49Z" fill="#149dea"/><path d="M7 33L47 20V47L10 56Z" fill="#062940"/><path d="M18 49Q23 34 39 32" stroke="#5ce8f2" stroke-width="5" stroke-linecap="round"/><path d="M32 43L36 39M37 37L39 36" stroke="#072a43" stroke-width="2"/></svg></div><span>Via<b>Deck</b> Live</span></div><div id="lamp" class="statelamp">PRIPÁJANIE</div></header>
+<div id="status" class="status" role="status">Pripájam sa k zdieľanej jazde…</div>
+<div id="content" hidden>
+  <div class="titleline"><div><span class="micro">Linka</span><strong class="linebadge" id="line">—</strong></div><div class="route-title"><span class="micro">Trasa / smer</span><strong id="routeName">—</strong><span id="direction" class="muted"></span></div></div>
+  <div id="nextCard" class="next"><span id="nextHeader" class="micro">NASLEDUJÚCA ZASTÁVKA</span><h1 id="nextName">—</h1><p id="platform" class="platform">&nbsp;</p><div class="nexttiming"><div><span class="micro">PLÁN</span><div id="planned" class="time">—:—</div></div><div id="deltaBox" class="delta"><span class="tiny" id="deltaCaption">ZOSTÁVA</span><span class="count" id="countdown">—:—</span></div></div></div>
+  <section class="section"><h2>ĎALŠIE NA TRASE</h2><div id="stops" class="stops"></div></section>
+  <section class="section"><h2>CIEĽOVÁ ZASTÁVKA</h2><div class="destination"><div><span class="micro">CIEĽ</span><div id="destination" class="dest-name">—</div></div><div class="desttime"><small>Plánovaný príchod</small><strong id="destPlan">—:—</strong><div id="destEstimateBox" hidden><small>Odhadovaný príchod</small><strong class="estimate" id="destEstimate">—:—</strong></div></div></div></section>
+  <section id="positionBox" class="section" hidden><h2>ZDIEĽANÁ POLOHA</h2><div class="destination"><div><span class="micro">GPS súradnice</span><div id="gpsPosition">—</div><span class="muted" id="speed"></span></div><a id="positionMap" class="map-link" target="_blank" rel="noopener noreferrer">Otvoriť mapu</a></div></section>
+</div>
+<div class="footer"><span id="updated">Posledná aktualizácia: —</span><span>Len na sledovanie · bez ovládania jazdy</span></div>
+</div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let lastData=null,receivedAt=0;
+function showStatus(text,error=false){$('status').hidden=false;$('status').textContent=text;$('status').classList.toggle('bad',error);}
+function setLamp(name,kind=''){$('lamp').textContent=name;$('lamp').className='statelamp '+kind;}
+function asClock(v){if(!Number.isFinite(v))return '—:—';return new Date(v).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});}
+function asDiff(v){const sec=Math.floor(Math.abs(v)/1000),h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;if(h>=1)return '>'+h+' h';return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
+function fill(value,id){$(id).textContent=String(value??'—');}
+function renderStops(data){const holder=$('stops');holder.replaceChildren();const stops=Array.isArray(data.stops)?data.stops:[];
+ if(!stops.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Žiadne ďalšie zastávky.';holder.append(empty);return;}
+ for(const st of stops){const row=document.createElement('div');row.className='stop'+(st.number<data.index+1?' passed':st.number===data.index+1?' current':'');
+ const number=document.createElement('span');number.className='index';number.textContent=String(st.number).padStart(2,'0');
+ const name=document.createElement('span');name.className='name';name.textContent=st.name||'—';
+ const at=document.createElement('span');at.className='at';at.textContent=asClock(st.planned);
+ row.append(number,name,at);holder.append(row);}}
+function render(data){receivedAt=Date.now();$('content').hidden=false;fill(data.line||'—','line');fill(data.routeName,'routeName');fill(data.direction,'direction');
+ fill(data.nextStop,'nextName');$('nextHeader').textContent=data.completed?'TRASA DOKONČENÁ':'NASLEDUJÚCA ZASTÁVKA';$('nextCard').classList.toggle('completed',!!data.completed);
+ fill(data.platform?'Nástupište: '+data.platform:'\u00a0','platform');fill(asClock(data.planned),'planned');
+ fill(data.destination,'destination');fill(asClock(data.destinationPlanned),'destPlan');$('destEstimateBox').hidden=!Number.isFinite(data.destinationEstimated);
+ if(Number.isFinite(data.destinationEstimated))fill(asClock(data.destinationEstimated),'destEstimate');
+ renderStops(data);const p=data.position;
+ $('positionBox').hidden=!(p&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
+ if(p&&Number.isFinite(p.lat)&&Number.isFinite(p.lon)){
+   fill(p.lat.toFixed(5)+', '+p.lon.toFixed(5)+' (±'+p.accuracy+' m)','gpsPosition');
+   $('speed').textContent=Number.isFinite(data.speed)?'Rýchlosť: '+data.speed+' km/h':'';
+   const q=new URL('https://www.openstreetmap.org/');q.searchParams.set('mlat',p.lat);q.searchParams.set('mlon',p.lon);q.searchParams.set('zoom','16');$('positionMap').href=q.href;
+ }
+ updateClock();
+}
+function updateClock(){if(!lastData)return;
+ const age=Date.now()-Number(receivedAt),serverAge=Date.now()-Number(lastData.updatedAt||0);
+ const freshness=lastData.updatedAt?serverAge:age;
+ if(freshness>30000){setLamp('BEZ AKTUALIZÁCIE','offline');showStatus('Údaje sa viac ako 30 sekúnd neaktualizovali. Môže byť prerušený internet, uspávací režim mobilu alebo ukončené vysielanie.');}
+ else{setLamp(lastData.public?.completed?'DOKONČENÁ':'NAŽIVO','live');$('status').hidden=true;}
+ $('updated').textContent='Posledná aktualizácia: '+(freshness<2500?'práve teraz':Math.floor(Math.max(0,freshness)/1000)+' s dozadu');
+ const d=lastData.public;if(!d)return;
+ const box=$('deltaBox');if(!Number.isFinite(d.planned)||d.completed){box.hidden=true;return;}box.hidden=false;
+ const delta=Date.now()-d.planned;
+ box.classList.toggle('on',delta>=0&&delta<=120000);$('deltaCaption').textContent=delta<0?'ZOSTÁVA':'OD PLÁNU';
+ fill((delta<0?'−':'')+asDiff(delta),'countdown');
+}
+function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('Nepodarilo sa načítať '+src));document.head.append(s);});}
+async function main(){
+ const id=new URLSearchParams(window.location.hash.substring(1)).get('s');
+ if(!id||!/^[a-f0-9]{32}$/.test(id)){setLamp('CHÝBA ODKAZ','offline');showStatus('Toto je stránka ViaDeck Live. Otvor ju cez odkaz, ktorý vytvorí vodič tlačidlom Zdieľať jazdu.',true);return;}
+ try{
+  if(!window.VIADECK_LIVE_CONFIG)await loadScript('./viadeck-live-config.js');const cfg=window.VIADECK_LIVE_CONFIG;
+  if(!cfg||!cfg.apiKey||cfg.apiKey.includes('DOPLN')||!cfg.databaseURL)throw new Error('Nie je nastavený Firebase v súbore viadeck-live-config.js.');
+  if(!window.firebase?.initializeApp){
+   await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+   await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js');
+  }
+  const app=window.firebase.initializeApp(cfg,'ViaDeckViewer');
+  window.firebase.database(app).ref('sessions/'+id).on('value',snapshot=>{
+   const data=snapshot.val();
+   if(!data){lastData=null;$('content').hidden=true;setLamp('NEDOSTUPNÉ','offline');showStatus('Relácia sa nenašla alebo jej prístup skončil.',true);return;}
+   if(data.status==='stopped'){$('content').hidden=true;lastData=null;setLamp('UKONČENÉ','offline');showStatus('Vodič ukončil zdieľanie tejto jazdy.');return;}
+   if(data.status!=='live'||!data.public){setLamp('NEDOSTUPNÉ','offline');showStatus('Relácia zatiaľ neobsahuje aktuálne údaje.');return;}
+   lastData={...data};render(data.public); // vykreslíme prijatý stav a samostatne sledovaný timestamp
+   lastData={...data};updateClock();
+  },err=>{setLamp('CHYBA SPOJENIA','offline');showStatus('Nepodarilo sa sledovať reláciu: '+(err?.message||String(err)),true);});
+ }catch(e){setLamp('NEDOSTUPNÉ','offline');showStatus('ViaDeck Live sa nespustil: '+(e.message||String(e)),true);}
+}
+setInterval(updateClock,1000);main();
+</script>
+</body>
+</html>
