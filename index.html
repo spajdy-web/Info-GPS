@@ -2373,7 +2373,7 @@ function stopDemo(){if(state.mode==='demo'){state.mode='off';state.position=null
 function changeDemo(dir){if(state.mode!=='demo')return;state.demoIndex=(state.demoIndex+dir+SEED_STOPS.length)%SEED_STOPS.length;demoPosition();}
 
 // ViaDeck Live – anonymné vlastníctvo relácie vo Firebase; nezdieľame miestne úložisko.
-const vdLive={session:null,ref:null,busy:false,lastSig:'',lastWrite:0,configReady:false,app:null,sharePosition:false,error:'',timer:null};
+const vdLive={session:null,ref:null,busy:false,lastSig:'',lastWrite:0,lastStaticSig:'',configReady:false,app:null,sharePosition:false,error:'',timer:null};
 function liveStatusText(text,isError=false){
  const el=$('liveShareStatus');el.textContent=text;el.classList.toggle('is-error',!!isError);el.classList.toggle('is-live',!!vdLive.session&&!isError);
 }
@@ -2405,18 +2405,50 @@ async function vdLiveSetup(){
  if(!auth.currentUser)await auth.signInAnonymously();
  vdLive.configReady=true;
 }
+function vdLiveStopMeta(stop,step){
+ const platform=stop&&step?.platformId?routePlatform(stop,step):null;
+ const fares=Array.isArray(stop?.fares)?stop.fares.filter(f=>f&&typeof f.system==='string'&&f.system.trim()).slice(0,5).map(f=>({system:f.system.trim().slice(0,45),zone:String(f.zone||'').trim().slice(0,35)})):[];
+ return {platform:platform?.name||'',fares};
+}
+function vdLiveRouteStops(route,times){
+ return route.steps.map((step,i)=>{
+  const stop=findStop(step.stopId),schedule=times[i]||{},meta=vdLiveStopMeta(stop,step),pos=routeStopCoordinate(step);
+  const planned=i===route.steps.length-1?schedule.arrival:schedule.departure;
+  return {number:i+1,name:(stop?.name||'Neznáma zastávka').slice(0,75),...meta,
+    planned:Number.isFinite(planned)?planned:null,
+    arrival:Number.isFinite(schedule.arrival)?schedule.arrival:null,
+    departure:Number.isFinite(schedule.departure)?schedule.departure:null,
+    pos:pos&&pos.length===2?pos.map(n=>Number(n.toFixed(6))):null};
+ });
+}
+function vdLiveThinPath(points,limit){
+ if(!Array.isArray(points)||points.length<2)return [];
+ const valid=points.filter(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite));
+ if(valid.length<=limit)return valid.map(p=>p.map(v=>Number(v.toFixed(6))));
+ return Array.from({length:limit},(_,i)=>{
+  const at=Math.round(i*(valid.length-1)/(limit-1));return valid[at].map(v=>Number(v.toFixed(6)));
+ });
+}
+function vdLiveRouteLegs(route){
+ const out=[],limit=Math.min(45,Math.max(9,Math.floor(3500/Math.max(1,route.steps.length-1))));
+ for(let i=1;i<route.steps.length;i++){
+  const road=legRoadGeometry(route,i),points=road||routePointsForLeg(route,i);
+  out.push({road:!!road,coords:vdLiveThinPath(points,limit)});
+ }
+ return out;
+}
 function vdLivePublicSnapshot(){
  const route=currentActiveRoute();if(!route)return null;
  const idx=Math.min(Math.max(activeRouteIndex,0),route.steps.length-1),times=routeSchedule(route,activeRouteStartEpoch);
- const step=route.steps[idx],stop=step?findStop(step.stopId):null;
- const dst=routeDestinationAt(route,idx),destTime=dst?times[dst.index]?.arrival:null;
+ const step=route.steps[idx],stop=step?findStop(step.stopId):null,currentMeta=vdLiveStopMeta(stop,step);
+ const dst=routeDestinationAt(route,idx),destTime=dst?times[dst.index]?.arrival:null,destMeta=dst?vdLiveStopMeta(dst.stop,route.steps[dst.index]):{platform:"",fares:[]};
  const planned=idx===route.steps.length-1?times[idx]?.arrival:times[idx]?.departure;
  const delta=Number.isFinite(planned)?Math.max(0,Date.now()-planned):0;
  const delay=Math.max(routeLastDelayMs,routeCompleted?0:delta);
  const listStart=Math.max(0,idx-1),listEnd=Math.min(route.steps.length,idx+10);
  const list=route.steps.slice(listStart,listEnd).map((x,i)=>{
    const n=listStart+i,p=findStop(x.stopId),schedule=times[n];return {
-    number:n+1,name:(p?.name||'Neznáma zastávka').slice(0,75),
+    number:n+1,name:(p?.name||'Neznáma zastávka').slice(0,75),...vdLiveStopMeta(p,x),
     planned:Number.isFinite(n===route.steps.length-1?schedule?.arrival:schedule?.departure)?(n===route.steps.length-1?schedule.arrival:schedule.departure):null
    };
  });
@@ -2425,11 +2457,11 @@ function vdLivePublicSnapshot(){
  return {
   v:1,line:route.line.slice(0,14),routeName:route.name.slice(0,80),direction:route.direction.slice(0,80),
   index:idx,total:route.steps.length,completed:!!routeCompleted,
-  nextStop:stop?.name||'—',platform:stop&&step?routePlatform(stop,step)?.name||'':'',
+  nextStop:stop?.name||'—',platform:currentMeta.platform,fares:currentMeta.fares,
   planned:Number.isFinite(planned)?planned:null,
-  destination:dst?.stop?.name||'—',destinationPlanned:Number.isFinite(destTime)?destTime:null,
+  destination:dst?.stop?.name||'—',destinationPlatform:destMeta.platform,destinationFares:destMeta.fares,destinationPlanned:Number.isFinite(destTime)?destTime:null,
   destinationEstimated:Number.isFinite(destTime)&&delay>=60000?destTime+delay:null,
-  stops:list,position:point,
+  stops:list,fullStops:vdLiveRouteStops(route,times),legs:vdLiveRouteLegs(route),position:point,
   speed:state.mode==='gps'&&Number.isFinite(state.speed)?Math.round(state.speed*3.6):null,
   gpsActive:state.mode==='gps'&&!!state.position
  };
@@ -2442,9 +2474,15 @@ async function vdLivePublish(force=false){
  if(!force&&sig===vdLive.lastSig&&now-vdLive.lastWrite<12000)return;
  vdLive.busy=true;
  try{
-   const write=vdLive.ref.update({public:payload,updatedAt:window.firebase.database.ServerValue.TIMESTAMP,expiresAt:Date.now()+12*3600000});
+   const staticSig=JSON.stringify([payload.fullStops,payload.legs]);
+   const changes={updatedAt:window.firebase.database.ServerValue.TIMESTAMP,expiresAt:Date.now()+12*3600000};
+   for(const [key,value] of Object.entries(payload)){
+    if((key==='fullStops'||key==='legs')&&staticSig===vdLive.lastStaticSig)continue;
+    changes['public/'+key]=value;
+   }
+   const write=vdLive.ref.update(changes);
    vdLive.writePromise=write;await write;
-   vdLive.lastSig=sig;vdLive.lastWrite=now;vdLive.error='';
+   vdLive.lastSig=sig;vdLive.lastWrite=now;vdLive.lastStaticSig=staticSig;vdLive.error='';
    if(vdLive.session&&$('liveShareDialog').open)liveStatusText('Zdieľanie aktívne · údaje sa aktualizujú počas jazdy.');
  }catch(e){vdLive.error=e.message||String(e);if($('liveShareDialog').open)liveStatusText('Nepodarilo sa odoslať údaje: '+vdLive.error,true);}
  finally{vdLive.busy=false;vdLive.writePromise=null;}
@@ -2469,7 +2507,7 @@ async function vdLiveStart(){
   vdLive.sharePosition=$('liveShareCoordinates').checked;
   const payload=vdLivePublicSnapshot();if(!payload)throw new Error('Jazda nemá pripravené údaje.');
   await ref.set({ownerUid:owner,status:'live',createdAt:window.firebase.database.ServerValue.TIMESTAMP,updatedAt:window.firebase.database.ServerValue.TIMESTAMP,expiresAt:Date.now()+12*3600000,public:payload});
-  vdLive.session=id;vdLive.ref=ref;vdLive.lastSig=JSON.stringify(payload);vdLive.lastWrite=Date.now();
+  vdLive.session=id;vdLive.ref=ref;vdLive.lastSig=JSON.stringify(payload);vdLive.lastStaticSig=JSON.stringify([payload.fullStops,payload.legs]);vdLive.lastWrite=Date.now();
   const url=vdLiveViewerLink(id);$('liveShareUrl').value=url;
   liveSyncControls();liveStatusText('Zdieľanie aktívne. Pošli odkaz alebo QR kód divákovi.');
   vdLiveShowQr(url);
@@ -2478,7 +2516,7 @@ async function vdLiveStart(){
 }
 async function vdLiveStop(fromRoute=false){
  if(!vdLive.ref)return;
- const ref=vdLive.ref,pendingWrite=vdLive.writePromise;vdLive.session=null;vdLive.ref=null;vdLive.lastSig='';vdLive.lastWrite=0;
+ const ref=vdLive.ref,pendingWrite=vdLive.writePromise;vdLive.session=null;vdLive.ref=null;vdLive.lastSig='';vdLive.lastStaticSig='';vdLive.lastWrite=0;
  liveSyncControls();$('liveShareQr').replaceChildren();
  liveStatusText(fromRoute?'Trasa ukončená. Zdieľanie bolo zastavené.':'Zdieľanie je vypnuté.');
  try{if(pendingWrite)await pendingWrite.catch(()=>{});await ref.update({status:'stopped',updatedAt:window.firebase.database.ServerValue.TIMESTAMP,public:{message:'Zdieľanie ukončené'}});}
