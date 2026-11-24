@@ -2,98 +2,226 @@
 <html lang="sk">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07131e">
-<meta name="description" content="ViaDeck Live – sledovanie zdieľanej jazdy">
+<meta name="description" content="ViaDeck Live – sledovanie zdieľanej jazdy, celá trasa a mapa">
 <title>ViaDeck Live</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
 <style>
-:root{font-family:Inter,'Segoe UI',Roboto,system-ui,-apple-system,sans-serif;color:#edf8fc;background:#07131e;--panel:#112838;--line:#2a4a5c;--muted:#96afbf;--cyan:#4fd6f0;--green:#a0edb7}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#07131e;color:#edf8fc}body{background:radial-gradient(ellipse 90% 35% at 90% -10%,#164459,transparent 78%),#07131e;padding-bottom:24px}
-button,input{font:inherit}button{cursor:pointer}.wrap{max-width:760px;margin:auto;padding:18px clamp(14px,4vw,30px)}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:20px;border-bottom:1px solid #263f4f;margin-bottom:18px}.brand{display:flex;align-items:center;gap:11px}.logo{width:43px;height:43px;border-radius:12px;background:linear-gradient(160deg,#0a2239,#153e50);display:grid;place-items:center}.logo svg{width:31px;height:31px}.brand span{font-size:23px;font-weight:760;letter-spacing:-.8px}.brand b{color:var(--cyan)}
-.statelamp{border-radius:18px;background:#173244;border:1px solid #37596d;padding:8px 12px;font-size:12px;font-weight:750;letter-spacing:.7px;color:#b5d6e5;display:flex;gap:7px;align-items:center}.statelamp:before{content:"";width:8px;height:8px;background:#879da8;border-radius:50%}.statelamp.live{color:#b0f4cb;border-color:#337960;background:#10372b}.statelamp.live:before{background:#57ed95;box-shadow:0 0 9px #57ed95}.statelamp.offline{color:#ffcd95;border-color:#8f6739;background:#322b20}.statelamp.offline:before{background:#f0ad54}
-.status{background:#142b3a;border:1px solid #284d60;padding:13px 14px;border-radius:14px;margin-bottom:15px;color:#d1e4ed;line-height:1.45;font-size:14px}.status[hidden]{display:none}.titleline{display:flex;justify-content:space-between;gap:16px;align-items:center;border-radius:18px;padding:16px 18px;background:#122c3c;border:1px solid #335a6c;margin-bottom:14px}.micro{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#9cb9ca;font-weight:700}.linebadge{display:block;font-weight:800;font-size:30px;margin-top:4px}.route-title{text-align:right;font-size:16px;color:#dcebf2;font-weight:600;max-width:68%}.route-title strong{display:block;font-size:19px;overflow-wrap:anywhere}.next{border-radius:24px;background:linear-gradient(125deg,#2596eb,#7cc7fc);padding:22px;color:#071b2c;box-shadow:0 12px 36px rgba(14,113,187,.16)}.next h1{font-size:clamp(32px,7vw,55px);font-weight:780;letter-spacing:-1.3px;line-height:1.05;overflow-wrap:anywhere;margin:12px 0 7px}.next .micro{color:#103b58}.next .platform{min-height:19px;color:#1a4768;font-size:15px;margin:0}.nexttiming{display:flex;justify-content:space-between;align-items:center;margin-top:17px;gap:12px;padding-top:14px;border-top:1px solid #4b93c6}.time{font-size:27px;font-weight:750;white-space:nowrap;font-variant-numeric:tabular-nums}.delta{border-radius:10px;background:#f28f92;padding:7px 10px;display:flex;flex-direction:column;align-items:end;gap:1px}.delta.on{background:#99e9af}.delta .tiny{font-size:10px;font-weight:750;letter-spacing:1px}.delta .count{font-size:23px;font-weight:800;font-variant-numeric:tabular-nums}.next.completed{filter:saturate(.78)}.section{margin-top:23px}.section h2{font-size:13px;color:#a5c4d5;font-weight:700;letter-spacing:2px;margin:0 0 12px}.stops{background:#102533;border:1px solid #2e4a5c;border-radius:18px;overflow:hidden}.stop{display:flex;align-items:center;gap:13px;padding:12px 16px;border-bottom:1px solid #294252}.stop:last-child{border-bottom:0}.stop .index{width:30px;height:30px;border:1px solid #3a687d;border-radius:50%;display:grid;place-items:center;color:#afd5e6;font-size:13px;flex-shrink:0}.stop .name{flex:1;font-weight:600;overflow-wrap:anywhere}.stop .at{color:#aec1ca;font-variant-numeric:tabular-nums;font-size:14px}.stop.passed{opacity:.48}.stop.current{background:#153e56}.stop.current .index{background:#1e93c9;color:white;border-color:#49b6e5}
-.destination{background:#112d3e;border-radius:18px;border:1px solid #3a667d;padding:17px;display:flex;justify-content:space-between;align-items:center;gap:15px}.destination .dest-name{font-size:clamp(22px,5vw,30px);font-weight:750;margin:6px 0;overflow-wrap:anywhere}.desttime{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.desttime strong{font-size:25px}.desttime small{display:block;color:#a5c6d8;font-size:12px}.desttime .estimate{color:#ff8c91}.map-link{display:inline-flex;align-items:center;gap:6px;background:#1c4c65;color:#d9f4ff;border:1px solid #34728d;text-decoration:none;padding:11px 15px;border-radius:12px;font-size:13px}.muted{color:var(--muted);font-size:13px}.footer{border-top:1px solid #213b4b;margin-top:22px;padding-top:15px;display:flex;justify-content:space-between;gap:12px;font-size:12px;color:#93afc0;flex-wrap:wrap}.empty{padding:18px;color:#a5bac6}.bad{color:#ffd2ae}.is-hidden{display:none!important}
-@media(max-width:390px){.wrap{padding:12px}.brand span{font-size:20px}.next{padding:17px}.destination{padding:14px}.nexttiming .time{font-size:24px}}
+:root{font-family:Inter,'Segoe UI',Roboto,system-ui,-apple-system,sans-serif;color-scheme:dark;background:#07131e;color:#edf8fc;--panel:#112838;--line:#2a4a5c;--muted:#96afbf;--cyan:#4fd6f0;--green:#a0edb7}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#07131e;color:#edf8fc}body{background:radial-gradient(ellipse 90% 35% at 90% -10%,#164459,transparent 78%),#07131e;padding-bottom:24px}button{font:inherit;cursor:pointer}button:focus-visible{outline:2px solid #85def5;outline-offset:3px}
+[hidden]{display:none!important}.wrap{max-width:800px;margin:auto;padding:16px clamp(12px,4vw,28px)}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:16px;border-bottom:1px solid #263f4f;margin-bottom:12px}.brand{display:flex;align-items:center;gap:9px}.logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(160deg,#0a2239,#153e50);display:grid;place-items:center}.logo svg{width:29px;height:29px}.brand span{font-size:21px;font-weight:780;letter-spacing:-.7px}.brand b{color:var(--cyan)}
+.statelamp{border-radius:18px;background:#173244;border:1px solid #37596d;padding:8px 10px;font-size:11px;font-weight:750;letter-spacing:.4px;color:#b5d6e5;display:flex;gap:6px;align-items:center}.statelamp:before{content:"";width:8px;height:8px;background:#879da8;border-radius:50%}.statelamp.live{color:#b0f4cb;border-color:#337960;background:#10372b}.statelamp.live:before{background:#57ed95;box-shadow:0 0 9px #57ed95}.statelamp.offline{color:#ffcd95;border-color:#8f6739;background:#322b20}.statelamp.offline:before{background:#f0ad54}
+.status{background:#142b3a;border:1px solid #284d60;padding:13px 14px;border-radius:14px;margin-bottom:15px;color:#d1e4ed;line-height:1.45;font-size:13px}.bad{color:#ffd2ae}
+.tabs{position:sticky;top:0;z-index:1200;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;background:#07131ef5;padding:7px 0 12px;backdrop-filter:blur(9px)}.tab{min-width:0;border:1px solid #355569;border-radius:11px;background:#122b3b;color:#a8c5d5;font-size:12px;font-weight:750;padding:12px 5px}.tab[aria-selected=true]{background:#1b6ca1;border-color:#338ac4;color:#fff}
+.titleline{display:flex;justify-content:space-between;gap:15px;align-items:center;border-radius:17px;padding:14px 16px;background:#122c3c;border:1px solid #335a6c;margin-bottom:12px}.micro{font-size:10px;text-transform:uppercase;letter-spacing:1.6px;color:#9cb9ca;font-weight:750}.linebadge{display:block;font-weight:850;font-size:29px;margin-top:2px}.route-title{text-align:right;font-size:15px;color:#dcebf2;font-weight:600;max-width:72%}.route-title strong{display:block;font-size:17px;overflow-wrap:anywhere}
+.next{border-radius:22px;background:linear-gradient(125deg,#2596eb,#7cc7fc);padding:20px;color:#071b2c;box-shadow:0 12px 36px #0e71bb29}.next h1{font-size:clamp(30px,7.5vw,52px);font-weight:800;letter-spacing:-1px;line-height:1.1;overflow-wrap:anywhere;margin:12px 0 4px}.next .micro{color:#103b58}.next.completed{filter:saturate(.8)}
+.platform-short{display:inline-block;margin-left:.35em;font-size:.46em;font-weight:550;opacity:.6;vertical-align:baseline;white-space:nowrap}.platform-long{font-size:12px;font-weight:500;color:#9db8c9;line-height:1.4;margin-top:3px;opacity:.85}.fare-info{font-size:11px;color:#8daabd;font-weight:450;line-height:1.45;margin-top:3px;overflow-wrap:anywhere}.next .platform-short{color:#0b4568}.next .platform-long{color:#154c6f;font-size:14px}.next .fare-info{font-size:12px;color:#164b6b}
+.nexttiming{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px;padding-top:13px;border-top:1px solid #4b93c6}.time{font-size:27px;font-weight:750;white-space:nowrap;font-variant-numeric:tabular-nums}.delta{border-radius:10px;background:#f28f92;padding:7px 10px;display:flex;flex-direction:column;align-items:end;gap:1px}.delta.on{background:#99e9af}.delta .tiny{font-size:10px;font-weight:750;letter-spacing:1px}.delta .count{font-size:23px;font-weight:800;font-variant-numeric:tabular-nums}
+.section{margin-top:21px}.section h2{font-size:12px;color:#a5c4d5;font-weight:750;letter-spacing:1.6px;margin:0 0 11px}.stops{background:#102533;border:1px solid #2e4a5c;border-radius:17px;overflow:hidden}.stop{display:flex;align-items:center;gap:11px;padding:12px 13px;border-bottom:1px solid #294252;scroll-margin-top:95px}.stop:last-child{border-bottom:0}.stop .index{width:29px;height:29px;border:1px solid #3a687d;border-radius:50%;display:grid;place-items:center;color:#afd5e6;font-size:12px;flex-shrink:0}.stop .name{flex:1;min-width:0}.stop .stop-title{font-size:15px;font-weight:650;overflow-wrap:anywhere}.stop .stop-title .platform-short{font-size:11px}.stop .at{color:#aec1ca;font-variant-numeric:tabular-nums;font-size:13px;white-space:nowrap}.stop.passed{opacity:.52}.stop.current{background:#153e56;box-shadow:inset 3px 0 #4dbfec}.stop.current .index{background:#1e93c9;color:white;border-color:#49b6e5}.stop .current-label{font-size:10px;color:#8fe6cc;font-weight:750;margin-top:3px}
+.destination{background:#112d3e;border-radius:18px;border:1px solid #3a667d;padding:15px;display:flex;justify-content:space-between;align-items:center;gap:12px}.dest-name{font-size:clamp(20px,5vw,29px);font-weight:760;margin:6px 0 3px;overflow-wrap:anywhere}.desttime{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}.desttime strong{font-size:23px}.desttime small{display:block;color:#a5c6d8;font-size:11px}.desttime .estimate{color:#ff8c91}.map-link{display:inline-flex;align-items:center;gap:6px;background:#1c4c65;color:#d9f4ff;border:1px solid #34728d;text-decoration:none;padding:11px 13px;border-radius:12px;font-size:12px}.muted{color:var(--muted);font-size:12px}
+.pane-intro{font-size:12px;line-height:1.6;color:#a4c2d2;margin:10px 2px 15px}.full-route-current{font-size:11px;font-weight:700;color:#83ddfd;padding:7px 0}.map-wrap{height:min(67dvh,620px);min-height:350px;border:1px solid #31576a;position:relative;border-radius:17px;overflow:hidden;background:#102430}.map{height:100%;width:100%;z-index:1}.map-placeholder{position:absolute;inset:0;display:grid;place-content:center;text-align:center;background:#112b3b;color:#c2d7e2;padding:22px;z-index:5}.map-caption{font-size:12px;color:#9fbac8;line-height:1.55;margin:9px 2px}.map-tools{display:flex;flex-wrap:wrap;gap:8px;margin:11px 0}.tool{border-radius:10px;border:1px solid #3e7894;background:#173e54;color:#d3edfb;font-weight:700;font-size:12px;padding:11px 13px}.tool.active{border-color:#4ad5aa;background:#145545;color:#d4ffef}.map-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:#acc9d5;margin:10px 0}.key{display:inline-flex;gap:6px;align-items:center}.key i{display:block;width:13px;height:4px;background:#4bc8ca;border-radius:10px}.key.dash i{background:repeating-linear-gradient(90deg,#f0bf69 0 5px,transparent 5px 8px)}.key.actual i{background:#42a7ff;height:9px;width:9px;border:2px solid white}.key.estimated i{background:#ffbd59;height:9px;width:9px;border:2px solid white}.key.viewer i{background:#75e6af;height:9px;width:9px;border:2px solid white}
+.vd-pin{width:18px;height:18px;border:3px solid white;border-radius:50%;box-shadow:0 2px 10px #0009}.vd-pin.real{background:#188cf5}.vd-pin.estimated{background:#f7b647}.vd-pin.viewer{background:#39cd87}.vd-stop{background:#102938;color:#e6f4fc;border:2px solid #90c5db;border-radius:50%;width:24px;height:24px;display:grid;place-items:center;font-size:10px;font-weight:750}.vd-stop.current{background:#238ff0;border-color:#fff}.leaflet-container{font:inherit;background:#152734}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#102736;color:#f0faff}.leaflet-popup-content{font-size:13px}
+.footer{border-top:1px solid #213b4b;margin-top:22px;padding-top:13px;display:flex;justify-content:space-between;gap:12px;font-size:11px;color:#93afc0;flex-wrap:wrap}.empty{padding:17px;color:#a5bac6}
+@media(max-width:390px){.wrap{padding:12px}.brand span{font-size:19px}.logo{height:36px;width:36px}.next{padding:17px}.destination{padding:12px}.tab{font-size:11px}.nexttiming .time{font-size:23px}.map-wrap{min-height:330px}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header><div class="brand"><div class="logo"><svg viewBox="0 0 60 60" fill="none" aria-hidden="true"><path d="M10 18L43 8V26L16 36Z" fill="#5be5f0"/><path d="M8 25L43 14V37L9 49Z" fill="#149dea"/><path d="M7 33L47 20V47L10 56Z" fill="#062940"/><path d="M18 49Q23 34 39 32" stroke="#5ce8f2" stroke-width="5" stroke-linecap="round"/><path d="M32 43L36 39M37 37L39 36" stroke="#072a43" stroke-width="2"/></svg></div><span>Via<b>Deck</b> Live</span></div><div id="lamp" class="statelamp">PRIPÁJANIE</div></header>
 <div id="status" class="status" role="status">Pripájam sa k zdieľanej jazde…</div>
+<nav id="tabs" class="tabs" aria-label="Pohľady diváka" hidden>
+<button class="tab" data-tab="home" aria-selected="true">Prehľad</button><button class="tab" data-tab="route" aria-selected="false">Celá trasa</button><button class="tab" data-tab="map" aria-selected="false">Mapa</button>
+</nav>
 <div id="content" hidden>
   <div class="titleline"><div><span class="micro">Linka</span><strong class="linebadge" id="line">—</strong></div><div class="route-title"><span class="micro">Trasa / smer</span><strong id="routeName">—</strong><span id="direction" class="muted"></span></div></div>
-  <div id="nextCard" class="next"><span id="nextHeader" class="micro">NASLEDUJÚCA ZASTÁVKA</span><h1 id="nextName">—</h1><p id="platform" class="platform">&nbsp;</p><div class="nexttiming"><div><span class="micro">PLÁN</span><div id="planned" class="time">—:—</div></div><div id="deltaBox" class="delta"><span class="tiny" id="deltaCaption">ZOSTÁVA</span><span class="count" id="countdown">—:—</span></div></div></div>
-  <section class="section"><h2>ĎALŠIE NA TRASE</h2><div id="stops" class="stops"></div></section>
-  <section class="section"><h2>CIEĽOVÁ ZASTÁVKA</h2><div class="destination"><div><span class="micro">CIEĽ</span><div id="destination" class="dest-name">—</div></div><div class="desttime"><small>Plánovaný príchod</small><strong id="destPlan">—:—</strong><div id="destEstimateBox" hidden><small>Odhadovaný príchod</small><strong class="estimate" id="destEstimate">—:—</strong></div></div></div></section>
-  <section id="positionBox" class="section" hidden><h2>ZDIEĽANÁ POLOHA</h2><div class="destination"><div><span class="micro">GPS súradnice</span><div id="gpsPosition">—</div><span class="muted" id="speed"></span></div><a id="positionMap" class="map-link" target="_blank" rel="noopener noreferrer">Otvoriť mapu</a></div></section>
+  <div id="pane-home" data-pane="home">
+    <div id="nextCard" class="next"><span id="nextHeader" class="micro">NASLEDUJÚCA ZASTÁVKA</span><h1 id="nextName">—</h1><div id="nextPlatform" class="platform-long" hidden></div><div id="nextFare" class="fare-info" hidden></div><div class="nexttiming"><div><span class="micro">PLÁN</span><div id="planned" class="time">—:—</div></div><div id="deltaBox" class="delta"><span class="tiny" id="deltaCaption">ZOSTÁVA</span><span class="count" id="countdown">—:—</span></div></div></div>
+    <section class="section"><h2>ĎALŠIE NA TRASE</h2><div id="stops" class="stops"></div></section>
+    <section class="section"><h2>CIEĽOVÁ ZASTÁVKA</h2><div class="destination"><div><span class="micro">CIEĽ</span><div id="destination" class="dest-name">—</div><div id="destinationPlatform" class="platform-long" hidden></div><div id="destinationFare" class="fare-info" hidden></div></div><div class="desttime"><small>Plánovaný príchod</small><strong id="destPlan">—:—</strong><div id="destEstimateBox" hidden><small>Odhadovaný príchod</small><strong class="estimate" id="destEstimate">—:—</strong></div></div></div></section>
+    <section id="positionBox" class="section" hidden><h2>ZDIEĽANÁ POLOHA VOZIDLA</h2><div class="destination"><div><span class="micro">GPS súradnice</span><div id="gpsPosition">—</div><span class="muted" id="speed"></span></div><a id="positionMap" class="map-link" target="_blank" rel="noopener noreferrer">Otvoriť mapu</a></div></section>
+  </div>
+  <div id="pane-route" data-pane="route" hidden>
+    <p class="pane-intro">Všetky zastávky v poradí jazdy. Aktuálne vybraná zastávka je zvýraznená; už prejdené sú tlmené.</p>
+    <div id="fullRouteStatus" class="full-route-current"></div><div id="fullStops" class="stops"></div>
+  </div>
+  <div id="pane-map" data-pane="map" hidden>
+    <div class="map-tools"><button class="tool" id="showViewerPosition" type="button">◎ Ukázať moju polohu</button><button class="tool" id="fitMap" type="button">Celá trasa</button><button class="tool" id="followVehicle" type="button">Vozidlo</button></div>
+    <div class="map-wrap"><div id="routeMap" class="map"></div><div id="mapPlaceholder" class="map-placeholder">Načítavam mapu trasy…</div></div>
+    <div class="map-legend"><span class="key"><i></i> vypočítaná geometria</span><span class="key dash"><i></i> orientačná spojnica</span><span class="key actual"><i></i> GPS vozidla</span><span class="key estimated"><i></i> odhad vozidla</span><span class="key viewer"><i></i> moja poloha</span></div>
+    <p id="mapCaption" class="map-caption">Skutočná GPS poloha vozidla sa ukazuje len vtedy, keď ju vysielajúci povolil. Inak vidíš orientačný odhad podľa naplánovaných zastávok a času. Moja poloha sa spracúva iba v tomto zariadení a nikam sa neodosiela.</p>
+  </div>
 </div>
 <div class="footer"><span id="updated">Posledná aktualizácia: —</span><span>Len na sledovanie · bez ovládania jazdy</span></div>
 </div>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
-let lastData=null,receivedAt=0;
+let lastData=null,receivedAt=0,currentPane='home';
+let map=null,routeLayer=null,stopLayer=null,vehicleMarker=null,viewerMarker=null,mapRouteSignature='',geoWatch=null,viewerCoords=null,hasMapInitialized=false;
 function showStatus(text,error=false){$('status').hidden=false;$('status').textContent=text;$('status').classList.toggle('bad',error);}
 function setLamp(name,kind=''){$('lamp').textContent=name;$('lamp').className='statelamp '+kind;}
 function asClock(v){if(!Number.isFinite(v))return '—:—';return new Date(v).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});}
 function asDiff(v){const sec=Math.floor(Math.abs(v)/1000),h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;if(h>=1)return '>'+h+' h';return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');}
 function fill(value,id){$(id).textContent=String(value??'—');}
+function fareCaption(fares){if(!Array.isArray(fares))return '';return fares.filter(f=>f&&typeof f.system==='string'&&f.system.trim()).map(f=>String(f.system).slice(0,45)+(String(f.zone||'').trim()?' · zóna '+String(f.zone).trim().slice(0,35):'')).join(' | ');}
+function setFareMeta(element,fares){const text=fareCaption(fares);element.textContent=text;element.hidden=!text;}
+function renderStopTitle(element,name,platform,below){
+ element.textContent=String(name||'—');const value=String(platform||'').trim();
+ if(value&&Array.from(value).length<=2){const small=document.createElement('small');small.className='platform-short';small.textContent=value;element.append(' ',small);}
+ below.textContent=value&&Array.from(value).length>2?'Nástupište '+value:'';below.hidden=!below.textContent;
+}
+function stopRow(st,index,data,full=false){
+ const row=document.createElement('div');row.className='stop'+(index<data.index?' passed':index===data.index?' current':'');
+ if(full&&index===data.index)row.id='currentFullStop';
+ const no=document.createElement('span');no.className='index';no.textContent=String(index+1).padStart(2,'0');
+ const label=document.createElement('div');label.className='name';const name=document.createElement('div');name.className='stop-title';
+ const platform=document.createElement('div');platform.className='platform-long';renderStopTitle(name,st.name,st.platform,platform);
+ const fare=document.createElement('div');fare.className='fare-info';setFareMeta(fare,st.fares);label.append(name,platform,fare);
+ if(index===data.index){const current=document.createElement('div');current.className='current-label';current.textContent=data.completed?'POSLEDNÁ ZASTÁVKA':'AKTUÁLNA ZASTÁVKA';label.append(current);}
+ const time=document.createElement('div');time.className='at';time.textContent=asClock(st.planned);row.append(no,label,time);return row;
+}
 function renderStops(data){const holder=$('stops');holder.replaceChildren();const stops=Array.isArray(data.stops)?data.stops:[];
  if(!stops.length){const empty=document.createElement('div');empty.className='empty';empty.textContent='Žiadne ďalšie zastávky.';holder.append(empty);return;}
- for(const st of stops){const row=document.createElement('div');row.className='stop'+(st.number<data.index+1?' passed':st.number===data.index+1?' current':'');
- const number=document.createElement('span');number.className='index';number.textContent=String(st.number).padStart(2,'0');
- const name=document.createElement('span');name.className='name';name.textContent=st.name||'—';
- const at=document.createElement('span');at.className='at';at.textContent=asClock(st.planned);
- row.append(number,name,at);holder.append(row);}}
-function render(data){receivedAt=Date.now();$('content').hidden=false;fill(data.line||'—','line');fill(data.routeName,'routeName');fill(data.direction,'direction');
- fill(data.nextStop,'nextName');$('nextHeader').textContent=data.completed?'TRASA DOKONČENÁ':'NASLEDUJÚCA ZASTÁVKA';$('nextCard').classList.toggle('completed',!!data.completed);
- fill(data.platform?'Nástupište: '+data.platform:'\u00a0','platform');fill(asClock(data.planned),'planned');
- fill(data.destination,'destination');fill(asClock(data.destinationPlanned),'destPlan');$('destEstimateBox').hidden=!Number.isFinite(data.destinationEstimated);
+ for(const st of stops){const index=Math.max(0,Number(st.number||1)-1);holder.append(stopRow(st,index,data));}
+}
+function renderFullStops(data){
+ const host=$('fullStops');host.replaceChildren();const list=Array.isArray(data.fullStops)?data.fullStops:[];
+ $('fullRouteStatus').textContent=(data.completed?'Trasa dokončená · ':'Aktuálna zastávka '+(Number(data.index)+1)+' / ')+(list.length||data.total||'—');
+ if(!list.length){const e=document.createElement('div');e.className='empty';e.textContent='Celú trasu vysielajúce zariadenie zatiaľ neposiela. Je potrebné aktualizovať aj index.html.';host.append(e);return;}
+ list.forEach((st,i)=>host.append(stopRow(st,i,data,true)));
+}
+function render(data){
+ receivedAt=Date.now();$('content').hidden=false;$('tabs').hidden=false;
+ fill(data.line||'—','line');fill(data.routeName,'routeName');fill(data.direction,'direction');
+ renderStopTitle($('nextName'),data.nextStop,data.platform,$('nextPlatform'));setFareMeta($('nextFare'),data.fares);
+ $('nextHeader').textContent=data.completed?'TRASA DOKONČENÁ':'NASLEDUJÚCA ZASTÁVKA';$('nextCard').classList.toggle('completed',!!data.completed);
+ fill(asClock(data.planned),'planned');
+ renderStopTitle($('destination'),data.destination,data.destinationPlatform,$('destinationPlatform'));setFareMeta($('destinationFare'),data.destinationFares);
+ fill(asClock(data.destinationPlanned),'destPlan');$('destEstimateBox').hidden=!Number.isFinite(data.destinationEstimated);
  if(Number.isFinite(data.destinationEstimated))fill(asClock(data.destinationEstimated),'destEstimate');
- renderStops(data);const p=data.position;
- $('positionBox').hidden=!(p&&Number.isFinite(p.lat)&&Number.isFinite(p.lon));
- if(p&&Number.isFinite(p.lat)&&Number.isFinite(p.lon)){
-   fill(p.lat.toFixed(5)+', '+p.lon.toFixed(5)+' (±'+p.accuracy+' m)','gpsPosition');
-   $('speed').textContent=Number.isFinite(data.speed)?'Rýchlosť: '+data.speed+' km/h':'';
-   const q=new URL('https://www.openstreetmap.org/');q.searchParams.set('mlat',p.lat);q.searchParams.set('mlon',p.lon);q.searchParams.set('zoom','16');$('positionMap').href=q.href;
- }
- updateClock();
+ renderStops(data);if(currentPane==='route')renderFullStops(data);
+ const p=data.position,valid=p&&Number.isFinite(p.lat)&&Number.isFinite(p.lon);
+ $('positionBox').hidden=!valid;
+ if(valid){fill(p.lat.toFixed(5)+', '+p.lon.toFixed(5)+' (±'+p.accuracy+' m)','gpsPosition');$('speed').textContent=Number.isFinite(data.speed)?'Rýchlosť: '+data.speed+' km/h':'';
+ const q=new URL('https://www.openstreetmap.org/');q.searchParams.set('mlat',p.lat);q.searchParams.set('mlon',p.lon);q.searchParams.set('zoom','16');$('positionMap').href=q.href;}
+ if(map&&currentPane==='map')refreshMap(data);updateClock();
 }
 function updateClock(){if(!lastData)return;
- const age=Date.now()-Number(receivedAt),serverAge=Date.now()-Number(lastData.updatedAt||0);
- const freshness=lastData.updatedAt?serverAge:age;
- if(freshness>30000){setLamp('BEZ AKTUALIZÁCIE','offline');showStatus('Údaje sa viac ako 30 sekúnd neaktualizovali. Môže byť prerušený internet, uspávací režim mobilu alebo ukončené vysielanie.');}
+ const fresh=lastData.updatedAt?Math.max(0,Date.now()-Number(lastData.updatedAt)):Math.max(0,Date.now()-receivedAt);
+ if(fresh>30000){setLamp('BEZ AKTUALIZÁCIE','offline');showStatus('Údaje sa viac ako 30 sekúnd neaktualizovali. Môže byť prerušený internet, uspávanie mobilu alebo ukončené vysielanie.');}
  else{setLamp(lastData.public?.completed?'DOKONČENÁ':'NAŽIVO','live');$('status').hidden=true;}
- $('updated').textContent='Posledná aktualizácia: '+(freshness<2500?'práve teraz':Math.floor(Math.max(0,freshness)/1000)+' s dozadu');
- const d=lastData.public;if(!d)return;
- const box=$('deltaBox');if(!Number.isFinite(d.planned)||d.completed){box.hidden=true;return;}box.hidden=false;
- const delta=Date.now()-d.planned;
- box.classList.toggle('on',delta>=0&&delta<=120000);$('deltaCaption').textContent=delta<0?'ZOSTÁVA':'OD PLÁNU';
- fill((delta<0?'−':'')+asDiff(delta),'countdown');
+ $('updated').textContent='Posledná aktualizácia: '+(fresh<2500?'práve teraz':Math.floor(fresh/1000)+' s dozadu');
+ const data=lastData.public;if(!data)return;
+ const box=$('deltaBox');if(!Number.isFinite(data.planned)||data.completed){box.hidden=true;}
+ else{box.hidden=false;const diff=Date.now()-data.planned;box.classList.toggle('on',diff>=0&&diff<=120000);$('deltaCaption').textContent=diff<0?'ZOSTÁVA':'OD PLÁNU';fill((diff<0?'−':'')+asDiff(diff),'countdown');}
+ if(map&&currentPane==='map'&&!data.position)updateVehiclePosition(data);
 }
-function loadScript(src){return new Promise((ok,no)=>{const s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=()=>no(new Error('Nepodarilo sa načítať '+src));document.head.append(s);});}
+async function loadScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(new Error('Nepodarilo sa načítať '+src));document.head.append(s);});}
+function switchPane(name){
+ if(!['home','route','map'].includes(name))return;currentPane=name;
+ document.querySelectorAll('[data-pane]').forEach(el=>el.hidden=el.dataset.pane!==name);
+ document.querySelectorAll('[data-tab]').forEach(el=>el.setAttribute('aria-selected',String(el.dataset.tab===name)));
+ if(name==='route'&&lastData?.public){renderFullStops(lastData.public);requestAnimationFrame(()=>$('currentFullStop')?.scrollIntoView({block:'center',behavior:'smooth'}));}
+ if(name==='map'){startMap().catch(e=>{$('mapPlaceholder').hidden=false;$('mapPlaceholder').textContent='Mapu sa nepodarilo načítať: '+e.message;});}
+}
+async function startMap(){
+ if(!window.L)await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
+ if(!map){map=L.map('routeMap',{zoomControl:true}).setView([48.15,17.11],12);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap prispievatelia'}).addTo(map);
+ routeLayer=L.layerGroup().addTo(map);stopLayer=L.layerGroup().addTo(map);}
+ $('mapPlaceholder').hidden=true;setTimeout(()=>map.invalidateSize(),80);
+ if(lastData?.public)refreshMap(lastData.public);
+}
+function validPoint(p){return Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Number.isFinite(p[1])&&Math.abs(p[0])<=180&&Math.abs(p[1])<=90;}
+function toLatLng(p){return [p[1],p[0]];}
+function allMapPoints(data){return (Array.isArray(data.fullStops)?data.fullStops:[]).map(x=>x.pos).filter(validPoint);}
+function fitRoute(){if(!map||!lastData?.public)return;const pts=allMapPoints(lastData.public);
+ if(!pts.length)return;const bounds=L.latLngBounds(pts.map(toLatLng));if(bounds.isValid())map.fitBounds(bounds.pad(.18),{maxZoom:15});}
+function makePin(kind){return L.divIcon({className:'',html:'<div class="vd-pin '+kind+'"></div>',iconSize:[18,18],iconAnchor:[9,9]});}
+function refreshMap(data){if(!map)return;
+ const stops=Array.isArray(data.fullStops)?data.fullStops:[],legs=Array.isArray(data.legs)?data.legs:[];
+ const signature=JSON.stringify([stops.map(s=>[s.name,s.pos,s.platform]),legs]);
+ if(mapRouteSignature!==signature){mapRouteSignature=signature;routeLayer.clearLayers();stopLayer.clearLayers();
+  let segments=0;
+  legs.forEach(leg=>{const pts=Array.isArray(leg?.coords)?leg.coords.filter(validPoint):[];if(pts.length<2)return;
+    const options=leg.road?{color:'#4dcacb',weight:5,opacity:.9}:{color:'#f0bf69',weight:3,opacity:.85,dashArray:'6 9'};
+    L.polyline(pts.map(toLatLng),options).addTo(routeLayer);segments++;});
+  stops.forEach((st,i)=>{if(!validPoint(st.pos))return;
+    const current=i===data.index;
+    const marker=L.marker(toLatLng(st.pos),{icon:L.divIcon({className:'',html:'<div class="vd-stop'+(current?' current':'')+'">'+(i+1)+'</div>',iconSize:[24,24],iconAnchor:[12,12]})}).addTo(stopLayer);
+    const pop=document.createElement('div');const title=document.createElement('strong');title.textContent=(i+1)+'. '+st.name;pop.append(title);
+    const meta=document.createElement('div');meta.textContent=(st.platform?'Nástupište '+st.platform+' · ':'')+fareCaption(st.fares);pop.append(meta);marker.bindPopup(pop);
+  });
+  if(!hasMapInitialized){hasMapInitialized=true;fitRoute();}
+  $('mapCaption').textContent=segments?'Skutočná GPS vozidla je dostupná len so súhlasom vysielajúceho. Keď chýba, poloha je ORIENTAČNÝ ODHAD podľa jazdného poriadku. Tyrkysová čiara = uložená cestná geometria; žltá prerušovaná = približné spojenie zastávok. Tvoja vlastná poloha zostáva iba v tomto zariadení.':'Vysielajúci neposiela geometriu. Na zobrazenie trasy aktualizuj aj index.html. Moja poloha sa nikam neodosiela.';
+ }
+ // Highlight the current stop every time, even when geometry has not changed.
+ stopLayer.eachLayer(marker=>{const n=marker.options?.icon?.options?.html?.match(/>(\d+)<\/div>/);if(!n)return;const active=Number(n[1])===data.index+1;const icon=L.divIcon({className:'',html:'<div class="vd-stop'+(active?' current':'')+'">'+n[1]+'</div>',iconSize:[24,24],iconAnchor:[12,12]});marker.setIcon(icon);});
+ updateVehiclePosition(data);updateViewerMarker();
+}
+function estimateVehicle(data){
+ const list=Array.isArray(data.fullStops)?data.fullStops:[];if(!list.length)return null;
+ const index=Math.max(0,Math.min(list.length-1,Number(data.index)||0));const current=list[index];
+ if(!current||!validPoint(current.pos))return null;if(index===0||data.completed)return current.pos;
+ const prev=list[index-1],leg=Array.isArray(data.legs)?data.legs[index-1]:null;
+ const points=Array.isArray(leg?.coords)?leg.coords.filter(validPoint):[];
+ if(!validPoint(prev?.pos))return current.pos;
+ let fraction=.5;
+ const start=Number(prev.departure),end=Number(current.arrival);
+ if(Number.isFinite(start)&&Number.isFinite(end)&&end>start)fraction=Math.max(0,Math.min(1,(Date.now()-start)/(end-start)));
+ if(points.length<2)return [prev.pos[0]+(current.pos[0]-prev.pos[0])*fraction,prev.pos[1]+(current.pos[1]-prev.pos[1])*fraction];
+ const dist=[],length=[];let total=0;
+ for(let i=1;i<points.length;i++){const [a,b]=[points[i-1],points[i]];const lat=(a[1]+b[1])*Math.PI/360;const d=Math.hypot((b[0]-a[0])*111320*Math.cos(lat),(b[1]-a[1])*111320);dist.push(d);total+=d;length.push(total);}
+ if(total<=0)return current.pos;const goal=fraction*total;let passed=0;
+ for(let i=1;i<points.length;i++){const d=dist[i-1];if(passed+d>=goal||i===points.length-1){const t=d>0?Math.max(0,Math.min(1,(goal-passed)/d)):1;return [points[i-1][0]+t*(points[i][0]-points[i-1][0]),points[i-1][1]+t*(points[i][1]-points[i-1][1])];}passed+=d;}
+ return current.pos;
+}
+function updateVehiclePosition(data){if(!map)return;
+ const p=data.position,actual=p&&Number.isFinite(p.lat)&&Number.isFinite(p.lon);
+ const estimate=actual?null:estimateVehicle(data);
+ if(!actual&&!validPoint(estimate)){if(vehicleMarker){map.removeLayer(vehicleMarker);vehicleMarker=null;}return;}
+ const location=actual?[p.lat,p.lon]:toLatLng(estimate);
+ const tip=actual?'Skutočná GPS poloha vozidla':'Orientačný odhad vozidla – nie GPS';
+ if(!vehicleMarker){vehicleMarker=L.marker(location,{icon:makePin(actual?'real':'estimated'),zIndexOffset:999}).addTo(map);}
+ else{vehicleMarker.setLatLng(location);vehicleMarker.setIcon(makePin(actual?'real':'estimated'));}
+ vehicleMarker.unbindTooltip();vehicleMarker.bindTooltip(tip,{direction:'top',offset:[0,-8]});
+}
+function updateViewerMarker(){if(!map)return;if(!viewerCoords){if(viewerMarker){map.removeLayer(viewerMarker);viewerMarker=null;}return;}
+ const point=[viewerCoords.lat,viewerCoords.lon];if(!viewerMarker)viewerMarker=L.marker(point,{icon:makePin('viewer'),zIndexOffset:1001}).addTo(map);
+ else viewerMarker.setLatLng(point);
+ viewerMarker.unbindTooltip();viewerMarker.bindTooltip('Moja poloha (iba na tomto zariadení)');
+}
+function toggleViewerLocation(){
+ const btn=$('showViewerPosition');if(geoWatch!==null){navigator.geolocation.clearWatch(geoWatch);geoWatch=null;viewerCoords=null;btn.textContent='◎ Ukázať moju polohu';btn.classList.remove('active');updateViewerMarker();return;}
+ if(!navigator.geolocation){btn.textContent='Poloha nie je podporovaná';return;}
+ btn.textContent='Zisťujem polohu…';geoWatch=navigator.geolocation.watchPosition(pos=>{
+  viewerCoords={lat:pos.coords.latitude,lon:pos.coords.longitude};btn.textContent='● Skryť moju polohu';btn.classList.add('active');updateViewerMarker();
+ },err=>{if(geoWatch!==null)navigator.geolocation.clearWatch(geoWatch);geoWatch=null;btn.textContent='◎ Ukázať moju polohu';btn.classList.remove('active');$('mapCaption').textContent='Tvoja poloha nie je dostupná ('+err.message+'). Povolenie sa žiada len pre toto zariadenie.';},{enableHighAccuracy:true,maximumAge:10000,timeout:15000});
+}
 async function main(){
- const id=new URLSearchParams(window.location.hash.substring(1)).get('s');
- if(!id||!/^[a-f0-9]{32}$/.test(id)){setLamp('CHÝBA ODKAZ','offline');showStatus('Toto je stránka ViaDeck Live. Otvor ju cez odkaz, ktorý vytvorí vodič tlačidlom Zdieľať jazdu.',true);return;}
+ const id=new URLSearchParams(location.hash.substring(1)).get('s');
+ if(!id||!/^[a-f0-9]{32}$/.test(id)){setLamp('CHÝBA ODKAZ','offline');showStatus('Toto je ViaDeck Live. Otvor stránku cez odkaz vytvorený tlačidlom Zdieľať jazdu.',true);return;}
  try{
   if(!window.VIADECK_LIVE_CONFIG)await loadScript('./viadeck-live-config.js');const cfg=window.VIADECK_LIVE_CONFIG;
-  if(!cfg||!cfg.apiKey||cfg.apiKey.includes('DOPLN')||!cfg.databaseURL)throw new Error('Nie je nastavený Firebase v súbore viadeck-live-config.js.');
-  if(!window.firebase?.initializeApp){
-   await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
-   await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js');
-  }
+  if(!cfg||!cfg.apiKey||cfg.apiKey.includes('DOPLN')||!cfg.databaseURL)throw new Error('Chýba konfigurácia Firebase v súbore viadeck-live-config.js.');
+  await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+  await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js');
   const app=window.firebase.initializeApp(cfg,'ViaDeckViewer');
-  window.firebase.database(app).ref('sessions/'+id).on('value',snapshot=>{
-   const data=snapshot.val();
-   if(!data){lastData=null;$('content').hidden=true;setLamp('NEDOSTUPNÉ','offline');showStatus('Relácia sa nenašla alebo jej prístup skončil.',true);return;}
-   if(data.status==='stopped'){$('content').hidden=true;lastData=null;setLamp('UKONČENÉ','offline');showStatus('Vodič ukončil zdieľanie tejto jazdy.');return;}
+  window.firebase.database(app).ref('sessions/'+id).on('value',snap=>{
+   const data=snap.val();
+   if(!data){lastData=null;$('content').hidden=true;$('tabs').hidden=true;setLamp('NEDOSTUPNÉ','offline');showStatus('Relácia sa nenašla alebo jej prístup skončil.',true);return;}
+   if(data.status==='stopped'){lastData=null;$('content').hidden=true;$('tabs').hidden=true;setLamp('UKONČENÉ','offline');showStatus('Vodič ukončil zdieľanie tejto jazdy.');return;}
    if(data.status!=='live'||!data.public){setLamp('NEDOSTUPNÉ','offline');showStatus('Relácia zatiaľ neobsahuje aktuálne údaje.');return;}
-   lastData={...data};render(data.public); // vykreslíme prijatý stav a samostatne sledovaný timestamp
-   lastData={...data};updateClock();
+   lastData=data;render(data.public);updateClock();
   },err=>{setLamp('CHYBA SPOJENIA','offline');showStatus('Nepodarilo sa sledovať reláciu: '+(err?.message||String(err)),true);});
- }catch(e){setLamp('NEDOSTUPNÉ','offline');showStatus('ViaDeck Live sa nespustil: '+(e.message||String(e)),true);}
+ }catch(e){setLamp('NEDOSTUPNÉ','offline');showStatus('ViaDeck Live sa nespustil: '+(e?.message||String(e)),true);}
 }
+document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>switchPane(btn.dataset.tab)));
+$('showViewerPosition').addEventListener('click',toggleViewerLocation);
+$('fitMap').addEventListener('click',fitRoute);
+$('followVehicle').addEventListener('click',()=>{if(map&&vehicleMarker)map.setView(vehicleMarker.getLatLng(),15);});
 setInterval(updateClock,1000);main();
 </script>
 </body>

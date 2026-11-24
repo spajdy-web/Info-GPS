@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b202f">
+<title>ViaDeck · vytvoriť aktualizovaný index.html</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:dark;background:#081923;color:#f1f8fc}*{box-sizing:border-box}body{max-width:650px;margin:auto;padding:22px 16px 50px}h1{font-size:26px;line-height:1.2}p{color:#b7cedd;line-height:1.55}.panel{padding:19px;border:1px solid #325467;background:#102c3e;border-radius:16px;margin-top:15px}.btn{border:0;background:#1e9eea;color:#05223b;padding:15px 16px;font:750 15px system-ui;border-radius:11px;display:block;width:100%;margin:12px 0;cursor:pointer}.btn:disabled{opacity:.5}.btn.secondary{background:#183b51;color:#def5fe;border:1px solid #4b809e}.status{background:#0a2832;color:#b6eadc;border-radius:10px;padding:13px;margin-top:10px;white-space:pre-line;line-height:1.5}.error{color:#ffd0bd}small{font-size:12px;color:#a5c0d0;line-height:1.55}input{max-width:100%;margin-top:10px}a{color:#8fddf9}.pill{display:inline-block;font-size:11px;padding:5px 9px;background:#184758;border-radius:20px;color:#83dafa;font-weight:750}
+</style>
+</head>
+<body>
+<div class="pill">ViaDeck Live · aktualizácia Info-GPS</div>
+<h1>Hotový <code>index.html</code> pre mapu diváka</h1>
+<p>Tento pomocník načíta pôvodný <strong>index.html</strong> z tvojho GitHubu, bez straty existujúcich funkcií pridá vysielanie celej trasy, nástupíšť, IDS, zón a geometrie a uloží nový kompletný súbor do telefónu.</p>
+<div class="panel">
+  <strong>1 · Automatické vytvorenie</strong>
+  <button id="create" class="btn">Vytvoriť a stiahnuť index.html</button>
+  <div id="status" class="status" role="status">Pripravené.</div>
+</div>
+<div class="panel">
+  <strong>2 · Len ak automatické načítanie nefunguje</strong>
+  <p><small>Na GitHube otvor index.html → Raw → uložiť súbor; potom ho tu vyber.</small></p>
+  <input id="source" type="file" accept="text/html,.html">
+  <button id="fromFile" class="btn secondary">Vytvoriť index.html z vybraného súboru</button>
+</div>
+<p><small>Pomocník komunikuje len s verejným repozitárom. Nepotrebuje prístup do Firebase, nečíta tvoje jazdy a nič nikam neodosiela. Vytvorený súbor nahraj do koreňa repozitára <a href="https://github.com/spajdy-web/Info-GPS" target="_blank" rel="noopener noreferrer">Info-GPS</a> vedľa súborov live.html a viadeck-live-config.js.</small></p>
+<script>
+'use strict';
+// Runs inside the browser helper, not on Firebase or GitHub.
+function patchIndex(i){
+ function once(oldstr,newstr,label){const count=i.split(oldstr).length-1;if(count!==1)throw Error(label+': očakávaný jeden výskyt, nájdené '+count+'. Repozitár sa možno medzitým zmenil.');i=i.replace(oldstr,newstr);}
+ if(!i.includes('function vdLiveStopMeta(')){
+  once('function vdLivePublicSnapshot(){',`function vdLiveStopMeta(stop,step){
+ const platform=stop&&step?.platformId?routePlatform(stop,step):null;
+ const fares=Array.isArray(stop?.fares)?stop.fares.filter(f=>f&&typeof f.system==='string'&&f.system.trim()).slice(0,5).map(f=>({system:f.system.trim().slice(0,45),zone:String(f.zone||'').trim().slice(0,35)})):[];
+ return {platform:platform?.name||'',fares};
+}
+function vdLiveRouteStops(route,times){
+ return route.steps.map((step,i)=>{
+  const stop=findStop(step.stopId),schedule=times[i]||{},meta=vdLiveStopMeta(stop,step),pos=routeStopCoordinate(step);
+  const planned=i===route.steps.length-1?schedule.arrival:schedule.departure;
+  return {number:i+1,name:(stop?.name||'Neznáma zastávka').slice(0,75),...meta,
+    planned:Number.isFinite(planned)?planned:null,
+    arrival:Number.isFinite(schedule.arrival)?schedule.arrival:null,
+    departure:Number.isFinite(schedule.departure)?schedule.departure:null,
+    pos:pos&&pos.length===2?pos.map(n=>Number(n.toFixed(6))):null};
+ });
+}
+function vdLiveThinPath(points,limit){
+ if(!Array.isArray(points)||points.length<2)return [];
+ const valid=points.filter(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite));
+ if(valid.length<=limit)return valid.map(p=>p.map(v=>Number(v.toFixed(6))));
+ return Array.from({length:limit},(_,i)=>{
+  const at=Math.round(i*(valid.length-1)/(limit-1));return valid[at].map(v=>Number(v.toFixed(6)));
+ });
+}
+function vdLiveRouteLegs(route){
+ const out=[],limit=Math.min(45,Math.max(9,Math.floor(3500/Math.max(1,route.steps.length-1))));
+ for(let i=1;i<route.steps.length;i++){
+  const road=legRoadGeometry(route,i),points=road||routePointsForLeg(route,i);
+  out.push({road:!!road,coords:vdLiveThinPath(points,limit)});
+ }
+ return out;
+}
+function vdLivePublicSnapshot(){`,'Publisher – funkcie pre celú trasu');
+ }else{
+  // Earlier metadata-only version: inject route helpers immediately before snapshot.
+  once('function vdLivePublicSnapshot(){',`function vdLiveRouteStops(route,times){
+ return route.steps.map((step,i)=>{
+  const stop=findStop(step.stopId),schedule=times[i]||{},meta=vdLiveStopMeta(stop,step),pos=routeStopCoordinate(step);
+  const planned=i===route.steps.length-1?schedule.arrival:schedule.departure;
+  return {number:i+1,name:(stop?.name||'Neznáma zastávka').slice(0,75),...meta,
+   planned:Number.isFinite(planned)?planned:null,
+   arrival:Number.isFinite(schedule.arrival)?schedule.arrival:null,
+   departure:Number.isFinite(schedule.departure)?schedule.departure:null,
+   pos:pos&&pos.length===2?pos.map(n=>Number(n.toFixed(6))):null};
+ });
+}
+function vdLiveThinPath(points,limit){
+ if(!Array.isArray(points)||points.length<2)return [];
+ const valid=points.filter(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite));
+ if(valid.length<=limit)return valid.map(p=>p.map(v=>Number(v.toFixed(6))));
+ return Array.from({length:limit},(_,i)=>valid[Math.round(i*(valid.length-1)/(limit-1))].map(v=>Number(v.toFixed(6))));
+}
+function vdLiveRouteLegs(route){
+ const out=[],limit=Math.min(45,Math.max(9,Math.floor(3500/Math.max(1,route.steps.length-1))));
+ for(let i=1;i<route.steps.length;i++){
+  const road=legRoadGeometry(route,i),points=road||routePointsForLeg(route,i);
+  out.push({road:!!road,coords:vdLiveThinPath(points,limit)});
+ }return out;
+}
+function vdLivePublicSnapshot(){`,'Publisher – doplnenie geometrie');
+ }
+ if(!i.includes('currentMeta=vdLiveStopMeta(')){
+  once(' const step=route.steps[idx],stop=step?findStop(step.stopId):null;',
+   ' const step=route.steps[idx],stop=step?findStop(step.stopId):null,currentMeta=vdLiveStopMeta(stop,step);','Publisher – nástupište aktuálnej zastávky');
+ }
+ if(!i.includes('destMeta=dst?vdLiveStopMeta(')){
+  once(' const dst=routeDestinationAt(route,idx),destTime=dst?times[dst.index]?.arrival:null;',
+   ' const dst=routeDestinationAt(route,idx),destTime=dst?times[dst.index]?.arrival:null,destMeta=dst?vdLiveStopMeta(dst.stop,route.steps[dst.index]):{platform:"",fares:[]};','Publisher – metadata cieľa');
+ }
+ if(!i.includes('...vdLiveStopMeta(p,x)')){
+  once("    number:n+1,name:(p?.name||'Neznáma zastávka').slice(0,75),",
+   "    number:n+1,name:(p?.name||'Neznáma zastávka').slice(0,75),...vdLiveStopMeta(p,x),",'Publisher – zastávky pre prehľad');
+ }
+ if(!i.includes('platform:currentMeta.platform')){
+  once("  nextStop:stop?.name||'—',platform:stop&&step?routePlatform(stop,step)?.name||'':'',", "  nextStop:stop?.name||'—',platform:currentMeta.platform,fares:currentMeta.fares,",'Publisher – metadata hlavnej zastávky');
+ }
+ if(!i.includes('destinationFares:destMeta.fares')){
+  once("  destination:dst?.stop?.name||'—',destinationPlanned:Number.isFinite(destTime)?destTime:null,",
+   "  destination:dst?.stop?.name||'—',destinationPlatform:destMeta.platform,destinationFares:destMeta.fares,destinationPlanned:Number.isFinite(destTime)?destTime:null,",'Publisher – metadata cieľovej zastávky');
+ }
+ once('  stops:list,position:point,',
+  '  stops:list,fullStops:vdLiveRouteStops(route,times),legs:vdLiveRouteLegs(route),position:point,',
+  'Publisher – celá trasa a úseky geometrie');
+ once("const vdLive={session:null,ref:null,busy:false,lastSig:'',lastWrite:0,configReady:false,app:null,sharePosition:false,error:'',timer:null};",
+      "const vdLive={session:null,ref:null,busy:false,lastSig:'',lastWrite:0,lastStaticSig:'',configReady:false,app:null,sharePosition:false,error:'',timer:null};",'Publisher – stav statických údajov');
+ once('   const write=vdLive.ref.update({public:payload,updatedAt:window.firebase.database.ServerValue.TIMESTAMP,expiresAt:Date.now()+12*3600000});',
+ `   const staticSig=JSON.stringify([payload.fullStops,payload.legs]);
+   const changes={updatedAt:window.firebase.database.ServerValue.TIMESTAMP,expiresAt:Date.now()+12*3600000};
+   for(const [key,value] of Object.entries(payload)){
+    if((key==='fullStops'||key==='legs')&&staticSig===vdLive.lastStaticSig)continue;
+    changes['public/'+key]=value;
+   }
+   const write=vdLive.ref.update(changes);`, 'Publisher – malé priebežné zápisy');
+ once("   vdLive.lastSig=sig;vdLive.lastWrite=now;vdLive.error='';",
+      "   vdLive.lastSig=sig;vdLive.lastWrite=now;vdLive.lastStaticSig=staticSig;vdLive.error='';",'Publisher – cache trasy');
+ once("  vdLive.session=id;vdLive.ref=ref;vdLive.lastSig=JSON.stringify(payload);vdLive.lastWrite=Date.now();",
+      "  vdLive.session=id;vdLive.ref=ref;vdLive.lastSig=JSON.stringify(payload);vdLive.lastStaticSig=JSON.stringify([payload.fullStops,payload.legs]);vdLive.lastWrite=Date.now();",'Publisher – uloženie štartovacích údajov');
+ once("const ref=vdLive.ref,pendingWrite=vdLive.writePromise;vdLive.session=null;vdLive.ref=null;vdLive.lastSig='';vdLive.lastWrite=0;",
+      "const ref=vdLive.ref,pendingWrite=vdLive.writePromise;vdLive.session=null;vdLive.ref=null;vdLive.lastSig='';vdLive.lastStaticSig='';vdLive.lastWrite=0;",'Publisher – zastavenie');
+ return i;
+}
+
+const $=id=>document.getElementById(id);
+const show=(message,error=false)=>{const el=$('status');el.textContent=message;el.classList.toggle('error',error);};
+function downloadHTML(content,name){const blob=new Blob([content],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}
+async function fromRemote(){
+ const base=['https://raw.githubusercontent.com/spajdy-web/Info-GPS/main/index.html','https://spajdy-web.github.io/Info-GPS/index.html'];let error=[];
+ for(const url of base)try{const response=await fetch(url+'?viaDeck='+Date.now(),{cache:'no-store'});if(!response.ok)throw Error('HTTP '+response.status);return await response.text();}catch(e){error.push(e.message);}
+ throw Error('Nepodarilo sa načítať GitHub: '+error.join(' / '));
+}
+async function create(getSource){$('create').disabled=true;$('fromFile').disabled=true;show('Načítavam pôvodný súbor a pripravujem aktualizáciu…');
+ try{const text=await getSource();const result=patchIndex(text);if(!result.includes('fullStops:vdLiveRouteStops(')||!result.includes('vdLiveRouteLegs('))throw Error('Nepodarilo sa vložiť celú trasu');
+ downloadHTML(result,'index.html');show('Hotovo! Úplný index.html bol vytvorený a stiahnutý. Nahraj ho na GitHub namiesto pôvodného. Potom nahraj aj nový live.html.');}
+ catch(e){show('Chyba: '+(e?.message||String(e))+'\nAk prehliadač blokuje automatické načítanie, použi ručný výber súboru nižšie.',true);}
+ finally{$('create').disabled=false;$('fromFile').disabled=false;}
+}
+$('create').addEventListener('click',()=>create(fromRemote));
+$('fromFile').addEventListener('click',()=>create(async()=>{const f=$('source').files[0];if(!f)throw Error('Najprv vyber pôvodný index.html');return await f.text();}));
+</script>
+</body>
+</html>
