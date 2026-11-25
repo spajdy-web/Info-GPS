@@ -290,12 +290,14 @@ function showSharedStopPicker(){
 function handleAdminStopLink(){
  if(!window.VD_ACCESS?.owner)return;
  const hash=decodeURIComponent(location.hash||'');
+ // Shared route/service links belong to viadeck-services.js. Do not consume them.
+ let handled=false;
  try{
-  if(hash==='#vd-shared-new')openSharedEditor();
-  else if(hash.startsWith('#vd-shared-edit='))openSharedEditor(hash.slice('#vd-shared-edit='.length));
-  else if(hash==='#vd-shared-select')showSharedStopPicker();
+  if(hash==='#vd-shared-new'){handled=true;openSharedEditor();}
+  else if(hash.startsWith('#vd-shared-edit=')){handled=true;openSharedEditor(hash.slice('#vd-shared-edit='.length));}
+  else if(hash==='#vd-shared-select'){handled=true;showSharedStopPicker();}
  }catch(e){alert('Správa zastávok: '+(e.message||e));}
- if(hash.startsWith('#vd-shared-'))history.replaceState(null,'',location.pathname+location.search);
+ if(handled)history.replaceState(null,'',location.pathname+location.search);
 }
 function launchCore(){
  if(sessionActive)return;sessionActive=true;
