@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#070d13">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="ViaDeck Display – širokouhlý informačný panel vozidla">
 <title>ViaDeck Display · vozidlový panel</title>
 <style>
@@ -46,6 +48,17 @@ body{background:#070d13}
 .message-overlay small{display:block;color:#9fbbc9;font-size:.55em;margin-top:1.5em;font-weight:450}
 @media (max-aspect-ratio:1/1){.display{grid-template-rows:minmax(0,29fr) minmax(0,47fr) minmax(0,24fr);gap:6px;padding:8px}.header{grid-template-columns:18% 1fr 27%;gap:5px}.line strong{font-size:clamp(23px,6vw,54px)}.current{padding:6px}.current-name{font-size:clamp(17px,3.7vw,40px)}.eta{padding:6px}.eta strong{font-size:clamp(16px,3.7vw,40px)}.eta .eta-clock{font-size:clamp(12px,2.5vw,28px)}.micro{font-size:9px}.stop-row{grid-template-columns:minmax(0,1fr) minmax(76px,28%);gap:5px}.stop-row .stop-name{font-size:clamp(11px,3vw,28px)}.stop-row .clock{font-size:clamp(11px,2.5vw,23px)}.stop-row .relative{font-size:10px}.destination{grid-template-columns:minmax(0,1fr) minmax(80px,35%);padding:8px}.destination .name{font-size:clamp(18px,3.5vw,40px)}.destination .scheduled{font-size:clamp(18px,3.5vw,36px)}.destination .predicted .value{font-size:clamp(13px,3vw,30px)}}
 @media(max-height:380px){.upcoming{padding:5px 10px}.upcoming .heading{font-size:9px;margin:0}.stop-row{padding:0 1px}.stop-row .stop-name{font-size:clamp(12px,4.5vmin,17px);line-height:1}.stop-row .clock{display:none}.stop-row .relative{font-size:clamp(12px,4vmin,15px);color:#f1f7fd}.destination{padding:5px 10px}.destination .scheduled{font-size:21px}.destination .predicted .value{font-size:18px}.destination .predicted .label{font-size:8px}.destination .timebox{gap:1px}.destination .micro{font-size:9px}}
+
+/* Initial one-tap fullscreen launch; absent from normal vehicle display. */
+.vd-display-launch{position:fixed;z-index:9;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:clamp(14px,4vmin,55px);background:#070d13;color:#effaff;text-align:center}
+.vd-display-launch-inner{width:min(100%,580px);display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2vmin,22px)}
+.vd-display-launch h1{font-size:clamp(22px,4.5vmin,45px);line-height:1.13;margin:0;font-weight:800}
+.vd-display-launch p{color:#aac5d3;font-size:clamp(13px,2.2vmin,20px);line-height:1.45;margin:0}
+.vd-display-launch button{cursor:pointer;font:inherit;border-radius:12px;padding:clamp(11px,2.4vmin,18px) clamp(18px,3.5vmin,31px);min-height:48px;max-width:100%;font-weight:750;font-size:clamp(14px,2.6vmin,22px)}
+.vd-display-launch .primary{background:#1676a2;border:1px solid #64ccef;color:white}
+.vd-display-launch .secondary{background:transparent;border:1px solid #456678;color:#bad4df}
+.vd-display-launch .error{color:#ffbd9e;font-size:clamp(12px,2vmin,17px)}
+@media (max-height:340px){.vd-display-launch-inner{gap:7px}.vd-display-launch button{min-height:35px;padding:6px 15px}}
 </style>
 </head>
 <body>
@@ -70,9 +83,79 @@ body{background:#070d13}
   </footer>
 </main>
 <div id="overlay" class="message-overlay"><div id="overlayText">Pripájam informačný panel…<small>Odkaz vytvoríš z aktívnej jazdy vo ViaDecku.</small></div></div>
+<section id="vdFullscreenLaunch" class="vd-display-launch" aria-label="Spustenie informačného panela">
+  <div class="vd-display-launch-inner">
+    <h1>Displej vozidla</h1>
+    <p>Spusti panel na celú obrazovku. Po spustení zostane obrazovka zapnutá, pokiaľ to zariadenie a prehliadač umožňujú.</p>
+    <button id="vdFullscreenStart" class="primary" type="button">⛶ Spustiť na celú obrazovku</button>
+    <button id="vdFullscreenContinue" class="secondary" type="button">Pokračovať bez celej obrazovky</button>
+    <p class="error" id="vdFullscreenError" hidden role="status"></p>
+  </div>
+</section>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);
+
+// A browser cannot enter fullscreen without user activation; the one-tap launch
+// is deliberately separate from the information panel itself.
+let displayWakeLock=null,displayWakePending=false,fullscreenLaunched=false;
+function isPanelFullscreen(){
+ return !!(document.fullscreenElement||document.webkitFullscreenElement)
+  ||matchMedia('(display-mode: fullscreen)').matches
+  ||matchMedia('(display-mode: standalone)').matches
+  ||!!navigator.standalone;
+}
+async function holdDisplayAwake(){
+ if(document.visibilityState!=='visible'||displayWakeLock||displayWakePending||!navigator.wakeLock?.request)return;
+ displayWakePending=true;
+ try{
+  const lock=await navigator.wakeLock.request('screen');
+  displayWakeLock=lock;
+  lock.addEventListener('release',()=>{
+   if(displayWakeLock===lock){displayWakeLock=null;}
+   // A browser may drop the wake lock when switching apps or due to OS policy.
+   // Retry once when still visible; do not run an unbounded retry loop.
+   if(document.visibilityState==='visible')setTimeout(()=>{if(!displayWakeLock)void holdDisplayAwake();},1500);
+  },{once:true});
+ }catch(e){console.info('[ViaDeck Display] Screen Wake Lock nie je dostupný:',e?.message||e);}
+ finally{displayWakePending=false;}
+}
+function dismissDisplayLaunch(){document.getElementById('vdFullscreenLaunch').hidden=true;void holdDisplayAwake();}
+async function startDisplayFullscreen(){
+ const root=document.documentElement;
+ const request=root.requestFullscreen||root.webkitRequestFullscreen;
+ const error=document.getElementById('vdFullscreenError');
+ if(!request){error.hidden=false;error.textContent='Tento prehliadač nepodporuje fullscreen stránky. Môžeš pokračovať bez neho alebo použiť kiosk režim zariadenia.';return;}
+ try{
+  // Must be invoked synchronously from the click handler, BEFORE any await.
+  const pending=request.call(root);
+  if(pending&&typeof pending.then==='function')await pending;
+  fullscreenLaunched=true;
+  dismissDisplayLaunch();
+  if(screen.orientation?.lock&&matchMedia('(pointer: coarse)').matches){
+   try{await screen.orientation.lock('landscape');}catch(e){/* Orientation lock is optional. */}
+  }
+ }catch(e){
+  error.hidden=false;
+  error.textContent='Fullscreen bol zamietnutý ('+(e?.message||'nepodporované')+'). Použi „Pokračovať bez celej obrazovky“ alebo kiosk režim prehliadača.';
+  void holdDisplayAwake();
+ }
+}
+document.getElementById('vdFullscreenStart').addEventListener('click',startDisplayFullscreen);
+document.getElementById('vdFullscreenContinue').addEventListener('click',()=>{fullscreenLaunched=false;dismissDisplayLaunch();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')void holdDisplayAwake();});
+window.addEventListener('pageshow',()=>{void holdDisplayAwake();});
+document.addEventListener('fullscreenchange',()=>{
+ if(fullscreenLaunched&&!isPanelFullscreen())document.getElementById('vdFullscreenLaunch').hidden=false;
+ void holdDisplayAwake();
+});
+document.addEventListener('webkitfullscreenchange',()=>{
+ if(fullscreenLaunched&&!isPanelFullscreen())document.getElementById('vdFullscreenLaunch').hidden=false;
+ void holdDisplayAwake();
+});
+if(isPanelFullscreen())dismissDisplayLaunch();
+else void holdDisplayAwake();
+
 let sessionData=null,receivedAt=0,serverOffset=0;
 const DEMO=(new URLSearchParams(location.search)).get('demo')==='1';
 const clock=ms=>Number.isFinite(ms)?new Date(ms).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'}):'—:—';
