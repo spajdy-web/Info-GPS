@@ -59,6 +59,15 @@ body{background:#070d13}
 .vd-display-launch .secondary{background:transparent;border:1px solid #456678;color:#bad4df}
 .vd-display-launch .error{color:#ffbd9e;font-size:clamp(12px,2vmin,17px)}
 @media (max-height:340px){.vd-display-launch-inner{gap:7px}.vd-display-launch button{min-height:35px;padding:6px 15px}}
+
+/* The display remains awake between journeys and shows a full-screen idle clock. */
+.vd-standby{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:clamp(8px,3vh,40px);overflow:hidden;background:radial-gradient(circle at 50% 36%,#12324a 0,#08151e 45%,#070d13 100%);text-align:center;padding:5vmin}
+.vd-standby .vd-idle-logo{width:min(38vmin,31vh,330px);height:min(38vmin,31vh,330px);filter:drop-shadow(0 0 34px #1ac5e138)}
+.vd-standby .vd-idle-brand{font-weight:820;letter-spacing:-.045em;font-size:clamp(32px,8vmin,95px);line-height:1.03;color:#ecfaff}
+.vd-standby .vd-idle-brand span{color:#46d9f4}
+.vd-standby .vd-idle-clock{font-variant-numeric:tabular-nums;font-weight:780;letter-spacing:.025em;font-size:clamp(45px,14vmin,175px);line-height:1.0;color:#effbff}
+.vd-standby .vd-idle-label{font-size:clamp(10px,2.1vmin,21px);font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:#86aebf}
+@media(max-height:380px){.vd-standby{flex-direction:row;gap:5vmin}.vd-standby .vd-idle-logo{width:26vmin;height:26vmin}.vd-standby .vd-idle-brand{font-size:clamp(22px,7vmin,48px)}.vd-standby .vd-idle-clock{font-size:clamp(27px,11vmin,60px)}.vd-standby .vd-idle-label{font-size:10px}}
 </style>
 </head>
 <body>
@@ -82,6 +91,20 @@ body{background:#070d13}
     <div class="timebox"><div class="scheduled" id="destinationPlanned">—:—</div><div id="destinationExpected" class="predicted" hidden><span class="label">OČAKÁVANÝ</span><span class="value" id="destinationEstimated">—:—</span></div></div>
   </footer>
 </main>
+<section class="vd-standby" id="vdStandby" hidden aria-label="ViaDeck – pohotovostný režim">
+<svg class="vd-idle-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" aria-hidden="true">
+<defs><linearGradient id="vd-idle-cyan" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#46e4f2"/><stop offset="1" stop-color="#13b2ef"/></linearGradient><linearGradient id="vd-idle-blue" x1="0" y1="0" x2=".8" y2="1"><stop offset="0" stop-color="#079fd8"/><stop offset="1" stop-color="#1160b5"/></linearGradient><linearGradient id="vd-idle-navy" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#123d69"/><stop offset="1" stop-color="#061f3e"/></linearGradient></defs>
+<path d="M33 32 101 14q12-3 12 8v16L40 60q-12 3-12-9V43q0-8 5-11Z" fill="url(#vd-idle-cyan)"/>
+<path d="M21 46 102 26q11-2 11 8v17L29 74q-11 3-11-9V57q0-8 3-11Z" fill="url(#vd-idle-blue)"/>
+<path d="M19 60 93 41q12-3 12 10v28q0 8-8 11l-76 25q-13 4-13-9V76q0-12 11-16Z" fill="url(#vd-idle-navy)"/>
+<path d="M35 110Q43 84 80 75Q87 73 92 65Q81 67 70 68Q31 78 25 112Z" fill="#43e0ee"/>
+<path d="M40 106 48 103 52 96 43 99Z M54 94 62 92 67 86 58 88Z M70 84 77 81 81 76 74 78Z" fill="#0b3767"/>
+<path d="M84 51a6 6 0 0 1 6 6c0 4-6 11-6 11s-6-7-6-11a6 6 0 0 1 6-6Z" fill="none" stroke="#9eeff9" stroke-width="2.5" stroke-linejoin="round"/>
+<circle cx="84" cy="57" r="2" fill="#9eeff9"/></svg>
+<div><div class="vd-idle-brand">Via<span>Deck</span></div><div class="vd-idle-label">Čaká na jazdu</div></div>
+<div class="vd-idle-clock" id="vdStandbyClock">--:--</div>
+</section>
+
 <div id="overlay" class="message-overlay"><div id="overlayText">Pripájam informačný panel…<small>Odkaz vytvoríš z aktívnej jazdy vo ViaDecku.</small></div></div>
 <section id="vdFullscreenLaunch" class="vd-display-launch" aria-label="Spustenie informačného panela">
   <div class="vd-display-launch-inner">
@@ -157,7 +180,8 @@ if(isPanelFullscreen())dismissDisplayLaunch();
 else void holdDisplayAwake();
 
 let sessionData=null,receivedAt=0,serverOffset=0;
-const DEMO=(new URLSearchParams(location.search)).get('demo')==='1';
+const DEMO_MODE=(new URLSearchParams(location.search)).get('demo');
+const DEMO=DEMO_MODE==='1'||DEMO_MODE==='standby';
 const clock=ms=>Number.isFinite(ms)?new Date(ms).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'}):'—:—';
 function safeNumber(x){return typeof x==='number'&&Number.isFinite(x)?x:null;}
 function delayMs(d){
@@ -209,11 +233,25 @@ function render(){
 }
 function showOverlay(message,detail=''){$('overlay').hidden=false;$('overlayText').replaceChildren(document.createTextNode(message));if(detail){const smaller=document.createElement('small');smaller.textContent=detail;$('overlayText').append(smaller);}}
 function hideOverlay(){$('overlay').hidden=true;}
-function update(){if(!sessionData)return;const published=Number(sessionData.updatedAt)||receivedAt;const age=Date.now()-published;if(age>45000){showOverlay('Údaje o jazde nie sú aktuálne.','Skontroluj internetové pripojenie alebo zdieľanie vo vozidle.');return;}hideOverlay();render();}
+function standbyClock(){
+ const now=new Date(Date.now()+serverOffset);
+ $('vdStandbyClock').textContent=now.toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'});
+}
+function update(){
+ if(!sessionData)return;
+ const published=Number(sessionData.updatedAt)||receivedAt;
+ const age=Date.now()-published;
+ if(age>45000){showOverlay('Údaje z infosystému nie sú aktuálne.','Skontroluj pripojenie vysielajúceho zariadenia.');return;}
+ hideOverlay();
+ const waiting=sessionData.mode==='standby'||sessionData.public?.standby===true;
+ $('vdStandby').hidden=!waiting;
+ document.querySelector('main.display').hidden=waiting;
+ if(waiting)standbyClock();else render();
+}
 function onData(d){if(!d){sessionData=null;showOverlay('Jazda nie je dostupná.','Odkaz môže byť neplatný alebo relácia skončila.');return;}if(d.status==='stopped'){sessionData=null;showOverlay('Zdieľanie bolo ukončené.');return;}if(d.status!=='live'||!d.public){sessionData=null;showOverlay('Údaje o jazde nie sú dostupné.');return;}sessionData=d;receivedAt=Date.now();update();}
 async function loadScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(Error('Nepodarilo sa načítať '+src));document.head.append(s);});}
 async function main(){
- if(DEMO){const base=Date.now();const fake=[['Hlavná stanica',0],['Šancová',3],['Račianske mýto',6],['Trnavské mýto',10],['Zimný štadión',13],['Astronomická',18]];onData({status:'live',updatedAt:Date.now(),public:{line:'61',index:0,nextStop:'Hlavná stanica',platform:'A',destination:'Astronomická',destinationPlanned:base+18*60000,delayMs:125000,completed:false,atStop:false,fullStops:fake.map(([name,min],i)=>({number:i+1,name,arrival:base+min*60000+45000,planned:base+min*60000+45000}))}});return;}
+ if(DEMO){if(DEMO_MODE==='standby'){onData({status:'live',mode:'standby',updatedAt:Date.now(),public:{v:2,standby:true}});return;}const base=Date.now();const fake=[['Hlavná stanica',0],['Šancová',3],['Račianske mýto',6],['Trnavské mýto',10],['Zimný štadión',13],['Astronomická',18]];onData({status:'live',updatedAt:Date.now(),public:{line:'61',index:0,nextStop:'Hlavná stanica',platform:'A',destination:'Astronomická',destinationPlanned:base+18*60000,delayMs:125000,completed:false,atStop:false,fullStops:fake.map(([name,min],i)=>({number:i+1,name,arrival:base+min*60000+45000,planned:base+min*60000+45000}))}});return;}
  const id=new URLSearchParams(location.hash.slice(1)).get('s');
  if(!id||!/^[a-f0-9]{32}$/.test(id)){showOverlay('Chýba odkaz na jazdu.','Spusti trasu vo ViaDecku a otvor zdieľanie pre displej.');return;}
  try{

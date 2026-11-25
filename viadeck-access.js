@@ -313,6 +313,7 @@ function launchCore(){
  installSharedEditorSave();
  document.title=document.title.replace(/0\.6\.[01]|0\.7\.0/g,'0.7.1');
  handleAdminStopLink();
+ const channelScript=document.createElement('script');channelScript.src='./viadeck-panel-channel.js?v=0.7.2';channelScript.onerror=()=>console.error('[ViaDeck] Panel channel script missing');document.body.appendChild(channelScript);
 }
 async function proceed(user){
  if(!isGoogle(user)){ui('Nepodporované prihlásenie','ViaDeck vyžaduje overený Google účet.',[{label:'Odhlásiť sa',run:googleSignOut}]);return;}
