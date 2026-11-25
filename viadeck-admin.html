@@ -1,7 +1,7 @@
 <!doctype html>
-<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07131e"><title>ViaDeck Admin · 0.6.0</title>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07131e"><title>ViaDeck Admin · 0.6.1</title>
 <style>
-:root{font:14px/1.45 Inter,system-ui,-apple-system,sans-serif;background:#07131e;color:#edf9ff}*{box-sizing:border-box}body{margin:0;padding:17px 12px 50px;background:radial-gradient(ellipse at top right,#13394d,transparent 80%),#07131e}.wrap{max-width:860px;margin:auto}a{color:#75d9f2}header{display:flex;align-items:center;gap:12px;justify-content:space-between;border-bottom:1px solid #31516a;padding-bottom:16px}header h1{margin:0;font-size:23px}h2{font-size:18px;margin:0 0 10px}.panel{background:#112838;border:1px solid #35586b;padding:19px;border-radius:17px;margin-top:17px}.muted{color:#a1bece}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}.entry{padding:12px 0;border-bottom:1px solid #294353}.entry:last-child{border:0}input{background:#091d2c;border:1px solid #46728a;color:#effaff;font:inherit;padding:12px;border-radius:9px;width:100%;margin:8px 0}.button{padding:10px 12px;border:1px solid #4d96b4;border-radius:10px;background:#1d83bf;color:white;font-weight:700;cursor:pointer;margin:4px 3px 4px 0}.button.alt{background:#244153;color:#d2eefa}.button.danger{background:#6d333d;border-color:#a66575}.button:disabled{opacity:.5}small{color:#9eb9c8}.status{white-space:pre-wrap;background:#082d38;border:1px solid #36637c;border-radius:12px;padding:11px;margin-top:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}@media(max-width:650px){.two{grid-template-columns:1fr}}
+:root{font:14px/1.45 Inter,system-ui,-apple-system,sans-serif;background:#07131e;color:#edf9ff}*{box-sizing:border-box}body{margin:0;padding:17px 12px 50px;background:radial-gradient(ellipse at top right,#13394d,transparent 80%),#07131e}.wrap{max-width:860px;margin:auto}a{color:#75d9f2}header{display:flex;align-items:center;gap:12px;justify-content:space-between;border-bottom:1px solid #31516a;padding-bottom:16px}header h1{margin:0;font-size:23px}h2{font-size:18px;margin:0 0 10px}.panel{background:#112838;border:1px solid #35586b;padding:19px;border-radius:17px;margin-top:17px}.muted{color:#a1bece}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}.entry{padding:12px 0;border-bottom:1px solid #294353}.entry:last-child{border:0}input{background:#091d2c;border:1px solid #46728a;color:#effaff;font:inherit;padding:12px;border-radius:9px;width:100%;margin:8px 0}.button{text-decoration:none;display:inline-block}.button{padding:10px 12px;border:1px solid #4d96b4;border-radius:10px;background:#1d83bf;color:white;font-weight:700;cursor:pointer;margin:4px 3px 4px 0}.button.alt{background:#244153;color:#d2eefa}.button.danger{background:#6d333d;border-color:#a66575}.button:disabled{opacity:.5}small{color:#9eb9c8}.status{white-space:pre-wrap;background:#082d38;border:1px solid #36637c;border-radius:12px;padding:11px;margin-top:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.shared-stops{max-height:450px;overflow:auto}.shared-stops .entry{display:flex;align-items:center;gap:12px;justify-content:space-between}.shared-stops .entry-main{flex:1;min-width:0;overflow-wrap:anywhere}.shared-stops .entry-main small{display:block}.shared-stops .entry a{white-space:nowrap}@media(max-width:650px){.two{grid-template-columns:1fr}}
 </style></head><body><div class="wrap">
 <header><div><div class="muted">VIADECK · SPRÁVA PRÍSTUPU</div><h1>Administrácia</h1></div><a href="./index.html">← Späť k ViaDecku</a></header>
 <div class="panel" id="access">Overujem oprávnenie vlastníka…</div>
@@ -11,17 +11,20 @@
  <section class="panel"><h2>Používatelia</h2><p class="muted">Pozastavenie účtu okamžite zablokuje prístup k online dátam. Lokálne dáta sa na jeho zariadení neodstraňujú.</p><div id="members"></div></section>
 </div>
 <section class="panel"><h2>Návrhy spoločných trás</h2><p class="muted">Schválením sa vytvorí nezávislá spoločná kópia. Zastávky potrebné pre trasu sa pridajú do spoločnej databázy, ak tam ešte nie sú. Osobné hlasové hlásenia sa nepublikujú.</p><div id="proposals"></div></section>
-<section class="panel"><h2>Spoločné zastávky a trasy</h2><div id="sharedInfo" class="muted">Načítavam…</div>
- <p class="muted">Novú zastávku môžeš vytvoriť tu. Administrátorské trasy publikuj schválením návrhu. Existujúce základné zastávky ViaDecku zostávajú dostupné všetkým.</p>
- <div class="two"><div><label for="stopName">Názov zastávky</label><input id="stopName" placeholder="Nová zastávka"><label for="stopCity">Mesto</label><input id="stopCity" value="Bratislava"><label for="stopPlatform">Nástupište (nepovinné)</label><input id="stopPlatform" placeholder="A"></div><div><label for="stopLat">Zemepisná šírka</label><input id="stopLat" inputmode="decimal" placeholder="48.145"><label for="stopLon">Zemepisná dĺžka</label><input id="stopLon" inputmode="decimal" placeholder="17.112"><label for="stopSystem">IDS</label><input id="stopSystem" value="IDS BK"><label for="stopZone">Zóna</label><input id="stopZone" placeholder="100"></div></div>
- <button class="button" id="stopAdd">Pridať spoločnú zastávku</button>
+<section class="panel"><h2>Spoločné zastávky a trasy</h2>
+ <div id="sharedInfo" class="muted">Načítavam…</div>
+ <p class="muted">Na tvorbu a úpravu používame <strong>rovnaký editor ako vo ViaDecku</strong>: nástupištia, tarifné systémy, GPS body, výber z mapy. Po uložení sa spoločná zastávka publikuje všetkým schváleným vodičom.</p>
+ <div class="row"><a class="button" href="./index.html#vd-shared-new">＋ Vytvoriť spoločnú zastávku</a><a class="button alt" href="./index.html#vd-shared-select">☑ Vybrať existujúce zastávky</a></div>
+ <label for="sharedSearch">Vyhľadať publikovanú zastávku</label><input id="sharedSearch" type="search" placeholder="Názov alebo mesto">
+ <div id="sharedStops" class="shared-stops"></div>
+ <p class="muted">Existujúce predvolené zastávky sa zobrazujú každému aj bez publikovania. Tento zoznam obsahuje dodatočne publikované alebo upravené spoločné zastávky. Ich úprava sa ostatným používateľom načíta po obnovení aplikácie.</p>
 </section>
 <div class="status" id="result">Pripravené.</div>
 </div>
 </div>
 <script>
 'use strict';
-const $=id=>document.getElementById(id);let db,auth,adminEmail='';
+const $=id=>document.getElementById(id);let db,auth,adminEmail='',membersCache={},profilesCache={},sharedCache={};
 function status(s){$('result').textContent=s;}
 function node(t,cls,v){const n=document.createElement(t);if(cls)n.className=cls;if(v!==undefined)n.textContent=v;return n;}
 function btn(label,onclick,cls='button'){const b=node('button',cls,label);b.onclick=()=>{b.disabled=true;Promise.resolve().then(onclick).catch(e=>status('Chyba: '+String(e.message||e))).finally(()=>b.disabled=false);};return b;}
@@ -39,19 +42,13 @@ async function init(){
    try{const result=await db.ref('owners/'+user.uid).once('value');if(result.val()!==true)throw Error('Tento účet nemá práva vlastníka.');
     $('access').textContent='Prihlásený vlastník: '+adminEmail;$('adminContent').hidden=false;
     db.ref('invites').on('value',s=>renderInvites(s.val()||{}),error);
-    db.ref('members').on('value',s=>renderMembers(s.val()||{}),error);
+    db.ref('members').on('value',s=>{membersCache=s.val()||{};renderMembers(membersCache);},error);
+    db.ref('profiles').on('value',s=>{profilesCache=s.val()||{};renderMembers(membersCache);},()=>{});
     db.ref('proposals').on('value',s=>renderProposals(s.val()||{}),error);
-    db.ref('shared').on('value',s=>{const x=s.val()||{};$('sharedInfo').textContent='Spoločné zastávky: '+Object.keys(x.stops||{}).length+' · spoločné trasy: '+Object.keys(x.routes||{}).length;},error);
+    db.ref('shared').on('value',s=>{sharedCache=s.val()||{};$('sharedInfo').textContent='Spoločné zastávky: '+Object.keys(sharedCache.stops||{}).length+' · spoločné trasy: '+Object.keys(sharedCache.routes||{}).length;renderSharedStops();},error);
    }catch(e){$('access').textContent='Prístup odmietnutý: '+String(e.message||e);}
   });
-  $('stopAdd').onclick=async()=>{try{
-   const name=$('stopName').value.trim(),city=$('stopCity').value.trim(),lat=Number($('stopLat').value.replace(',','.')),lon=Number($('stopLon').value.replace(',','.'));
-   if(!name||name.length>70||!city||!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180||!$('stopLat').value||!$('stopLon').value)throw Error('Doplň platný názov, mesto a GPS súradnice.');
-   const id='common-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
-   const value={id,name,city,platforms:[[lat,lon]],platformDetails:[{id:id+':1',name:$('stopPlatform').value.trim().slice(0,70)}],fares:[{system:$('stopSystem').value.trim().slice(0,45)||'IDS BK',zone:$('stopZone').value.trim().slice(0,35)}]};
-   await db.ref('shared/stops/'+id).set({json:JSON.stringify(value),updatedAt:firebase.database.ServerValue.TIMESTAMP});
-   $('stopName').value='';$('stopPlatform').value='';status('Spoločná zastávka '+name+' uložená.');
-  }catch(e){status('Chyba pri zastávke: '+e.message);}};
+  $('sharedSearch').addEventListener('input',renderSharedStops);
   $('inviteAdd').onclick=async()=>{try{
    const email=$('inviteEmail').value.trim().toLowerCase();if(!email.includes('@')||email.length>180)throw Error('Zadaj platnú e-mailovú adresu.');
    const key=await sha(email);await db.ref('invites/'+key).set({email,enabled:true});$('inviteEmail').value='';status('Pozvánka uložená pre '+email);
@@ -64,8 +61,25 @@ function renderInvites(items){const host=$('invites');host.replaceChildren();con
   row.append(top,btn(item.enabled?'Vypnúť pozvánku':'Obnoviť pozvánku',()=>db.ref('invites/'+key+'/enabled').set(!item.enabled),'button alt'));host.append(row);}
 }
 function renderMembers(items){const host=$('members');host.replaceChildren();const entries=Object.entries(items);if(!entries.length){host.append(node('p','muted','Žiadni registrovaní vodiči.'));return;}
- for(const [uid,item] of entries){const row=node('div','entry');row.append(node('div','',item.email||uid),node('small','',item.status==='active'?'Aktívny':'Pozastavený'));
+ for(const [uid,item] of entries){const row=node('div','entry');row.append(node('div','',profilesCache[uid]?.displayName||item.displayName||item.email||uid),node('small','',(item.email||uid)+' · '+(item.status==='active'?'Aktívny':'Pozastavený')));
   row.append(btn(item.status==='active'?'Pozastaviť':'Povoliť',()=>db.ref('members/'+uid+'/status').set(item.status==='active'?'suspended':'active'),'button alt'));host.append(row);}
+}
+
+function renderSharedStops(){
+ const host=$('sharedStops');if(!host)return;host.replaceChildren();
+ const q=$('sharedSearch')?.value?.toLocaleLowerCase('sk').trim()||'';
+ const entries=Object.entries(sharedCache.stops||{}).flatMap(([id,item])=>{
+  const stop=safeJson(item?.json);return stop&&validKey(id)?[{id,stop}]:[];
+ }).sort((a,b)=>a.stop.name.localeCompare(b.stop.name,'sk'));
+ let count=0;
+ for(const {id,stop} of entries){
+  if(q&&!(stop.name+' '+(stop.city||'')).toLocaleLowerCase('sk').includes(q))continue;
+  count++;const row=node('div','entry'),main=node('div','entry-main');
+  main.append(node('strong','',stop.name),node('small','',(stop.city||'')+' · '+(stop.platforms?.length||0)+' nástupíšť'+(stop.fares?.length?' · '+stop.fares.map(f=>f.system+(f.zone?' '+f.zone:'')).join(', '):'')));
+  const edit=node('a','button alt','Upraviť');edit.href='./index.html#vd-shared-edit='+encodeURIComponent(id);
+  row.append(main,edit);host.append(row);
+ }
+ if(!count)host.append(node('p','muted',q?'Nenašla sa žiadna spoločná zastávka.':'Zatiaľ neboli publikované ďalšie zastávky.'));
 }
 function validKey(key){return typeof key==='string'&&key.length>0&&key.length<=150&&!/[.#$\[\]\/]/.test(key);}
 function goodStop(s){return s&&validKey(s.id)&&typeof s.name==='string'&&s.name.length>0&&s.name.length<=70&&Array.isArray(s.platforms)&&s.platforms.length&&s.platforms.length<=32&&s.platforms.every(p=>Array.isArray(p)&&p.length===2&&Number.isFinite(p[0])&&Math.abs(p[0])<=90&&Number.isFinite(p[1])&&Math.abs(p[1])<=180);}
