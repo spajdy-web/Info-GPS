@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="sk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070d13">
+<meta name="description" content="ViaDeck Display – širokouhlý informačný panel vozidla">
+<title>ViaDeck Display · vozidlový panel</title>
+<style>
+:root{color-scheme:dark;font-family:Inter,'Segoe UI',Arial,system-ui,sans-serif;background:#070d13;color:#f5faff;--muted:#9fb9c9;--accent:#55d5f0;--border:#234250}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;height:100dvh;margin:0;overflow:hidden;overscroll-behavior:none}
+body{background:#070d13}
+[hidden]{display:none!important}
+.display{height:100%;height:100dvh;width:100%;display:grid;grid-template-rows:minmax(0,30fr) minmax(0,46fr) minmax(0,24fr);overflow:hidden;padding:clamp(10px,1.5vmin,24px);gap:clamp(8px,1.1vmin,17px)}
+.header{min-height:0;display:grid;grid-template-columns:minmax(94px,16%) minmax(0,1fr) minmax(132px,21%);gap:clamp(8px,1.1vmin,20px)}
+.line{min-width:0;background:#125a86;border-radius:clamp(10px,1.8vmin,23px);display:flex;align-items:center;justify-content:center;padding:5px;box-shadow:inset 0 0 0 1px #398eb4}
+.line strong{font-size:clamp(36px,9.5vmin,120px);line-height:1;font-weight:860;letter-spacing:-.05em;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.current{min-height:0;display:flex;flex-direction:column;justify-content:center;gap:.45vmin;padding:clamp(5px,1.2vmin,18px);border-radius:clamp(10px,1.8vmin,23px);background:#10232d;border:1px solid var(--border)}
+.micro{color:var(--muted);font-size:clamp(11px,1.8vmin,23px);font-weight:760;letter-spacing:.1em;text-transform:uppercase;line-height:1.15}
+.current-name{font-size:clamp(25px,6.2vmin,80px);line-height:1.05;font-weight:790;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow-wrap:anywhere;letter-spacing:-.025em}
+.platform{color:#b7d5e3;font-size:clamp(11px,2vmin,24px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.eta{border-radius:clamp(10px,1.8vmin,23px);background:#10232d;border:1px solid var(--border);display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding:clamp(8px,1.7vmin,25px);text-align:right;overflow:hidden;gap:1vmin}
+.eta strong{color:#ffd67e;font-size:clamp(27px,5.7vmin,78px);font-weight:850;line-height:1;letter-spacing:-.04em;white-space:nowrap}
+.eta.stop strong{color:#76efb4}
+.eta .eta-clock{font-size:clamp(17px,3vmin,39px);color:#cfdfeb;font-weight:680;white-space:nowrap}
+.upcoming{min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);background:#0e1c26;border:1px solid var(--border);border-radius:clamp(10px,1.8vmin,23px);padding:clamp(9px,1.3vmin,20px) clamp(12px,2vmin,30px);overflow:hidden}
+.upcoming .heading{font-size:clamp(11px,1.7vmin,23px);font-weight:760;letter-spacing:.12em;color:#aac6d6;margin-bottom:.5vmin}
+.stop-list{height:100%;min-height:0;display:grid;grid-template-rows:repeat(4,minmax(0,1fr));overflow:hidden}
+.stop-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(134px,25%);align-items:center;gap:12px;min-height:0;border-bottom:1px solid #233b47;padding:.3vmin .1vmin}
+.stop-row:last-child{border-bottom:0}
+.stop-row .stop-name{font-size:clamp(15px,4vmin,49px);line-height:1.06;font-weight:670;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stop-row .stop-time{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:0;white-space:nowrap}
+.stop-row .clock{font-size:clamp(18px,3.8vmin,51px);font-weight:780;line-height:1.1}
+.stop-row .relative{font-size:clamp(10px,1.7vmin,21px);color:#aec7d7;font-weight:600}
+.stop-row.empty{opacity:.18}
+.destination{min-height:0;background:linear-gradient(100deg,#143f4e,#0b3043 75%);border:1px solid #397f98;border-radius:clamp(11px,2vmin,26px);padding:clamp(9px,1.8vmin,26px) clamp(13px,2.3vmin,36px);display:grid;grid-template-columns:minmax(0,1fr) minmax(155px,29%);align-items:center;gap:clamp(8px,1.2vmin,18px);overflow:hidden}
+.destination .name{font-size:clamp(25px,6.6vmin,88px);font-weight:820;line-height:1.02;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.destination .timebox{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:clamp(2px,.6vmin,9px);text-align:right;min-width:0}
+.destination .scheduled{font-size:clamp(25px,5vmin,69px);line-height:1;font-weight:850;white-space:nowrap}
+.destination .predicted{display:flex;align-items:baseline;gap:clamp(6px,1vmin,15px);color:#ffcc79;white-space:nowrap}
+.destination .predicted .value{font-size:clamp(22px,4.4vmin,58px);font-weight:850;line-height:1}
+.destination .predicted .label{font-size:clamp(10px,1.5vmin,18px);font-weight:760;text-transform:uppercase}
+.message-overlay{position:fixed;inset:0;z-index:4;display:flex;align-items:center;justify-content:center;padding:5vmin;background:#070d13;color:white;text-align:center}
+.message-overlay div{max-width:850px;font-size:clamp(19px,3.2vmin,44px);font-weight:670;line-height:1.4}
+.message-overlay small{display:block;color:#9fbbc9;font-size:.55em;margin-top:1.5em;font-weight:450}
+@media (max-aspect-ratio:1/1){.display{grid-template-rows:minmax(0,29fr) minmax(0,47fr) minmax(0,24fr);gap:6px;padding:8px}.header{grid-template-columns:18% 1fr 27%;gap:5px}.line strong{font-size:clamp(23px,6vw,54px)}.current{padding:6px}.current-name{font-size:clamp(17px,3.7vw,40px)}.eta{padding:6px}.eta strong{font-size:clamp(16px,3.7vw,40px)}.eta .eta-clock{font-size:clamp(12px,2.5vw,28px)}.micro{font-size:9px}.stop-row{grid-template-columns:minmax(0,1fr) minmax(76px,28%);gap:5px}.stop-row .stop-name{font-size:clamp(11px,3vw,28px)}.stop-row .clock{font-size:clamp(11px,2.5vw,23px)}.stop-row .relative{font-size:10px}.destination{grid-template-columns:minmax(0,1fr) minmax(80px,35%);padding:8px}.destination .name{font-size:clamp(18px,3.5vw,40px)}.destination .scheduled{font-size:clamp(18px,3.5vw,36px)}.destination .predicted .value{font-size:clamp(13px,3vw,30px)}}
+@media(max-height:380px){.upcoming{padding:5px 10px}.upcoming .heading{font-size:9px;margin:0}.stop-row{padding:0 1px}.stop-row .stop-name{font-size:clamp(12px,4.5vmin,17px);line-height:1}.stop-row .clock{display:none}.stop-row .relative{font-size:clamp(12px,4vmin,15px);color:#f1f7fd}.destination{padding:5px 10px}.destination .scheduled{font-size:21px}.destination .predicted .value{font-size:18px}.destination .predicted .label{font-size:8px}.destination .timebox{gap:1px}.destination .micro{font-size:9px}}
+</style>
+</head>
+<body>
+<main class="display" aria-label="Palubný informačný panel vozidla">
+  <section class="header" aria-label="Aktuálna zastávka">
+    <div class="line"><strong id="line">—</strong></div>
+    <div class="current"><div class="micro">AKTUÁLNA ZASTÁVKA</div><div id="current" class="current-name">—</div><div id="platform" class="platform" hidden></div></div>
+    <div id="etaBox" class="eta"><strong id="eta">—</strong><div id="etaClock" class="eta-clock">—:—</div></div>
+  </section>
+  <section class="upcoming" aria-label="Štyri ďalšie zastávky">
+    <div class="heading">ĎALŠIE ZASTÁVKY</div>
+    <div class="stop-list" id="stops">
+      <div class="stop-row empty"><div class="stop-name">—</div><div class="stop-time"><span class="clock">—:—</span></div></div>
+      <div class="stop-row empty"><div class="stop-name">—</div><div class="stop-time"><span class="clock">—:—</span></div></div>
+      <div class="stop-row empty"><div class="stop-name">—</div><div class="stop-time"><span class="clock">—:—</span></div></div>
+      <div class="stop-row empty"><div class="stop-name">—</div><div class="stop-time"><span class="clock">—:—</span></div></div>
+    </div>
+  </section>
+  <footer class="destination" aria-label="Cieľová zastávka">
+    <div class="destination-left"><div class="micro">CIEĽOVÁ ZASTÁVKA</div><div id="destination" class="name">—</div></div>
+    <div class="timebox"><div class="scheduled" id="destinationPlanned">—:—</div><div id="destinationExpected" class="predicted" hidden><span class="label">OČAKÁVANÝ</span><span class="value" id="destinationEstimated">—:—</span></div></div>
+  </footer>
+</main>
+<div id="overlay" class="message-overlay"><div id="overlayText">Pripájam informačný panel…<small>Odkaz vytvoríš z aktívnej jazdy vo ViaDecku.</small></div></div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+let sessionData=null,receivedAt=0,serverOffset=0;
+const DEMO=(new URLSearchParams(location.search)).get('demo')==='1';
+const clock=ms=>Number.isFinite(ms)?new Date(ms).toLocaleTimeString('sk-SK',{hour:'2-digit',minute:'2-digit'}):'—:—';
+function safeNumber(x){return typeof x==='number'&&Number.isFinite(x)?x:null;}
+function delayMs(d){
+ if(Number.isFinite(d?.delayMs))return Math.max(0,d.delayMs);
+ if(Number.isFinite(d?.destinationPlanned)&&Number.isFinite(d?.destinationEstimated))return Math.max(0,d.destinationEstimated-d.destinationPlanned);
+ return 0;
+}
+function relative(ms,now){if(!Number.isFinite(ms))return '—';const diff=ms-now;if(diff<=60000)return diff>=-30000?'<1 min.':'—';const total=Math.ceil(diff/60000);if(total<60)return 'o '+total+' min.';return 'o '+Math.floor(total/60)+' h '+String(total%60).padStart(2,'0')+' min.';}
+function etaLabel(ms,now,atStop,finished){if(atStop||finished)return 'STOP';if(!Number.isFinite(ms))return '—';const delta=ms-now;if(delta<=60000)return '<1 min.';if(delta<3600000)return Math.ceil(delta/60000)+' min.';return Math.floor(delta/3600000)+' h '+String(Math.ceil(delta%3600000/60000)).padStart(2,'0')+' min.';}
+function stopArrival(item){return safeNumber(item?.arrival)??safeNumber(item?.planned)??null;}
+function publicStops(d){
+ const list=Array.isArray(d?.fullStops)?d.fullStops:[];
+ if(list.length)return list;
+ return Array.isArray(d?.stops)?d.stops:[];
+}
+function render(){
+ const d=sessionData?.public;if(!d)return;
+ const now=Date.now()+serverOffset, offset=delayMs(d), stops=publicStops(d),idx=Math.max(0,Number(d.index)||0);
+ $('line').textContent=String(d.line||'—').slice(0,14);
+ $('current').textContent=String(d.nextStop||'—').slice(0,90);
+ $('platform').textContent=d.platform?'Nástupište '+String(d.platform).slice(0,65):'';$('platform').hidden=!d.platform;
+ const thisStop=stops.find(s=>Number(s?.number)===idx+1)||stops[idx];
+ const arrival=stopArrival(thisStop)??safeNumber(d.planned);
+ const expected=arrival===null?null:arrival+offset;
+ const atStop=!!d.atStop || !!d.completed;
+ $('eta').textContent=etaLabel(expected,now,atStop,d.completed);
+ $('etaClock').textContent=clock(expected);
+ $('etaBox').classList.toggle('stop',atStop);
+ const targets=[];
+ for(const s of stops){const no=Number(s?.number);if(Number.isFinite(no)&&no>idx+1)targets.push(s);}
+ if(!targets.length)targets.push(...stops.slice(idx+1));
+ const holder=$('stops');holder.replaceChildren();
+ for(let i=0;i<4;i++){
+  const st=targets[i],row=document.createElement('div');row.className='stop-row'+(!st?' empty':'');
+  const name=document.createElement('div');name.className='stop-name';name.textContent=st?String(st.name||'—').slice(0,90):'—';
+  const right=document.createElement('div');right.className='stop-time';
+  const arrival=st?stopArrival(st):null;const estimated=arrival===null?null:arrival+offset;
+  const t=document.createElement('span');t.className='clock';t.textContent=clock(estimated);
+  const small=document.createElement('span');small.className='relative';small.textContent=estimated===null?'':relative(estimated,now);
+  right.append(t,small);row.append(name,right);holder.append(row);
+ }
+ $('destination').textContent=String(d.destination||'—').slice(0,100);
+ const planned=safeNumber(d.destinationPlanned);
+ $('destinationPlanned').textContent=clock(planned);
+ const estimate=planned!==null?planned+offset:null;
+ const showEstimate=offset>60000&&estimate!==null&&!d.completed;
+ $('destinationExpected').hidden=!showEstimate;
+ $('destinationEstimated').textContent=clock(estimate);
+}
+function showOverlay(message,detail=''){$('overlay').hidden=false;$('overlayText').replaceChildren(document.createTextNode(message));if(detail){const smaller=document.createElement('small');smaller.textContent=detail;$('overlayText').append(smaller);}}
+function hideOverlay(){$('overlay').hidden=true;}
+function update(){if(!sessionData)return;const published=Number(sessionData.updatedAt)||receivedAt;const age=Date.now()-published;if(age>45000){showOverlay('Údaje o jazde nie sú aktuálne.','Skontroluj internetové pripojenie alebo zdieľanie vo vozidle.');return;}hideOverlay();render();}
+function onData(d){if(!d){sessionData=null;showOverlay('Jazda nie je dostupná.','Odkaz môže byť neplatný alebo relácia skončila.');return;}if(d.status==='stopped'){sessionData=null;showOverlay('Zdieľanie bolo ukončené.');return;}if(d.status!=='live'||!d.public){sessionData=null;showOverlay('Údaje o jazde nie sú dostupné.');return;}sessionData=d;receivedAt=Date.now();update();}
+async function loadScript(src){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=src;s.onload=resolve;s.onerror=()=>reject(Error('Nepodarilo sa načítať '+src));document.head.append(s);});}
+async function main(){
+ if(DEMO){const base=Date.now();const fake=[['Hlavná stanica',0],['Šancová',3],['Račianske mýto',6],['Trnavské mýto',10],['Zimný štadión',13],['Astronomická',18]];onData({status:'live',updatedAt:Date.now(),public:{line:'61',index:0,nextStop:'Hlavná stanica',platform:'A',destination:'Astronomická',destinationPlanned:base+18*60000,delayMs:125000,completed:false,atStop:false,fullStops:fake.map(([name,min],i)=>({number:i+1,name,arrival:base+min*60000+45000,planned:base+min*60000+45000}))}});return;}
+ const id=new URLSearchParams(location.hash.slice(1)).get('s');
+ if(!id||!/^[a-f0-9]{32}$/.test(id)){showOverlay('Chýba odkaz na jazdu.','Spusti trasu vo ViaDecku a otvor zdieľanie pre displej.');return;}
+ try{
+  if(!window.VIADECK_LIVE_CONFIG)await loadScript('./viadeck-live-config.js');
+  const cfg=window.VIADECK_LIVE_CONFIG;
+  if(!cfg?.apiKey||!cfg?.databaseURL)throw Error('Chýba konfigurácia Firebase.');
+  await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+  await loadScript('https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js');
+  const app=firebase.initializeApp(cfg,'ViaDeckPanelViewer');
+  firebase.database(app).ref('.info/serverTimeOffset').on('value',snap=>{serverOffset=Number(snap.val())||0;});
+  firebase.database(app).ref('sessions/'+id).on('value',snap=>onData(snap.val()),err=>showOverlay('Nepodarilo sa prijímať údaje.',String(err?.message||err)));
+ }catch(err){showOverlay('Nepodarilo sa pripojiť panel.',String(err?.message||err));}
+}
+window.addEventListener('resize',()=>{if(sessionData)render();});
+setInterval(()=>{if(DEMO){if(sessionData){sessionData.updatedAt=Date.now();update();}return;}update();},1000);
+main();
+</script>
+</body>
+</html>

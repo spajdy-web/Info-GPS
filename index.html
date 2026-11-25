@@ -443,6 +443,15 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
 .vd-dest-dialog button{background:#225673;border:1px solid #5a91ac;border-radius:9px;color:white;padding:9px 11px;cursor:pointer}
 .vd-dest-dialog button.vd-danger{background:#5d2331;border-color:#b65e6c;color:#ff9aa5}.vd-dest-list{max-height:42vh;overflow:auto;margin-top:12px}
 @media(max-width:400px){.route-edit-head h2{font-size:17px}.vd-route-tools{gap:3px}.vd-tool-icon{width:32px;height:34px}.vd-insert-voice-btn{font-size:10px}}
+
+/* ViaDeck Display – nové tlačidlo v hlavičke jazdy a odkaz pre vozidlový panel */
+#vdDisplayOpenBtn svg{width:17px;height:17px}
+#screen-home .route-compact-controls #vdDisplayOpenBtn{background:#e4f7fe;border-color:#468baa;color:#12526e}
+#screen-home .route-compact-controls #vdDisplayOpenBtn.is-sharing{background:#146386;color:#effaff;border-color:#145c7a}
+.vd-display-dialog{width:min(95vw,520px);max-height:86dvh;overflow:auto}
+.vd-display-dialog .vd-display-status{padding:11px 13px;border:1px solid var(--line);background:#102c3a;border-radius:10px;font-size:13px;color:#c7dce6;margin-top:10px}
+.vd-display-dialog .live-share-linkbox{border-top:0;margin-top:7px}
+.vd-display-dialog .description{margin:9px 0 13px}
 </style>
 </head>
 <body>
@@ -469,7 +478,7 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
 <section id="screen-home" class="screen">
 
 
-<article class="nearest" aria-live="polite"><div class="nearhead"><span class="pillno">1</span><span id="nearheadText">NAJBLIŽŠIA ZASTÁVKA</span><span class="stopcheck" id="nearestCheck" hidden title="V oblasti zastávky" aria-label="V oblasti zastávky"><svg viewBox="0 0 32 39" aria-hidden="true"><rect x="4" y="2" width="24" height="22" rx="5" fill="currentColor"/><path d="M16 24 V37 M8 37 H24" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></span><div id="routeCompactControls" class="route-compact-controls" hidden><span id="activeRouteName" class="route-compact-number">1/1</span><span class="route-completed-label" id="routeCompletedLabel">KONIEC</span><button type="button" id="liveOpenBtn" class="live-share-trigger" title="ViaDeck Live · Zdieľať jazdu" aria-label="Otvoriť zdieľanie ViaDeck Live"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.8 10.7 6.5-4.1m-6.5 8 6.5 3.6"/></svg></button><button type="button" id="routeEndBtn" aria-label="Ukončiť jazdu" title="Ukončiť jazdu">×</button></div></div><div class="near-columns"><div class="near-left"><div class="near-title"><h2 id="nearestName">Zapni GPS</h2></div><div id="nearPlatformName" class="near-platform">Nástupište: —</div><div id="nearestFare" class="fare-meta">IDS BK · zóna —</div></div><div class="near-clock" aria-label="Časové údaje trasy"><div id="nearestRemainingBadge" class="delta-badge is-idle"><span id="nearestDeltaLabel">ZOSTÁVA</span><b id="nearestRemaining">—:—</b></div><b id="nearestPlanned" class="planned-time">—:—</b></div></div><div class="nearfoot"><span id="nearestMeters">Čakám na polohu</span><small id="nearestExtra">BA · Vrakuňa</small></div></article>
+<article class="nearest" aria-live="polite"><div class="nearhead"><span class="pillno">1</span><span id="nearheadText">NAJBLIŽŠIA ZASTÁVKA</span><span class="stopcheck" id="nearestCheck" hidden title="V oblasti zastávky" aria-label="V oblasti zastávky"><svg viewBox="0 0 32 39" aria-hidden="true"><rect x="4" y="2" width="24" height="22" rx="5" fill="currentColor"/><path d="M16 24 V37 M8 37 H24" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg></span><div id="routeCompactControls" class="route-compact-controls" hidden><span id="activeRouteName" class="route-compact-number">1/1</span><span class="route-completed-label" id="routeCompletedLabel">KONIEC</span><button type="button" id="liveOpenBtn" class="live-share-trigger" title="ViaDeck Live · Zdieľať jazdu" aria-label="Otvoriť zdieľanie ViaDeck Live"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.8 10.7 6.5-4.1m-6.5 8 6.5 3.6"/></svg></button><button type="button" id="vdDisplayOpenBtn" class="live-share-trigger" title="ViaDeck Display · Zdieľanie pre infosystém vozidla" aria-label="Zdieľanie pre infosystém vozidla"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3.5" width="19" height="14" rx="2"/><path d="M8 21h8M12 17.5V21M6 8h5M6 11h10"/></svg></button><button type="button" id="routeEndBtn" aria-label="Ukončiť jazdu" title="Ukončiť jazdu">×</button></div></div><div class="near-columns"><div class="near-left"><div class="near-title"><h2 id="nearestName">Zapni GPS</h2></div><div id="nearPlatformName" class="near-platform">Nástupište: —</div><div id="nearestFare" class="fare-meta">IDS BK · zóna —</div></div><div class="near-clock" aria-label="Časové údaje trasy"><div id="nearestRemainingBadge" class="delta-badge is-idle"><span id="nearestDeltaLabel">ZOSTÁVA</span><b id="nearestRemaining">—:—</b></div><b id="nearestPlanned" class="planned-time">—:—</b></div></div><div class="nearfoot"><span id="nearestMeters">Čakám na polohu</span><small id="nearestExtra">BA · Vrakuňa</small></div></article>
 
 <div id="carouselHeadingBar" class="carousel-heading" hidden><div class="other-heading" id="carouselHeading">ĎALŠIE V OKOLÍ</div>
 <div id="carouselTabs" class="carousel-tabs" role="tablist" aria-label="Informácie o zastávke" hidden>
@@ -618,6 +627,19 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
 </div></nav>
 <!-- Schválený originálny gong priamo v HTML: na GitHub stačí nahrať iba index.html. -->
 
+<dialog id="vdDisplayDialog" class="stop-dialog live-share-dialog vd-display-dialog" aria-labelledby="vdDisplayTitle">
+ <div class="editor-top"><div><div class="screen-eyebrow">VIADECK · DISPLEJ VOZIDLA</div><h2 id="vdDisplayTitle">Zdieľanie pre infosystém</h2></div><button type="button" class="mini-icon" id="vdDisplayClose" aria-label="Zavrieť">×</button></div>
+ <p class="description">Širokouhlý panel zobrazuje linku, zastávky, časy príchodov a cieľ. Využíva tú istú živú reláciu ako zdieľanie pre diváka. Nespúšťa ďalší GPS prenos.</p>
+ <div class="vd-display-status" id="vdDisplayStatus" role="status">Spusti zdieľanie pre vygenerovanie odkazu.</div>
+ <button type="button" class="btn" id="vdDisplayGenerate">Spustiť zdieľanie a vytvoriť odkaz</button>
+ <div class="live-share-linkbox" id="vdDisplayDetails" hidden>
+  <label for="vdDisplayUrl">Odkaz na displej vozidla</label>
+  <div class="live-share-linkrow"><input type="text" id="vdDisplayUrl" readonly aria-label="Odkaz na vozidlový panel"><button type="button" id="vdDisplayCopy" class="btn secondary">Kopírovať</button></div>
+  <div class="live-share-actions"><button type="button" id="vdDisplayOpenViewer" class="btn secondary">Otvoriť panel</button></div>
+  <div class="live-share-qr" id="vdDisplayQr" aria-label="QR kód vozidlového panela"></div>
+ </div>
+ <p class="tiny">Pri ukončení zdieľania sa odpojí divák aj vozidlový panel. V bežnom zobrazení panel nemá hlavičku, status ani posúvanie.</p>
+</dialog>
 <dialog id="liveShareDialog" class="stop-dialog live-share-dialog" aria-labelledby="liveShareTitle">
   <div class="editor-top"><div><div class="screen-eyebrow">VIADECK · REALTIME</div><h2 id="liveShareTitle">ViaDeck Live</h2></div><button type="button" class="mini-icon" id="liveShareClose" aria-label="Zavrieť">×</button></div>
   <p class="description">Vytvor odkaz, cez ktorý môže iné zariadenie sledovať tvoju aktuálnu jazdu. Zdieľanie využíva Firebase a vyžaduje internet.</p>
@@ -2437,6 +2459,7 @@ function liveSyncControls(){
  $('liveShareLinkBox').hidden=!active;
  $('liveOpenBtn').classList.toggle('is-sharing',active);
  $('liveOpenBtn').title=active?'ViaDeck Live · Zdieľanie aktívne':'ViaDeck Live · Zdieľať jazdu';
+ if(typeof vdDisplaySync==='function')vdDisplaySync();
 }
 function vdLiveLoadScript(url){return new Promise((resolve,reject)=>{
  const x=document.createElement('script');x.src=url;x.async=true;
@@ -2499,7 +2522,7 @@ function vdLivePublicSnapshot(){
    ?{lat:Number(state.position.lat.toFixed(6)),lon:Number(state.position.lon.toFixed(6)),accuracy:Math.round(state.accuracy)}:null;
  return {
   v:1,line:(window.VD071?.liveDestination?.()?.line??vdResolveDestination(route,idx,dst).line).slice(0,14),routeName:route.name.slice(0,80),direction:route.direction.slice(0,80),
-  index:idx,total:route.steps.length,completed:!!routeCompleted,
+  index:idx,total:route.steps.length,completed:!!routeCompleted,atStop:!!routeCompleted||!!(state.mode==='gps'&&state.enteredStopId===step?.stopId&&Number.isFinite(state.accuracy)&&state.accuracy<=65),delayMs:Math.max(0,Math.round(delay)),
   nextStop:stop?.name||'—',platform:currentMeta.platform,fares:currentMeta.fares,
   planned:Number.isFinite(planned)?planned:null,
   destination:window.VD071?.liveDestination?.()?.name||vdResolveDestination(route,idx,dst).name,destinationPlatform:destMeta.platform,destinationFares:destMeta.fares,destinationPlanned:Number.isFinite(destTime)?destTime:null,
@@ -2565,7 +2588,55 @@ async function vdLiveStop(fromRoute=false){
  try{if(pendingWrite)await pendingWrite.catch(()=>{});await ref.update({status:'stopped',updatedAt:window.firebase.database.ServerValue.TIMESTAMP,public:{message:'Zdieľanie ukončené'}});}
  catch(e){liveStatusText('Lokálne vypnuté. Server nepotvrdil ukončenie: '+(e.message||String(e)),true);}
 }
+// ViaDeck Display 0.7.1 – identická Firebase relácia, nové rozhranie pre infosystém vozidla.
+let vdDisplayQrSession='';
+function vdDisplayUrl(){if(!vdLive.session)return '';const u=new URL('./panel.html',document.baseURI);u.hash='s='+vdLive.session;return u.href;}
+async function vdDisplayMakeQr(){
+ const host=$('vdDisplayQr'),url=vdDisplayUrl();if(!host||!url||!$('vdDisplayDialog').open)return;
+ if(vdDisplayQrSession===vdLive.session&&host.childNodes.length)return;
+ host.replaceChildren();vdDisplayQrSession=vdLive.session;
+ try{
+  if(!window.QRCode)await vdLiveLoadScript('https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js');
+  if(!vdLive.session||url!==vdDisplayUrl()||!$('vdDisplayDialog').open)return;
+  if(window.QRCode)new window.QRCode(host,{text:url,width:172,height:172,colorDark:'#0b1720',colorLight:'#fff',correctLevel:window.QRCode.CorrectLevel.M});
+ }catch(e){host.textContent='QR kód sa nepodarilo načítať. Odkaz môžeš skopírovať.';host.style.background='transparent';host.style.color='#f1f6ff';}
+}
+function vdDisplaySync(){
+ const dialog=$('vdDisplayDialog');if(!dialog)return;
+ const active=!!vdLive.session;
+ $('vdDisplayGenerate').hidden=active;
+ $('vdDisplayDetails').hidden=!active;
+ $('vdDisplayOpenBtn')?.classList.toggle('is-sharing',active);
+ if(active){
+  $('vdDisplayUrl').value=vdDisplayUrl();
+  $('vdDisplayStatus').textContent='Zdieľanie aktívne. Použi odkaz alebo QR kód na displeji vozidla.';
+  if(dialog.open)void vdDisplayMakeQr();
+ }else{
+  $('vdDisplayStatus').textContent='Pre vozidlový panel ešte nie je spustené zdieľanie.';
+  $('vdDisplayUrl').value='';vdDisplayQrSession='';$('vdDisplayQr').replaceChildren();
+ }
+}
+function vdDisplayInit(){
+ $('vdDisplayOpenBtn').addEventListener('click',()=>{if(!currentActiveRoute())return;$('vdDisplayDialog').showModal();vdDisplaySync();});
+ $('vdDisplayClose').addEventListener('click',()=>$('vdDisplayDialog').close());
+ $('vdDisplayGenerate').addEventListener('click',async()=>{
+  const b=$('vdDisplayGenerate');b.disabled=true;
+  $('vdDisplayStatus').textContent='Pripájam zdieľanie…';
+  try{await vdLiveStart();if(!vdLive.session)throw Error($('liveShareStatus').textContent||'Zdieľanie sa nepodarilo spustiť.');vdDisplaySync();}
+  catch(e){$('vdDisplayStatus').textContent=String(e?.message||e);}
+  finally{b.disabled=false;}
+ });
+ $('vdDisplayCopy').addEventListener('click',async()=>{
+  const field=$('vdDisplayUrl');
+  try{await navigator.clipboard.writeText(field.value);toast('Odkaz na ViaDeck Display skopírovaný.');}
+  catch{field.select();document.execCommand('copy');toast('Odkaz je pripravený na kopírovanie.');}
+ });
+ $('vdDisplayOpenViewer').addEventListener('click',()=>{const link=vdDisplayUrl();if(link)window.open(link,'_blank','noopener,noreferrer');});
+ vdDisplaySync();
+}
+
 function vdLiveInit(){
+ vdDisplayInit();
  $('liveOpenBtn').addEventListener('click',()=>{if(!currentActiveRoute())return;liveSyncControls();$('liveShareDialog').showModal();});
  $('liveShareClose').addEventListener('click',()=>$('liveShareDialog').close());
  $('liveShareStart').addEventListener('click',vdLiveStart);
