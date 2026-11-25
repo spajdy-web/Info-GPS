@@ -35,6 +35,9 @@ function destOptions(selected){return `<option value="">— Vyber cieľ —</opt
 function createUI(){
  if($('screen-services'))return;
  const style=document.createElement('style');style.textContent=`
+ /* Service nav icon uses the same responsive sizing as every other button.
+    The old inline 23px override made it visibly lower/bigger on mobile. */
+ .bottomnav .navbtn[data-screen="services"] svg{display:block;flex-shrink:0;vertical-align:middle}
  .vd071-list,.vd071-editor{max-width:1020px;margin:0 auto;padding:16px 13px 85px}
  .vd071-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:15px}
  .vd071-head h1,.vd071-head h2{margin:0;font-size:23px}
@@ -55,7 +58,7 @@ function createUI(){
  `;document.head.append(style);
  const screen=document.createElement('section');screen.id='screen-services';screen.className='screen';screen.hidden=true;screen.innerHTML=`<div class="vd071-list" id="vd071-list"><div class="vd071-head"><div><div class="screen-eyebrow">KNIŽNICA SLUŽIEB</div><h1>Služby <span class="count-pill" id="vd071-count">0</span></h1></div><button type="button" class="vd071-btn primary" id="vd071-create">+ Pridať službu</button></div><p class="description">Služba spája uložené trasy s plánovanými časmi odchodov. Funguje aj offline, pretože si ukladá kópie použitých trás.</p><div class="vd071-grid" id="vd071-cards"></div></div><div class="vd071-editor" id="vd071-editor" hidden></div>`;
  const after=$('screen-settings');(after?.parentNode||document.querySelector('main')).insertBefore(screen,after||null);
- const nav=document.createElement('button');nav.className='navbtn';nav.dataset.screen='services';nav.type='button';nav.setAttribute('aria-label','Služby');nav.innerHTML=icoCalendar+'<span>Služby</span>';nav.querySelector('svg')?.setAttribute('style','width:23px;height:23px');
+ const nav=document.createElement('button');nav.className='navbtn';nav.dataset.screen='services';nav.type='button';nav.setAttribute('aria-label','Služby');nav.innerHTML=icoCalendar+'<span>Služby</span>';nav.querySelector('svg')?.removeAttribute('style');
  document.querySelector('.bottomnav .nav-inner')?.insertBefore(nav,document.querySelector('[data-screen="settings"]'));
  nav.addEventListener('click',()=>switchScreen('services'));
  $('vd071-create').addEventListener('click',()=>openEditor());
