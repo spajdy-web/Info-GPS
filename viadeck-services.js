@@ -1,4 +1,4 @@
-/* ViaDeck 0.7.1 – services, shared duty editing, layovers and long-press controls.
+/* ViaDeck 0.7.1 hotfix 2 – services, shared duty editing, layovers and long-press controls.
    Loaded only after authenticated ViaDeck core. Does not run for public Live viewer. */
 (()=>{
 'use strict';
@@ -161,24 +161,62 @@ function installLongPress(){for(const [id,delta] of [['routePrevBtn',-1],['route
  }}
 function canJump(delta){return !!active && active.idx+delta>=0 && active.idx+delta<active.items.length;}
 function liveDestination(){if(!active)return null;const waiting=layover();return waiting?{name:waiting.name,line:waiting.line}:null;}
+// A manual destination is a temporary override, not a permanent route edit.
+// It expires when the active stop changes: on a freshly started route, this
+// means immediately after the first stop is passed. This also handles a
+// mid-route manual override at the next stop. A custom layover message selected
+// on a completed route may remain until the next route is activated.
+let overrideSeen=null,overrideRouteId='',overrideStopIndex=-1,overrideWasCompleted=false;
+function expireManualDestinationIfNeeded(){
+ const route=currentActiveRoute(),override=vdDestinationOverride;
+ if(!route||!override||override.routeId!==route.id){
+  overrideSeen=null;overrideRouteId='';overrideStopIndex=-1;return false;
+ }
+ if(override!==overrideSeen){
+  overrideSeen=override;overrideRouteId=route.id;
+  overrideStopIndex=activeRouteIndex;overrideWasCompleted=routeCompleted;
+ }
+ if(route.id===overrideRouteId&&activeRouteIndex===overrideStopIndex&&
+    (overrideWasCompleted||!routeCompleted))return false;
+ vdDestinationOverride=null;
+ overrideSeen=null;overrideRouteId='';overrideStopIndex=-1;
+ destinationSignSignature='';
+ if(typeof vdLivePublish==='function'&&typeof vdLive!=='undefined'&&vdLive?.session)
+  void vdLivePublish(true);
+ return true;
+}
 function layover(){if(!active)return null;const idx=active.idx,entry=active.items[idx],now=Date.now();if(!entry)return null;
  const nextIndex=active.waiting?idx:routeCompleted?idx+1:-1;
  if(nextIndex<0||nextIndex>=active.items.length)return null;
  const next=active.items[nextIndex],delta=active.starts[nextIndex]-now;
+ // Inside the last 90 seconds always show the next route's destination,
+ // even if a manual layover message was previously selected.
+ if(delta<=90000){const r=next.routeSnapshot;const dest=routeDestinationAt(r,0);return {name:dest?.name||dest?.stop?.name||r.name,line:dest?.line||r.line||'',status:delta>0?'Odchod '+clock(active.starts[nextIndex]):'Odchod naplánovaný '+clock(active.starts[nextIndex]),time:delta};}
  const override=vdDestinationOverride?.routeId===currentActiveRoute()?.id?vdDestinationOverride:null;
  if(override)return {name:override.text||' ',line:override.line||'',status:'Ručne nastavený cieľ · odchod '+clock(active.starts[nextIndex]),time:delta};
- if(delta<=90000){const r=next.routeSnapshot;const dest=routeDestinationAt(r,0);return {name:dest?.name||dest?.stop?.name||r.name,line:dest?.line||r.line||'',status:delta>0?'Odchod '+clock(active.starts[nextIndex]):'Odchod naplánovaný '+clock(active.starts[nextIndex]),time:delta};}
  const d=next.layoverDestinationSnapshot||vdDestinations.find(x=>x.id===next.layoverDestinationId);
  if(next.layoverMode==='library'&&d?.text)return {name:d.text,line:d.line||'',status:'Odchod '+clock(active.starts[nextIndex]),time:delta};
  return {name:'ODCHOD O '+fmtMinutes(delta),line:'',status:'Plánovaný odchod '+clock(active.starts[nextIndex]),time:delta};
 }
-function tick(){if(!active)return;const now=Date.now();const done=$('vd071-manual-finish');if(done){done.hidden=active.waiting||routeCompleted||activeRouteIndex!==currentActiveRoute()?.steps.length-1;}
+// One owner for the destination panel while a duty is waiting: the existing
+// core time renderer can run every second, but it must not leave its route
+// destination on top of the driver's layover destination.
+function paintLayover(){
+ const lay=layover(),note=$('vd071-layover');
+ if(!lay){if(note)note.hidden=true;return false;}
+ if(note){note.hidden=false;note.textContent=active.name+' · '+lay.status+(active.mode==='manual'?' · ďalšia trasa manuálne':'');}
+ $('routeDestinationName').textContent=lay.name;
+ $('routeDestinationLine').textContent=lay.line;
+ $('routeDestinationLine').hidden=!lay.line;
+ syncDestinationSign(lay.line,lay.name);
+ $('routeDestinationTime').textContent=clock(active.starts[active.waiting?active.idx:active.idx+1]);
+ $('routeDestinationEstimate').hidden=true;
+ return true;
+}
+function tick(){expireManualDestinationIfNeeded();if(!active)return;const now=Date.now();const done=$('vd071-manual-finish');if(done){done.hidden=active.waiting||routeCompleted||activeRouteIndex!==currentActiveRoute()?.steps.length-1;}
  if(active.waiting&&now>=active.starts[active.idx])active.waiting=false;
  if(active.mode==='auto'&&now>manualUntil){const due=[];for(let i=active.autoHandled+1;i<active.items.length;i++)if(active.starts[i]<=now)due.push(i);if(due.length){const n=due[due.length-1];if(n>active.idx){switchTo(n,'auto');}else active.autoHandled=Math.max(active.autoHandled,n);}}
- const lay=layover();const note=$('vd071-layover');if(!lay){if(note)note.hidden=true;return;}
- if(note){note.hidden=false;note.textContent=active.name+' · '+lay.status+(active.mode==='manual'?' · ďalšia trasa manuálne':'');}
- $('routeDestinationName').textContent=lay.name;$('routeDestinationLine').textContent=lay.line;$('routeDestinationLine').hidden=!lay.line;
- syncDestinationSign(lay.line,lay.name);$('routeDestinationTime').textContent=clock(active.starts[active.waiting?active.idx:active.idx+1]);$('routeDestinationEstimate').hidden=true;
+ paintLayover();
 }
 function restore(){try{const snap=JSON.parse(sessionStorage.getItem(SESSION_KEY)||'null');if(!snap)return;if(!Array.isArray(snap.items)||!Array.isArray(snap.starts)||snap.idx<0||snap.idx>=snap.items.length)return;const age=Date.now()-Number(snap.startedAt);if(age<0||age>48*3600000)return;
  active={...snap,items:snap.items.map(normEntry).filter(Boolean),mode:store.mode};manualUntil=Number(snap.manualUntil)||0;
@@ -205,6 +243,20 @@ async function saveSharedRouteDraft(current){if(!window.VD_ACCESS?.owner||!share
 function clearSharedEditor(){sharedEditRouteId='';}
 function exportStore(){return CLONE(store);}
 function importStore(raw){const next=normStore(raw);if(!Array.isArray(raw?.items))throw Error('Záloha služieb má neplatný formát.');const previous=store;store=next;try{writeStore();renderServices();}catch(e){store=previous;throw e;}}
+// The original route panel and the service module both update the same DOM.
+// Repaint a layover synchronously after every core time update, before the
+// browser gets a chance to render the wrong destination.
+const originalCoreTimeUpdate=typeof updateTimeDisplays==='function'?updateTimeDisplays:null;
+if(originalCoreTimeUpdate){
+ updateTimeDisplays=function(...args){
+  // Run before the original renderer paints: no stale manual destination can
+  // flash when GPS advances or the driver taps the next-stop arrow.
+  expireManualDestinationIfNeeded();
+  const result=originalCoreTimeUpdate.apply(this,args);
+  if(active)paintLayover();
+  return result;
+ };
+}
 window.VD071={currentRoute,renderServices,openEditor,sharedRouteEditId:()=>sharedEditRouteId,saveSharedRouteDraft,exportStore,importStore,beforeStandaloneRoute,beforeEndRoute,isWaiting,tick,canJump,arrowRouteJump,liveDestination,clearSharedEditor};
 try{createUI();restore();setInterval(()=>{if(document.visibilityState==='visible'&&active){active.routeCompleted=routeCompleted;tick();if(Date.now()%10000<1000)saveSession();}},1000);setTimeout(openHashEditor,250);}catch(e){console.error('[ViaDeck 0.7.1] Inicializácia služieb',e);}
 })();
