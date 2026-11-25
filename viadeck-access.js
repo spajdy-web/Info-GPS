@@ -301,7 +301,7 @@ function launchCore(){
  if(sessionActive)return;sessionActive=true;
  const core=$('viadeck-core');if(!core)throw Error('V súbore index.html chýba ViaDeck core (viadeck-core).');
   const script=document.createElement('script');script.textContent=core.textContent;document.body.appendChild(script);
- const serviceScript=document.createElement('script');serviceScript.src='./viadeck-services.js?v=0.7.1.2';serviceScript.onerror=()=>console.error('ViaDeck Služby sa nepodarilo načítať.');document.body.appendChild(serviceScript);
+ const serviceScript=document.createElement('script');serviceScript.src='./viadeck-services.js?v=0.7.1.3';serviceScript.onerror=()=>console.error('ViaDeck Služby sa nepodarilo načítať.');document.body.appendChild(serviceScript);
  document.body.classList.remove('vd-access-locked');appRoot.hidden=true;
  const toolbar=document.createElement('div');toolbar.id='vd-account-toolbar';
  const profile=headerIcon('profile','Účet vodiča');profile.title=auth.currentUser?.email||'Účet';profile.onclick=showProfile;toolbar.append(profile);
