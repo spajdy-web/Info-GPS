@@ -1,7 +1,15 @@
 <!doctype html>
-<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07131e"><title>ViaDeck Admin · 0.6.1</title>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07131e"><title>ViaDeck Admin · 0.7.0</title>
 <style>
 :root{font:14px/1.45 Inter,system-ui,-apple-system,sans-serif;background:#07131e;color:#edf9ff}*{box-sizing:border-box}body{margin:0;padding:17px 12px 50px;background:radial-gradient(ellipse at top right,#13394d,transparent 80%),#07131e}.wrap{max-width:860px;margin:auto}a{color:#75d9f2}header{display:flex;align-items:center;gap:12px;justify-content:space-between;border-bottom:1px solid #31516a;padding-bottom:16px}header h1{margin:0;font-size:23px}h2{font-size:18px;margin:0 0 10px}.panel{background:#112838;border:1px solid #35586b;padding:19px;border-radius:17px;margin-top:17px}.muted{color:#a1bece}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}.entry{padding:12px 0;border-bottom:1px solid #294353}.entry:last-child{border:0}input{background:#091d2c;border:1px solid #46728a;color:#effaff;font:inherit;padding:12px;border-radius:9px;width:100%;margin:8px 0}.button{text-decoration:none;display:inline-block}.button{padding:10px 12px;border:1px solid #4d96b4;border-radius:10px;background:#1d83bf;color:white;font-weight:700;cursor:pointer;margin:4px 3px 4px 0}.button.alt{background:#244153;color:#d2eefa}.button.danger{background:#6d333d;border-color:#a66575}.button:disabled{opacity:.5}small{color:#9eb9c8}.status{white-space:pre-wrap;background:#082d38;border:1px solid #36637c;border-radius:12px;padding:11px;margin-top:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.shared-stops{max-height:450px;overflow:auto}.shared-stops .entry{display:flex;align-items:center;gap:12px;justify-content:space-between}.shared-stops .entry-main{flex:1;min-width:0;overflow-wrap:anywhere}.shared-stops .entry-main small{display:block}.shared-stops .entry a{white-space:nowrap}@media(max-width:650px){.two{grid-template-columns:1fr}}
+
+.vd-delete{display:inline-grid;place-items:center;width:38px;height:38px;padding:0;border:1px solid #9f5261;border-radius:10px;background:#4d202a;color:#ff8799;cursor:pointer;vertical-align:middle}
+.vd-delete svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:2.3;stroke-linecap:round;stroke-linejoin:round}
+.vd-delete:hover,.vd-delete:focus-visible{background:#7a2938;color:#fff;outline:2px solid #fc8291}
+.entry-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:7px 0}
+.vd-dialog{width:min(95vw,470px);max-height:90vh;overflow:auto;border:1px solid #547c94;border-radius:16px;background:#112738;color:#effaff;padding:22px;box-shadow:0 25px 90px #000b}
+.vd-dialog::backdrop{background:#000b}.vd-dialog h2{margin:0 0 10px}.vd-dialog p{line-height:1.5}
+.vd-dialog .button{display:block;width:100%;margin:8px 0;text-align:left}
 </style></head><body><div class="wrap">
 <header><div><div class="muted">VIADECK · SPRÁVA PRÍSTUPU</div><h1>Administrácia</h1></div><a href="./index.html">← Späť k ViaDecku</a></header>
 <div class="panel" id="access">Overujem oprávnenie vlastníka…</div>
@@ -10,7 +18,7 @@
  <section class="panel"><h2>Pozvať vodiča</h2><p class="muted">Pridaj presnú adresu jeho Google účtu. Ostatní sa k dátam ViaDecku nedostanú.</p><label for="inviteEmail">E-mail</label><input type="email" id="inviteEmail" placeholder="vodic@gmail.com"><button id="inviteAdd" class="button">Pridať pozvánku</button><div id="invites"></div></section>
  <section class="panel"><h2>Používatelia</h2><p class="muted">Pozastavenie účtu okamžite zablokuje prístup k online dátam. Lokálne dáta sa na jeho zariadení neodstraňujú.</p><div id="members"></div></section>
 </div>
-<section class="panel"><h2>Návrhy spoločných trás</h2><p class="muted">Schválením sa vytvorí nezávislá spoločná kópia. Zastávky potrebné pre trasu sa pridajú do spoločnej databázy, ak tam ešte nie sú. Osobné hlasové hlásenia sa nepublikujú.</p><div id="proposals"></div></section>
+<section class="panel"><h2>Návrhy spoločných trás</h2><p class="muted">Návrhy sa uchovávajú maximálne 30 dní po vytvorení; pri otvorení administrácie sa staršie záznamy čistia. Na nepretržité vynucovanie lehoty treba plánované čistenie na serveri. Neodsúhlasené návrhy môžeš zmazať aj ručne. </p><p class="muted">Schválením sa vytvorí nezávislá spoločná kópia. Zastávky potrebné pre trasu sa pridajú do spoločnej databázy, ak tam ešte nie sú. Osobné hlasové hlásenia sa nepublikujú.</p><div id="proposals"></div></section>
 <section class="panel"><h2>Spoločné zastávky a trasy</h2>
  <div id="sharedInfo" class="muted">Načítavam…</div>
  <p class="muted">Na tvorbu a úpravu používame <strong>rovnaký editor ako vo ViaDecku</strong>: nástupištia, tarifné systémy, GPS body, výber z mapy. Po uložení sa spoločná zastávka publikuje všetkým schváleným vodičom.</p>
@@ -20,11 +28,20 @@
  <p class="muted">Existujúce predvolené zastávky sa zobrazujú každému aj bez publikovania. Tento zoznam obsahuje dodatočne publikované alebo upravené spoločné zastávky. Ich úprava sa ostatným používateľom načíta po obnovení aplikácie.</p>
 </section>
 <div class="status" id="result">Pripravené.</div>
+<dialog id="vd-delete-member-dialog" class="vd-dialog" aria-labelledby="vd-delete-member-title">
+ <h2 id="vd-delete-member-title">Odstrániť pozastaveného vodiča</h2>
+ <p id="vd-delete-member-detail"></p>
+ <p class="muted">Prístup sa odoberie a pozvánka sa vypne, aby sa účet neprihlásil znova automaticky. Firebase Authentication účet zostane existovať, kým ho neodstrániš cez zabezpečený Admin SDK alebo Firebase Console.</p>
+ <button type="button" class="button alt" id="vd-archive-member">Odstrániť prístup a ARCHIVOVAŤ dáta v databáze</button>
+ <button type="button" class="button danger" id="vd-erase-member">Odstrániť prístup a NATRVALO VYMAZAŤ dáta</button>
+ <button type="button" class="button alt" id="vd-cancel-member">Zrušiť</button>
+</dialog>
 </div>
 </div>
 <script>
 'use strict';
-const $=id=>document.getElementById(id);let db,auth,adminEmail='',membersCache={},profilesCache={},sharedCache={};
+const $=id=>document.getElementById(id);let db,auth,adminEmail='',membersCache={},profilesCache={},sharedCache={},invitesCache={};
+const vdPendingPrune=new Set(); const VD_RETENTION_MS=30*24*60*60*1000;
 function status(s){$('result').textContent=s;}
 function node(t,cls,v){const n=document.createElement(t);if(cls)n.className=cls;if(v!==undefined)n.textContent=v;return n;}
 function btn(label,onclick,cls='button'){const b=node('button',cls,label);b.onclick=()=>{b.disabled=true;Promise.resolve().then(onclick).catch(e=>status('Chyba: '+String(e.message||e))).finally(()=>b.disabled=false);};return b;}
@@ -41,10 +58,10 @@ async function init(){
    adminEmail=user.email||'';
    try{const result=await db.ref('owners/'+user.uid).once('value');if(result.val()!==true)throw Error('Tento účet nemá práva vlastníka.');
     $('access').textContent='Prihlásený vlastník: '+adminEmail;$('adminContent').hidden=false;
-    db.ref('invites').on('value',s=>renderInvites(s.val()||{}),error);
+    db.ref('invites').on('value',s=>{invitesCache=s.val()||{};renderInvites(invitesCache);},error);
     db.ref('members').on('value',s=>{membersCache=s.val()||{};renderMembers(membersCache);},error);
     db.ref('profiles').on('value',s=>{profilesCache=s.val()||{};renderMembers(membersCache);},()=>{});
-    db.ref('proposals').on('value',s=>renderProposals(s.val()||{}),error);
+    db.ref('proposals').on('value',s=>{const items=s.val()||{};void pruneOldProposals(items);renderProposals(items);},error);
     db.ref('shared').on('value',s=>{sharedCache=s.val()||{};$('sharedInfo').textContent='Spoločné zastávky: '+Object.keys(sharedCache.stops||{}).length+' · spoločné trasy: '+Object.keys(sharedCache.routes||{}).length;renderSharedStops();},error);
    }catch(e){$('access').textContent='Prístup odmietnutý: '+String(e.message||e);}
   });
@@ -56,13 +73,70 @@ async function init(){
  }catch(e){$('access').textContent='Chyba inicializácie: '+String(e.message||e);}
 }
 function error(e){status('Chyba prístupu: '+e.message);}
-function renderInvites(items){const host=$('invites');host.replaceChildren();const entries=Object.entries(items);if(!entries.length){host.append(node('p','muted','Zatiaľ žiadne pozvánky.'));return;}
- for(const [key,item] of entries){const row=node('div','entry'),top=node('div','row');top.append(node('span','',item.email||key),node('small','',item.enabled?'Pozvaný':'Pozvánka vypnutá'));
-  row.append(top,btn(item.enabled?'Vypnúť pozvánku':'Obnoviť pozvánku',()=>db.ref('invites/'+key+'/enabled').set(!item.enabled),'button alt'));host.append(row);}
+const VD_CROSS='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19"/></svg>';
+function deleteIcon(label,onclick){
+ const b=document.createElement('button');b.type='button';b.className='vd-delete';b.title=label;b.setAttribute('aria-label',label);b.innerHTML=VD_CROSS;
+ b.onclick=async()=>{b.disabled=true;try{await onclick();}catch(e){status('Chyba: '+String(e.message||e));}finally{b.disabled=false;}};return b;
 }
-function renderMembers(items){const host=$('members');host.replaceChildren();const entries=Object.entries(items);if(!entries.length){host.append(node('p','muted','Žiadni registrovaní vodiči.'));return;}
- for(const [uid,item] of entries){const row=node('div','entry');row.append(node('div','',profilesCache[uid]?.displayName||item.displayName||item.email||uid),node('small','',(item.email||uid)+' · '+(item.status==='active'?'Aktívny':'Pozastavený')));
-  row.append(btn(item.status==='active'?'Pozastaviť':'Povoliť',()=>db.ref('members/'+uid+'/status').set(item.status==='active'?'suspended':'active'),'button alt'));host.append(row);}
+function renderInvites(items){
+ const host=$('invites');host.replaceChildren();const entries=Object.entries(items).sort((a,b)=>String(a[1].email).localeCompare(String(b[1].email)));
+ if(!entries.length){host.append(node('p','muted','Zatiaľ žiadne pozvánky.'));return;}
+ for(const [key,item] of entries){
+  const row=node('div','entry'),top=node('div','row'),actions=node('div','entry-actions');
+  top.append(node('span','',item.email||key),node('small','',item.enabled?'Pozvaný':'Pozvánka vypnutá'));
+  actions.append(btn(item.enabled?'Vypnúť pozvánku':'Obnoviť pozvánku',()=>db.ref('invites/'+key+'/enabled').set(!item.enabled),'button alt'));
+  if(item.enabled===false)actions.append(deleteIcon('Vymazať vypnutú pozvánku',async()=>{
+   if(!confirm('Natrvalo odstrániť vypnutú pozvánku pre '+(item.email||key)+'?'))return;
+   await db.ref('invites/'+key).remove();status('Vypnutá pozvánka bola odstránená.');
+  }));
+  row.append(top,actions);host.append(row);
+ }
+}
+async function chooseMemberDeletion(item,uid){
+ const dialog=$('vd-delete-member-dialog');$('vd-delete-member-detail').textContent='Vodič: '+String(item.email||uid)+'\n\nVyber, čo sa má stať s jeho osobnými dátami.';
+ return new Promise(resolve=>{
+  let done=false;const finish=result=>{if(done)return;done=true;dialog.close();resolve(result);};
+  $('vd-archive-member').onclick=()=>finish('archive');
+  $('vd-erase-member').onclick=()=>finish('erase');
+  $('vd-cancel-member').onclick=()=>finish(null);
+  dialog.oncancel=e=>{e.preventDefault();finish(null);};dialog.onclose=()=>{if(!done){done=true;resolve(null);}};
+  dialog.showModal();
+ });
+}
+async function deleteSuspendedMember(uid,item){
+ if(!auth.currentUser||uid===auth.currentUser.uid)throw Error('Svoj vlastný účet nemôžeš odstrániť.');
+ const current=(await db.ref('members/'+uid).once('value')).val();
+ if(!current||current.status!=='suspended')throw Error('Účet už nie je pozastavený. Obnov administráciu.');
+ const choice=await chooseMemberDeletion(current,uid);if(!choice)return;
+ if(choice==='erase'&&!confirm('Posledné potvrdenie: skutočne NATRVALO vymazať všetky osobné údaje '+(current.email||uid)+' z Realtime Database? Túto akciu nie je možné vrátiť.'))return;
+ const [personal,profile,proposals,sessions]=await Promise.all([
+  db.ref('userData/'+uid).once('value'),db.ref('profiles/'+uid).once('value'),db.ref('proposals').once('value'),db.ref('sessions').once('value')
+ ]);
+ const ownProposals=Object.fromEntries(Object.entries(proposals.val()||{}).filter(([,p])=>p?.authorUid===uid));
+ const ownSessions=Object.entries(sessions.val()||{}).filter(([,s])=>s?.ownerUid===uid).map(([id])=>id);
+ const updates={['members/'+uid]:null,['userData/'+uid]:null,['profiles/'+uid]:null};
+ for(const id of Object.keys(ownProposals))updates['proposals/'+id]=null;
+ for(const id of ownSessions)updates['sessions/'+id]=null;
+ if(current.inviteKey&&invitesCache[current.inviteKey])updates['invites/'+current.inviteKey+'/enabled']=false;
+ if(choice==='archive'){
+  updates['archivedUsers/'+uid]={member:current,profile:profile.val()||null,userData:personal.val()||null,proposals:ownProposals,archivedAt:firebase.database.ServerValue.TIMESTAMP,archivedBy:auth.currentUser.uid};
+ }
+ await db.ref().update(updates);
+ status(choice==='archive'?'Prístup odstránený. Dáta presunuté do archivedUsers/'+uid+'.':'Prístup odstránený. Osobné dáta z Realtime Database boli vymazané. Firebase Authentication účet sa nemaže automaticky.');
+}
+function renderMembers(items){
+ const host=$('members');host.replaceChildren();const entries=Object.entries(items);
+ if(!entries.length){host.append(node('p','muted','Žiadni registrovaní vodiči.'));return;}
+ for(const [uid,item] of entries){
+  const row=node('div','entry');row.append(node('div','',profilesCache[uid]?.displayName||item.displayName||item.email||uid),node('small','',(item.email||uid)+' · '+(item.status==='active'?'Aktívny':'Pozastavený')));
+  const actions=node('div','entry-actions');actions.append(btn(item.status==='active'?'Pozastaviť':'Povoliť',()=>db.ref('members/'+uid+'/status').set(item.status==='active'?'suspended':'active'),'button alt'));
+  if(item.status==='suspended'&&uid!==auth.currentUser?.uid)actions.append(deleteIcon('Odstrániť pozastaveného používateľa',()=>deleteSuspendedMember(uid,item)));
+  row.append(actions);host.append(row);
+ }
+}
+async function pruneOldProposals(items){
+ const now=Date.now();const outdated=Object.entries(items).filter(([id,p])=>p&&Number.isFinite(p.createdAt)&&p.createdAt>0&&p.createdAt<=now-VD_RETENTION_MS&&!vdPendingPrune.has(id));
+ for(const [id] of outdated){vdPendingPrune.add(id);db.ref('proposals/'+id).remove().catch(e=>status('Starý návrh '+id+' sa nepodarilo vymazať: '+e.message)).finally(()=>vdPendingPrune.delete(id));}
 }
 
 function renderSharedStops(){
@@ -96,7 +170,7 @@ async function approve(id,item){
  updates['proposals/'+id+'/status']='approved';updates['proposals/'+id+'/reviewedAt']=firebase.database.ServerValue.TIMESTAMP;
  await db.ref().update(updates);status('Spoločná trasa bola schválená a publikovaná.');
 }
-function renderProposals(items){const host=$('proposals');host.replaceChildren();const entries=Object.entries(items).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));if(!entries.length){host.append(node('p','muted','Zatiaľ bez návrhov.'));return;}
+function renderProposals(items){const host=$('proposals');host.replaceChildren();const entries=Object.entries(items).filter(([,p])=>!Number.isFinite(p?.createdAt)||Number(p.createdAt)+VD_RETENTION_MS>Date.now()).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));if(!entries.length){host.append(node('p','muted','Zatiaľ bez návrhov.'));return;}
  for(const [id,item] of entries){const row=node('div','entry');row.append(node('strong','',item.name||'Bez názvu'));
   row.append(node('div','muted',item.authorUid+' · '+(item.status||'?')+' · '+new Date(item.createdAt||0).toLocaleDateString('sk-SK')));
   if(item.status==='pending'){
@@ -106,6 +180,10 @@ function renderProposals(items){const host=$('proposals');host.replaceChildren()
    if(Array.isArray(stops))for(const stop of stops.slice(0,100))preview.append(node('div','muted',String(stop.name||'?')+' ['+String(stop.id||'?')+'] '+JSON.stringify(stop.platforms?.[0]||[])));
    row.append(preview,btn('Schváliť',()=>approve(id,item)),btn('Zamietnuť',()=>db.ref('proposals/'+id).update({status:'rejected',reviewedAt:firebase.database.ServerValue.TIMESTAMP}),'button danger'));
   }
+  if(item.status!=='approved')row.append(deleteIcon('Vymazať neschválený návrh trasy',async()=>{
+   if(!confirm('Natrvalo odstrániť návrh trasy „'+(item.name||'Bez názvu')+'“?'))return;
+   await db.ref('proposals/'+id).remove();status('Návrh bol odstránený.');
+  }));
   host.append(row);
  }
 }

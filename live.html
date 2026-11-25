@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07131e">
-<meta name="description" content="ViaDeck Live – sledovanie zdieľanej jazdy, celá trasa a mapa">
+<meta name="description" content="ViaDeck Live – sledovanie zdieľanej jazdy, celá trasa a monochromatická mapa">
 <title>ViaDeck Live</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous">
 <style>
@@ -129,7 +129,7 @@ function switchPane(name){
 async function startMap(){
  if(!window.L)await loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
  if(!map){map=L.map('routeMap',{zoomControl:true}).setView([48.15,17.11],12);
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap prispievatelia'}).addTo(map);
+ L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:19,attribution:'© OpenStreetMap prispievatelia · © CARTO'}).addTo(map);
  routeLayer=L.layerGroup().addTo(map);stopLayer=L.layerGroup().addTo(map);}
  $('mapPlaceholder').hidden=true;setTimeout(()=>map.invalidateSize(),80);
  if(lastData?.public)refreshMap(lastData.public);

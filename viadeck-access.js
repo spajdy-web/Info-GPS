@@ -1,4 +1,4 @@
-/* ViaDeck 0.6.1 – Google login / scoped data / invitation / sync.
+/* ViaDeck 0.7.0 – Google login / scoped data / invitation / sync.
  * Loaded AFTER the inert ViaDeck core. No app code executes until access is granted.
  * Browser-side access gate is UX only: database rules provide authorization.
  */
@@ -13,6 +13,7 @@ const KEYS={
  'gps-info-v04-gtfs-meta':'gtfsMeta',
  'gps-info-v05-routes':'routes',
  'gps-info-v054-voice-library':'voice',
+ 'gps-info-v07-destinations':'destinations',
  'gps-info-v055-open-settings':'accordion'
 };
 const $=id=>document.getElementById(id);
@@ -171,7 +172,7 @@ async function proposeRoute(route,stops){
  if(!database||!activeUid)throw Error('Nie si prihlásený.');
  const routeJson=JSON.stringify(route),stopsJson=JSON.stringify(stops);
  if(routeJson.length>180000||stopsJson.length>180000)throw Error('Trasa je na odoslanie príliš veľká.');
- await database.ref('proposals').push({authorUid:activeUid,name:route.name||'Trasa',status:'pending',routeJson,stopsJson,createdAt:window.firebase.database.ServerValue.TIMESTAMP});
+ await database.ref('proposals').push({authorUid:activeUid,name:route.name||'Trasa',status:'pending',routeJson,stopsJson,createdAt:window.firebase.database.ServerValue.TIMESTAMP,expiresAt:Date.now()+30*86400000});
 }
 let driverProfile={displayName:''};
 async function readDriverProfile(){
@@ -306,7 +307,7 @@ function launchCore(){
  const actions=document.querySelector('.wrap > header .head-actions');
  if(actions)actions.prepend(toolbar);else document.querySelector('.wrap > header')?.append(toolbar);
  installSharedEditorSave();
- document.title=document.title.replace('0.6.0','0.6.1');
+ document.title=document.title.replace('0.6.0','0.7.0').replace('0.6.1','0.7.0');
  handleAdminStopLink();
 }
 async function proceed(user){

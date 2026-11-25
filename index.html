@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#08131d">
-<meta name="description" content="ViaDeck – palubné informácie, trasy, GPS a hlásenia. Verzia 0.6.0">
-<title>ViaDeck · 0.6.0</title>
+<meta name="description" content="ViaDeck – palubné informácie, trasy, GPS a hlásenia. Verzia 0.7.0">
+<title>ViaDeck · 0.7.0</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23082640%22%2F%3E%3Cpath%20d%3D%22M9%2045Q17%2020%2048%2015%22%20fill%3D%22none%22%20stroke%3D%22%232de5ef%22%20stroke-width%3D%228%22%20stroke-linecap%3D%22round%22%2F%3E%3Ccircle%20cx%3D%2215%22%20cy%3D%2242%22%20r%3D%225%22%20fill%3D%22white%22%2F%3E%3Ccircle%20cx%3D%2246%22%20cy%3D%2217%22%20r%3D%225%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E">
 
 <style>
@@ -426,6 +426,23 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
 .live-share-opt input{width:19px;height:19px;accent-color:#35bae7;flex:none}
 .live-share-actions{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.live-share-linkbox{margin:16px 0 0;border-top:1px solid var(--line);padding-top:12px}.live-share-linkbox label{display:block;margin-bottom:7px;color:#bdd7e4}.live-share-linkrow{display:flex;gap:8px}.live-share-linkrow input{flex:1;min-width:0;border-radius:9px;border:1px solid #315266;background:#0d1d2c;color:#eefaff;padding:10px}
 .live-share-qr{background:#fff;display:table;margin:14px auto;padding:9px;border-radius:9px}.live-share-qr:empty{display:none}.live-share-qr canvas,.live-share-qr img{display:block;max-width:180px}
+<style id="vd070styles">
+.vd-route-tools{display:flex;gap:5px;align-items:center;flex-shrink:0}
+.vd-tool-icon,.vd-active-dest-btn,.vd-dest-library-icon{display:inline-flex;align-items:center;justify-content:center;border:1px solid #386075;background:#173c53;color:#d9f4fc;border-radius:9px;cursor:pointer;width:37px;height:37px;flex:0 0 auto}
+.vd-route-tools svg,.vd-active-dest-btn svg,.vd-dest-library-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round}
+.vd-active-dest-btn{position:absolute;right:11px;top:9px;width:30px;height:28px;background:#163746;z-index:3}
+.destination-card{position:relative}.destination-card .destination-label{padding-right:35px}
+.vd-dest-library-icon{padding:7px!important;width:40px;height:40px}
+.vd-insert-voice-btn{font-size:11px;border:1px solid #5386a1;background:#173a51;color:#eaf9ff;padding:6px 8px;border-radius:8px;cursor:pointer;margin-left:7px}
+.vd-target-source{display:grid;gap:7px;padding:9px 10px;border:1px solid #39576a;border-radius:9px}
+.vd-target-source label{display:grid;gap:4px}.vd-target-source select{width:100%}
+.vd-lib-inline{font-size:12px;color:#abedff;border:1px solid #44768d;background:#163e53;border-radius:8px;padding:8px;cursor:pointer}
+.vd-dest-dialog{width:min(95vw,650px);max-height:min(90vh,820px);overflow:auto;border:1px solid #528097;border-radius:17px;padding:17px;background:#102737;color:#f1faff;box-shadow:0 25px 80px #000a}
+.vd-dest-dialog::backdrop{background:#000b}.vd-dest-dialog h2{font-size:20px;margin:0 0 12px}.vd-dest-dialog input,.vd-dest-dialog select{width:100%;padding:11px;border-radius:8px;border:1px solid #507890;background:#0a1b29;color:#f4faff;margin:4px 0 10px}
+.vd-dest-dialog label{display:block;font-size:12px;color:#b5d4df}.vd-dest-row{padding:10px 0;border-bottom:1px solid #3a5b6c;display:flex;gap:8px;align-items:center;justify-content:space-between}.vd-dest-row strong{font-size:13px;overflow-wrap:anywhere}.vd-dest-actions{display:flex;gap:6px;flex-wrap:wrap}
+.vd-dest-dialog button{background:#225673;border:1px solid #5a91ac;border-radius:9px;color:white;padding:9px 11px;cursor:pointer}
+.vd-dest-dialog button.vd-danger{background:#5d2331;border-color:#b65e6c;color:#ff9aa5}.vd-dest-list{max-height:42vh;overflow:auto;margin-top:12px}
+@media(max-width:400px){.route-edit-head h2{font-size:17px}.vd-route-tools{gap:3px}.vd-tool-icon{width:32px;height:34px}.vd-insert-voice-btn{font-size:10px}}
 </style>
 </head>
 <body>
@@ -474,7 +491,7 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
 <div class="carousel-map-stage" id="carouselMapStage"><canvas id="carouselMapFallback" class="carousel-map-schematic" role="img" aria-label="Náhradná schéma trasy a aktuálnej GPS polohy"></canvas><div id="carouselMap" class="carousel-map-tiles" hidden aria-label="Mapa s vyznačenou cestnou geometriou trasy"></div><span id="carouselMapNote" class="carousel-map-note">Pripravujem mapu…</span></div>
 <div class="carousel-map-legend"><span><i class="carousel-map-line"></i>Vypočítaná cesta</span><span><i class="carousel-map-line is-guide"></i>Úsek bez cestnej geometrie</span><span>● GPS poloha</span></div></div>
 </div>
-<div id="routeProgressFooter" class="route-progress-footer" hidden><div class="route-nav-arrows"><button type="button" id="routePrevBtn" aria-label="Predchádzajúca zastávka" title="Späť o zastávku">↑</button><button type="button" id="routeNextBtn" aria-label="Nasledujúca zastávka" title="Ďalej o zastávku">↓</button></div><div class="destination-card"><div class="destination-label">CIEĽ</div><div class="destination-title" id="routeDestinationTitle"><span class="destination-line" id="routeDestinationLine" hidden></span><strong id="routeDestinationName">—</strong></div><div class="destination-dot-sign" id="routeDestinationDots" hidden role="img" aria-label="Cieľ na bodovom displeji"><canvas id="routeDestinationCanvas" aria-hidden="true"></canvas></div><div class="destination-arrival"><span>Plánovaný príchod</span><div id="routeDestinationTimes" class="destination-time-values"><b id="routeDestinationTime">—:—</b><b id="routeDestinationEstimate" class="destination-estimate" hidden>—:—</b></div></div></div></div>
+<div id="routeProgressFooter" class="route-progress-footer" hidden><div class="route-nav-arrows"><button type="button" id="routePrevBtn" aria-label="Predchádzajúca zastávka" title="Späť o zastávku">↑</button><button type="button" id="routeNextBtn" aria-label="Nasledujúca zastávka" title="Ďalej o zastávku">↓</button></div><div class="destination-card"><div class="destination-label">CIEĽ</div><button type="button" id="vdActiveDestinationBtn" class="vd-active-dest-btn" title="Zmeniť cieľ a linku počas jazdy" aria-label="Zmeniť cieľ a linku"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 14h7M17 14l2-2"/></svg></button><div class="destination-title" id="routeDestinationTitle"><span class="destination-line" id="routeDestinationLine" hidden></span><strong id="routeDestinationName">—</strong></div><div class="destination-dot-sign" id="routeDestinationDots" hidden role="img" aria-label="Cieľ na bodovom displeji"><canvas id="routeDestinationCanvas" aria-hidden="true"></canvas></div><div class="destination-arrival"><span>Plánovaný príchod</span><div id="routeDestinationTimes" class="destination-time-values"><b id="routeDestinationTime">—:—</b><b id="routeDestinationEstimate" class="destination-estimate" hidden>—:—</b></div></div></div></div>
 <div class="stats"><div class="stat"><div class="stat-label">RÝCHLOSŤ</div><div class="stat-value"><span id="speed">—</span><small> km/h</small></div></div><div class="stat"><div class="stat-label">SMER</div><div class="stat-value"><span id="heading">—</span><small> °</small></div></div><div class="stat"><div class="stat-label">GPS PRESNOSŤ</div><div class="stat-value"><span id="accuracy">—</span><small> m</small></div></div></div>
 <div class="note" id="infoBox"><strong>Pripravené.</strong> Ťukni na GPS v spodnej lište a povoľ polohu. Táto verzia zatiaľ nezaručuje správne poradie zastávok podľa smeru jazdy.</div>
 <div class="status-bottom" id="lastFix">Zastávky: 7 predinštalovaných · poloha sa nesleduje</div>
@@ -498,13 +515,13 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
 </section>
 <section id="screen-route" class="screen route-section" hidden>
   <div id="routeBrowse">
-    <div class="page-header"><div><div class="screen-eyebrow">VLASTNÉ TRASY</div><h1 class="page-title">Trasy <span class="count-pill" id="routesCount">0</span></h1></div><div class="actions-row"><button class="btn secondary voice-library-icon" type="button" id="openVoiceLibraryBtn" title="Knižnica hlásení" aria-label="Otvoriť knižnicu hlásení"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4h4l10 5V5L7 10H3Z"/><path d="M20 9c1.2 1.2 1.2 4.8 0 6"/><path d="M22 6c3 3.4 3 8.6 0 12"/></svg></button><button class="btn btn-add" id="addRouteBtn" type="button">+ Pridať</button></div></div>
+    <div class="page-header"><div><div class="screen-eyebrow">VLASTNÉ TRASY</div><h1 class="page-title">Trasy <span class="count-pill" id="routesCount">0</span></h1></div><div class="actions-row"><button class="btn secondary voice-library-icon" type="button" id="openVoiceLibraryBtn" title="Knižnica hlásení" aria-label="Otvoriť knižnicu hlásení"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4h4l10 5V5L7 10H3Z"/><path d="M20 9c1.2 1.2 1.2 4.8 0 6"/><path d="M22 6c3 3.4 3 8.6 0 12"/></svg></button><button class="btn secondary vd-dest-library-icon" type="button" id="vdDestinationLibraryBtn" title="Knižnica cieľov" aria-label="Otvoriť knižnicu cieľov"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 14h7M17 14l2-2"/></svg></button><button class="btn btn-add" id="addRouteBtn" type="button">+ Pridať</button></div></div>
     <p class="description">Usporiadaj zastávky, nástupištia a smerové body. Geometriu po cestách môžeš vypočítať a uložiť k trase. Trasy zostávajú uložené v tomto zariadení.</p>
     <div id="routeLibrary" class="route-library"></div>
     <div id="routesEmpty" class="empty-routes" style="margin-top:7vh"><div class="empty-icon"><svg aria-hidden="true"><use href="#ic-route"/></svg></div><h1>Prvá trasa</h1><p>Vytvor trasu zo zastávok, ktoré už máš v databáze.</p><button type="button" class="btn" id="emptyAddRouteBtn">+ Pridať trasu</button></div>
   </div>
   <div id="routeEditor" class="route-edit" hidden>
-    <div class="route-edit-head"><div><div class="screen-eyebrow">EDITOR TRASY</div><h2 id="routeEditorTitle">Nová trasa</h2></div><button type="button" id="routeCancelTop" class="mini-icon" aria-label="Zrušiť úpravu">×</button></div>
+    <div class="route-edit-head"><div><div class="screen-eyebrow">EDITOR TRASY</div><h2 id="routeEditorTitle">Nová trasa</h2></div><div class="vd-route-tools"><button type="button" id="vdGeomTop" class="vd-tool-icon" title="Upraviť geometriu na mape" aria-label="Upraviť geometriu trasy"><svg viewBox="0 0 24 24"><path d="M4 17 9 7l6 10 5-9"/><circle cx="4" cy="17" r="2"/><circle cx="9" cy="7" r="2"/><circle cx="15" cy="17" r="2"/><circle cx="20" cy="8" r="2"/></svg></button><button type="button" id="vdVoiceTop" class="vd-tool-icon" title="Pridať hlasový bod" aria-label="Pridať hlasový bod"><svg viewBox="0 0 24 24"><path d="M3 10v4h4l8 5V5l-8 5H3zM19 8v8M15 12h8"/></svg></button><button type="button" id="routeCancelTop" class="mini-icon" aria-label="Zrušiť úpravu">×</button></div></div>
     <div class="route-form-grid">
       <label class="route-field wide">Názov trasy <input id="routeName" maxlength="80" placeholder="Napr. Jurajov dvor → Dlhé diely" required></label>
       <label class="route-field">Číslo linky (voliteľné) <input id="routeLine" maxlength="14" placeholder="N33"></label>
@@ -550,8 +567,8 @@ body.route-in-progress .feedback{bottom:calc(188px + env(safe-area-inset-bottom)
 </div></details>
 <details class="panel settings-accordion"><summary class="settings-summary"><span>Panel a carousel</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="settings-contents"><div class="field"><label for="carouselInterval">Interval automatického prepínania</label><select id="carouselInterval"><option value="10">10 sekúnd</option><option value="20">20 sekúnd</option><option value="30">30 sekúnd</option></select><p class="range-hint">Zastávky, mapa a odchody sa striedajú aj pri státí v zastávke. Pred odbočením môže zostať mapa dočasne podržaná.</p></div><label class="toggle"><span><strong>Zobraziť ovládanie carouselu</strong><br><small class="tiny">Nadpis „Ďalšie zastávky / Odchody“ a ručné prepínanie. Predvolene skryté; automatické striedanie zostáva zapnuté.</small></span><input type="checkbox" id="showCarouselControls"></label><label class="toggle"><span><strong>Mapa trasy v carouseli</strong><br><small class="tiny">Automaticky striedať mapu so zastávkami a prípadnými odchodmi, ak má trasa vypočítanú geometriu.</small></span><input type="checkbox" id="carouselMapEnabled"></label><label class="toggle"><span><strong>Podržať mapu pred odbočením</strong><br><small class="tiny">Pri výraznej zmene smeru na vypočítanej ceste zostane mapa zobrazená až po prejdení odbočenia. Nie je to detektor všetkých križovatiek.</small></span><input type="checkbox" id="carouselTurnHoldEnabled"></label><div class="field"><label for="destinationDisplayStyle">Vzhľad cieľového displeja</label><select id="destinationDisplayStyle"><option value="classic">Klasický (veľký text)</option><option value="flipdot">Flip-dot (jantárové bodky)</option><option value="lcd">Bodový LCD (zelené body)</option></select><p class="range-hint">Číslo linky sa zobrazí pred cieľom, ak je v trase vyplnené. Bodový displej používa skutočne vykreslené body a funguje aj offline.</p></div></div></details><details class="panel settings-accordion"><summary class="settings-summary"><span>Databáza zastávok</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="settings-contents"><p>Bratislavské zastávky sa dajú doplniť z oficiálneho GTFS DPB (stop_id, platform_code, zóny). Pri prvom načítaní sa archív uloží do prehliadača. Pri neúspechu môžeš získať ZIP <a href="https://www.arcgis.com/sharing/rest/content/items/aba12fd2cbac4843bc7406151bc66106/data" target="_blank" rel="noopener noreferrer">z oficiálneho zdroja</a> a nahrať ho v Zastávkach. Nezadané zóny zostanú neznáme.</p><p>Predinštalované zastávky aj vlastné body môžeš upraviť v sekcii Zastávky. Zmeny zostávajú uložené v tomto prehliadači.</p><div class="actions-row"><button class="btn secondary" id="exportStopsBtn">↓ Export zálohy JSON</button><button class="btn secondary" id="importStopsBtn">↑ Import zálohy</button><input id="importStopsFile" type="file" accept=".json,application/json" hidden></div><button class="btn secondary reset-button" id="restoreDefaultsBtn">Obnoviť predvolené zastávky</button></div></details>
 <details class="panel settings-accordion"><summary class="settings-summary"><span>Správanie počas jazdy</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="settings-contents"><p>Systém prednostne vyberá zastávky približne do ±45° od GPS smeru. Pri státí uchová posledný spoľahlivý smer. Po opustení zastávky ju krátko vynechá, aby sa nevrátila na panel. Pri neznámom smere sa zobrazujú najbližšie body podľa vzdialenosti.</p></div></details><details class="panel settings-accordion"><summary class="settings-summary"><span>Test bez jazdy</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="settings-contents"><p>Simulácia postupne prejde cez sedem vložených zastávok. Údaje sú jasne označené ako DEMO a nesmú sa zamieňať so skutočnou polohou.</p><div class="actions-row"><button class="btn secondary" id="startDemo">Spustiť demo</button><button class="btn secondary" id="stopDemo" hidden>Ukončiť demo</button></div></div></details><details class="panel settings-accordion"><summary class="settings-summary"><span>Odchodové tabule · experiment</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="settings-contents"><p>V sekcii Zastávky → ✎ upraviť môžeš ku konkrétnej zastávke pridať URL odchodovej tabule iMHD. Panel strieda ďalšie zastávky, mapu trasy a originálnu tabuľu v iframe v nastavenom intervale. Do 100 m pred zastávkou uprednostní odchody (ak je URL nastavená), ale pri státí v zastávke ich nezamyká; po prejazde ich vypne podľa nastavenej vzdialenosti. Žiadne odchody automaticky nesťahujeme ani nezobrazujeme v našom dizajne.</p></div></details>
-<details class="panel settings-accordion"><summary class="settings-summary"><span>ViaDeck · verzia 0.6.0</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="settings-contents"><p>36 pôvodných zastávok + import DPB GTFS · úpravy a zálohy · offline GPS výpočty · monochromatická vektorová mapa · demo režim.</p><p class="tiny">Zastávky: OpenStreetMap/OMA.sk (ODbL). Mapa: OpenFreeMap / OpenStreetMap © prispievatelia. Na načítanie mapového podkladu je potrebný internet.</p></div></details></section>
-<div class="meta-footer" style="display:none"><span>ViaDeck · 0.6.0</span><span>Údaje: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap / ODbL</a></span></div>
+<details class="panel settings-accordion"><summary class="settings-summary"><span>ViaDeck · verzia 0.7.0</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary><div class="settings-contents"><p>36 pôvodných zastávok + import DPB GTFS · úpravy a zálohy · offline GPS výpočty · monochromatická vektorová mapa · demo režim.</p><p class="tiny">Zastávky: OpenStreetMap/OMA.sk (ODbL). Mapa: OpenFreeMap / OpenStreetMap © prispievatelia. Na načítanie mapového podkladu je potrebný internet.</p></div></details></section>
+<div class="meta-footer" style="display:none"><span>ViaDeck · 0.7.0</span><span>Údaje: <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap / ODbL</a></span></div>
 </main>
 </div>
 <dialog id="routeInsertDialog" class="route-insert-dialog" aria-labelledby="routeInsertTitle">
@@ -1078,11 +1095,17 @@ function finishVoiceMapPick(point=null){if(!voiceMapPicker)return;const item=rou
 const routesKey='gps-info-v05-routes';
 let routes=[],routeDraft=null,routeDraftDirty=false,routeGeomEditing=false,routeMoveViaId=null,activeRouteId=null,activeRouteIndex=0,activeRouteStartEpoch=null,routeCompleted=false,pendingRouteId=null,voicePlayed=new Set(),voiceGpsTicks=new Map(),voiceNextSpoken=new Set(),voiceMapPicker=null,roadCalculationBusy=false,routeInside=false,routeExitTicks=0,routeLastDelayMs=0;
 const routeUID=()=>('id-'+Date.now().toString(36)+'-'+Math.floor(Math.random()*1e9).toString(36));
+const vdDestinationStoreKey='gps-info-v07-destinations';
+function vdNormalizeDestinations(items){if(!Array.isArray(items))return [];const ids=new Set();return items.slice(0,250).filter(x=>x&&typeof x==='object').map(x=>({id:String(x.id||routeUID()),code:String(x.code||'').slice(0,48),line:String(x.line||'').slice(0,14),text:String(x.text||'').slice(0,110)})).filter(x=>!ids.has(x.id)&&ids.add(x.id));}
+let vdDestinations=[];try{vdDestinations=vdNormalizeDestinations(JSON.parse(localStorage.getItem(vdDestinationStoreKey)||'[]'));}catch{}
+let vdDestinationOverride=null;
+function vdSaveDestinations(){try{localStorage.setItem(vdDestinationStoreKey,JSON.stringify(vdDestinations));return true;}catch(e){toast('Ciele sa nepodarilo uložiť: '+e.message);return false;}}
+function vdDestinationCaption(d){return (d.code?'['+d.code+'] ':'')+(d.line?d.line+' · ':'')+(d.text||'Bez nápisu');}
 function normalizeRoutes(raw){
  if(!Array.isArray(raw))return [];
  const ids=new Set();return raw.slice(0,100).filter(r=>r&&typeof r==='object'&&typeof r.id==='string'&&!ids.has(r.id)&&ids.add(r.id)).map(r=>{
   const minValue=(v,max)=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))&&Number(v)>=0&&Number(v)<=max?Number(v):null;
-  const steps=Array.isArray(r.steps)?r.steps.slice(0,250).filter(x=>x&&typeof x.stopId==='string').map((x,i)=>({id:typeof x.id==='string'&&x.id?x.id:routeUID()+'-'+i,stopId:x.stopId,platformId:typeof x.platformId==='string'&&x.platformId?x.platformId:null,arrival:typeof x.arrival==='string'?x.arrival:null,departure:typeof x.departure==='string'?x.departure:null,travelMin:minValue(x.travelMin,180),dwellMin:minValue(x.dwellMin,60)??0,roadMin:minValue(x.roadMin,180),roadMeters:minValue(x.roadMeters,200000),roadKey:typeof x.roadKey==='string'?x.roadKey:null,geometryKey:typeof x.geometryKey==='string'?x.geometryKey:null,roadGeometry:Array.isArray(x.roadGeometry)&&x.roadGeometry.length>=2&&x.roadGeometry.length<=360&&x.roadGeometry.every(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite)&&Math.abs(p[0])<=180&&Math.abs(p[1])<=90)?x.roadGeometry:null,destinationStepId:typeof x.destinationStepId==='string'&&x.destinationStepId?x.destinationStepId:null})):[];
+  const steps=Array.isArray(r.steps)?r.steps.slice(0,250).filter(x=>x&&typeof x.stopId==='string').map((x,i)=>({id:typeof x.id==='string'&&x.id?x.id:routeUID()+'-'+i,stopId:x.stopId,platformId:typeof x.platformId==='string'&&x.platformId?x.platformId:null,arrival:typeof x.arrival==='string'?x.arrival:null,departure:typeof x.departure==='string'?x.departure:null,travelMin:minValue(x.travelMin,180),dwellMin:minValue(x.dwellMin,60)??0,roadMin:minValue(x.roadMin,180),roadMeters:minValue(x.roadMeters,200000),roadKey:typeof x.roadKey==='string'?x.roadKey:null,geometryKey:typeof x.geometryKey==='string'?x.geometryKey:null,roadGeometry:Array.isArray(x.roadGeometry)&&x.roadGeometry.length>=2&&x.roadGeometry.length<=360&&x.roadGeometry.every(p=>Array.isArray(p)&&p.length===2&&p.every(Number.isFinite)&&Math.abs(p[0])<=180&&Math.abs(p[1])<=90)?x.roadGeometry:null,destinationStepId:typeof x.destinationStepId==='string'&&x.destinationStepId?x.destinationStepId:null,destinationLibraryId:typeof x.destinationLibraryId==='string'&&x.destinationLibraryId?x.destinationLibraryId:null})):[];
   const vias=Array.isArray(r.via)?r.via.slice(0,500).filter(x=>x&&typeof x.afterStepId==='string'&&Number.isFinite(x.lat)&&Number.isFinite(x.lon)&&Math.abs(x.lat)<=90&&Math.abs(x.lon)<=180).map(x=>({id:typeof x.id==='string'?x.id:routeUID(),afterStepId:x.afterStepId,lat:x.lat,lon:x.lon})):[];
   const announcements=Array.isArray(r.announcements)?r.announcements.slice(0,120).filter(a=>a&&typeof a.announcementId==='string').map(a=>({id:typeof a.id==='string'&&a.id?a.id:routeUID(),kind:a.kind==='gps'?'gps':'after-stop',announcementId:a.announcementId,afterStepId:typeof a.afterStepId==='string'?a.afterStepId:null,lat:a.lat!==null&&a.lat!==undefined&&a.lat!==''&&Number.isFinite(Number(a.lat))?Number(a.lat):null,lon:a.lon!==null&&a.lon!==undefined&&a.lon!==''&&Number.isFinite(Number(a.lon))?Number(a.lon):null,radius:[20,30,50,75,100,150].includes(Number(a.radius))?Number(a.radius):50})):[];
   return {id:r.id,name:String(r.name||'Nepomenovaná trasa').slice(0,80),line:String(r.line||'').slice(0,14),direction:String(r.direction||'').slice(0,80),timeMode:r.timeMode==='road'?'road':'manual',steps,via:vias,announcements};
@@ -1131,14 +1154,14 @@ function finishRouteStart(e){e.preventDefault();const route=routeById(pendingRou
  if(!Number.isFinite(epoch)){toast('Zadaj platný dátum a čas odjazdu.');return;}
  $('routeStartDialog').close();pendingRouteId=null;
  if(state.mode==='demo')stopDemo();
- activeRouteId=route.id;state.carouselTurnHold=null;activeRouteIndex=0;routeCompleted=false;activeRouteStartEpoch=epoch;refreshActiveRouteMapLayer();routeLastDelayMs=0;resetVoiceRouteState();resetStopProgress();resetRouteDetection();
+ activeRouteId=route.id;vdDestinationOverride=null;state.carouselTurnHold=null;activeRouteIndex=0;routeCompleted=false;activeRouteStartEpoch=epoch;refreshActiveRouteMapLayer();routeLastDelayMs=0;resetVoiceRouteState();resetStopProgress();resetRouteDetection();
  switchScreen('home');toast('Trasa „'+route.name+'“ · plánovaný odjazd '+formatRouteClock(epoch)+'.');
 }
 function routeStepJump(delta){
  const route=currentActiveRoute();if(!route)return;
  activeRouteIndex=Math.max(0,Math.min(route.steps.length-1,activeRouteIndex+delta));routeCompleted=false;voiceGpsTicks.clear();resetRouteDetection();update();
 }
-function endRoute(){if(vdLive.session)vdLiveStop(true);state.carouselTurnHold=null;activeRouteId=null;refreshActiveRouteMapLayer();activeRouteIndex=0;routeCompleted=false;activeRouteStartEpoch=null;routeLastDelayMs=0;resetVoiceRouteState();stopSpeaking();resetRouteDetection();resetStopProgress();update();toast('Jazda po trase ukončená.');}
+function endRoute(){if(vdLive.session)vdLiveStop(true);state.carouselTurnHold=null;activeRouteId=null;vdDestinationOverride=null;refreshActiveRouteMapLayer();activeRouteIndex=0;routeCompleted=false;activeRouteStartEpoch=null;routeLastDelayMs=0;resetVoiceRouteState();stopSpeaking();resetRouteDetection();resetStopProgress();update();toast('Jazda po trase ukončená.');}
 function updateRouteProgress(){
  const route=currentActiveRoute();if(!route||!state.position||!Number.isFinite(state.accuracy)||state.accuracy>65)return;
  const step=route.steps[activeRouteIndex],stop=step?findStop(step.stopId):null;if(!stop)return;
@@ -1276,7 +1299,7 @@ function renderRouteInsertSuggestions(){
 }
 function routeInsertionSlot(index){
  const wrapper=el('div','route-insert-slot');const btn=routeButton('+ Vložiť zastávku','route-insert-btn',()=>openRouteInsertion(index),'Vložiť zastávku na pozíciu '+(index+1));
- wrapper.append(btn);return wrapper;
+ wrapper.append(btn);if(index>0&&index<routeDraft.steps.length){wrapper.append(routeButton('+ Hlasový bod','vd-insert-voice-btn',()=>vdAddVoiceAt(index),'Pridať hlasový bod po predchádzajúcej zastávke'));}return wrapper;
 }
 
 function renderRouteSteps(){
@@ -1308,11 +1331,30 @@ function renderRouteSteps(){
    dwellInput.addEventListener('change',()=>{const n=Number(dwellInput.value);step.dwellMin=Number.isFinite(n)&&n>=0&&n<=60?n:0;dwellInput.value=String(step.dwellMin);routeDraftDirty=true;});
    dwellLab.append(el('span','',index===0?'Pobyt na začiatku (min)':'Pobyt na zastávke (min)'),dwellInput);fields.append(dwellLab);
   }
-  const destination=el('label','','');destination.classList.add('span-two');destination.append(el('span','','Cieľ od tejto zastávky'));
-  const target=el('select');target.append(new Option('Bez zmeny cieľa', ''));
-  routeDraft.steps.slice(index).forEach((s,i)=>target.append(new Option((index+i+1)+'. '+(findStop(s.stopId)?.name||'Chýbajúca zastávka'),s.id)));
-  if(step.destinationStepId&&!Array.from(target.options).some(o=>o.value===step.destinationStepId))step.destinationStepId=null;
-  target.value=step.destinationStepId||'';target.addEventListener('change',()=>{step.destinationStepId=target.value||null;routeDraftDirty=true;});destination.append(target);fields.append(destination);
+  const destination=el('div','span-two vd-target-source');
+  const srcLabel=el('label');srcLabel.append(el('span','','Cieľ od tejto zastávky'));
+  const src=el('select');src.setAttribute('aria-label','Zdroj cieľa');src.append(new Option('Bez zmeny cieľa',''),new Option('Cieľ z trasy','route'),new Option('Cieľ z knižnice','library'));
+  srcLabel.append(src);destination.append(srcLabel);
+  const routeLabel=el('label'),routeTarget=el('select');routeLabel.append(el('span','','Zastávka – cieľ z trasy'));
+  routeTarget.append(new Option('Vyber cieľovú zastávku',''));
+  routeDraft.steps.slice(index).forEach((s,i)=>routeTarget.append(new Option((index+i+1)+'. '+(findStop(s.stopId)?.name||'Chýbajúca zastávka'),s.id)));
+  if(step.destinationStepId&&!Array.from(routeTarget.options).some(o=>o.value===step.destinationStepId))step.destinationStepId=null;
+  routeTarget.value=step.destinationStepId||'';routeLabel.append(routeTarget);destination.append(routeLabel);
+  const libLabel=el('label'),libTarget=el('select');libLabel.append(el('span','','Cieľ z knižnice'));
+  libTarget.append(new Option('Vyber uložený cieľ',''));
+  for(const d of vdDestinations)libTarget.append(new Option(vdDestinationCaption(d),d.id));
+  if(step.destinationLibraryId&&!vdDestinations.some(d=>d.id===step.destinationLibraryId))libTarget.append(new Option('⚠ Cieľ bol z knižnice odstránený',step.destinationLibraryId));
+  libTarget.value=step.destinationLibraryId||'';libLabel.append(libTarget);destination.append(libLabel);
+  const libOpen=routeButton('✎ Knižnica cieľov','vd-lib-inline',()=>vdOpenDestLibrary(false),'Spravovať knižnicu cieľov');destination.append(libOpen);
+  const sync=()=>{routeLabel.hidden=src.value!=='route';libLabel.hidden=src.value!=='library';libOpen.hidden=src.value!=='library';};
+  src.value=step.destinationLibraryId?'library':step.destinationStepId?'route':'';sync();
+  src.addEventListener('change',()=>{step.destinationStepId=null;step.destinationLibraryId=null;
+   if(src.value==='route'){step.destinationStepId=routeTarget.value||routeDraft.steps[index]?.id||null;routeTarget.value=step.destinationStepId||'';}
+   if(src.value==='library'){step.destinationLibraryId=libTarget.value||vdDestinations[0]?.id||null;libTarget.value=step.destinationLibraryId||'';}
+   routeDraftDirty=true;sync();});
+  routeTarget.addEventListener('change',()=>{step.destinationStepId=routeTarget.value||null;step.destinationLibraryId=null;routeDraftDirty=true;});
+  libTarget.addEventListener('change',()=>{step.destinationLibraryId=libTarget.value||null;step.destinationStepId=null;routeDraftDirty=true;});
+  fields.append(destination);
   main.append(fields);
   const up=routeButton('↑','',()=>moveRouteStep(index,-1),'Posunúť vyššie'),down=routeButton('↓','',()=>moveRouteStep(index,1),'Posunúť nižšie');up.disabled=index===0;down.disabled=index===routeDraft.steps.length-1;
   const duplicate=routeButton('⧉','',()=>{if(routeDraft.steps.length>=250)return;routeDraft.steps.splice(index+1,0,{...step,id:routeUID()});routeDraftDirty=true;renderRouteSteps();renderRouteAnnouncements();},'Duplikovať zastávku');
@@ -1410,6 +1452,16 @@ function routeDestinationAt(route,index){
   if(found>=i)target=found;
  }
  return {index:target,stop:findStop(route.steps[target].stopId)};
+}
+function vdResolveDestination(route,index,base){
+  let line=String(route?.line||'').trim(),name=base?.stop?.name||'—';
+  if(route&&Array.isArray(route.steps))for(let i=0;i<=index&&i<route.steps.length;i++){
+   const step=route.steps[i];
+   if(step.destinationStepId){const match=route.steps.find(x=>x.id===step.destinationStepId);if(match)name=findStop(match.stopId)?.name||name;line=String(route.line||'').trim();}
+   if(step.destinationLibraryId){const d=vdDestinations.find(x=>x.id===step.destinationLibraryId);if(d){name=d.text||' ';line=d.line||String(route.line||'').trim();}}
+  }
+  if(vdDestinationOverride&&vdDestinationOverride.routeId===route?.id){name=vdDestinationOverride.text||' ';line=vdDestinationOverride.line||'';}
+  return {name,line};
 }
 // GPSInfo 0.5.5: road-conforming geometry is cached per arriving step.
 // The signature includes stop platforms and ordered direction points, so an edited leg
@@ -1531,61 +1583,41 @@ function renderRouteTimeMode(){if(!routeDraft)return;$('routeRoadControls').hidd
 let destinationSignSignature='';
 function drawDestinationSign(line,name,style){
  if(style==='classic'||!currentActiveRoute())return;
- const host=$('routeDestinationDots'),canvas=$('routeDestinationCanvas');
- if(host.hidden||host.clientWidth<50)return;
- const width=Math.max(60,Math.round(host.clientWidth));
- const dpr=Math.min(2,window.devicePixelRatio||1);
- const raw=document.createElement('canvas'),c=raw.getContext('2d',{willReadFrequently:true});
- let font=Math.min(31,Math.max(23,Math.round(width*.092)));
- const prefix=line?line+'  ':'';
- // Snažíme sa udržať číslo linky a cieľ v jednom rade. Dlhé názvy sa môžu zalomiť.
- const maxWidth=width-20;
- const setFont=()=>{c.font='800 '+font+'px Arial, sans-serif';};
- setFont();
- let rows=[prefix+name];
- if(c.measureText(rows[0]).width>maxWidth){
-  const words=name.split(/\s+/).filter(Boolean);
-  // Preferujeme číslo linky v prvom rade (ak existuje).
-  const parts=[];
-  let first=prefix.trim();
-  for(const w of words){
-   const candidate=first?first+' '+w:w;
-   if(first&&c.measureText(candidate).width>maxWidth){parts.push(first);first=w;}else first=candidate;
-  }
-  if(first)parts.push(first);
-  rows=parts.length>1&&parts.length<=2?parts:[prefix+name];
-  // Pre neobvykle dlhé názvy zmenšíme písmo, neorežeme ho.
-  while(font>15&&rows.some(r=>{setFont();return c.measureText(r).width>maxWidth;})){font-=1;}
-  setFont();
-  if(rows.some(r=>c.measureText(r).width>maxWidth)){
-   // Posledná záloha pre súvislé dlhé názvy bez medzier.
-   rows=[prefix+name];while(font>12&&c.measureText(rows[0]).width>maxWidth){font--;setFont();}
-  }
+ const host=$('routeDestinationDots'),canvas=$('routeDestinationCanvas');if(host.hidden||host.clientWidth<50)return;
+ const width=Math.round(host.clientWidth),dpr=Math.min(2,window.devicePixelRatio||1);
+ const raster=document.createElement('canvas'),c=raster.getContext('2d',{willReadFrequently:true});
+ let font=Math.min(30,Math.max(22,Math.round(width*.095))),prefix=String(line||'').trim();
+ const words=String(name||'').trim().split(/\s+/).filter(Boolean),max=width-17;
+ const measure=text=>{c.font='900 '+font+'px Arial, sans-serif';return c.measureText(text).width;};
+ let rows=[];const asOne=(prefix?prefix+'  ':'')+words.join(' ');
+ if(measure(asOne)<=max)rows=[asOne];
+ else{
+  const first=prefix?prefix+'  ':'';let left=first;
+  for(const word of words){const candidate=left?left+' '+word:word;if(measure(candidate)>max&&left.trim()){rows.push(left.trim());left=word;}else left=candidate;}
+  if(left.trim())rows.push(left.trim());
+  if(rows.length>2)rows=[first+words.slice(0,Math.ceil(words.length/2)).join(' '),words.slice(Math.ceil(words.length/2)).join(' ')];
+  while(font>13&&rows.some(x=>measure(x)>max))font--;
+  if(rows.some(x=>measure(x)>max)){rows=[asOne];while(font>11&&measure(asOne)>max)font--;}
  }
- const lineHeight=font+7,height=rows.length*lineHeight+9;
- raw.width=width;raw.height=height;setFont();
- c.fillStyle='#fff';c.textBaseline='alphabetic';
- rows.forEach((txt,i)=>c.fillText(txt,9,(i+1)*lineHeight-5));
- const image=c.getImageData(0,0,width,height).data;
- canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
- canvas.style.width=width+'px';canvas.style.height=height+'px';
- const out=canvas.getContext('2d');out.setTransform(dpr,0,0,dpr,0,0);
- const flip=style==='flipdot',pitch=flip?3.9:3.65;
- out.fillStyle=flip?'#191d1b':'#082a27';out.fillRect(0,0,width,height);
- const lit=flip?'#ffbf52':'#a1f7cb',off=flip?'#30342e':'#164039';
- // Sampling z viac než jedného pixelu zabraňuje blikajúcim dieram v ťahoch písma.
- for(let y=pitch/2;y<height;y+=pitch){
-  for(let x=pitch/2;x<width;x+=pitch){
-   let alpha=0;
-   for(const dy of [-1,0,1])for(const dx of [-1,0,1]){
-    const px=Math.max(0,Math.min(width-1,Math.floor(x+dx))),py=Math.max(0,Math.min(height-1,Math.floor(y+dy)));
-    alpha+=image[(py*width+px)*4+3];
-   }
-   const active=alpha/9>65;
-   out.beginPath();out.arc(x,y,flip?pitch*.38:pitch*.34,0,Math.PI*2);
-   out.fillStyle=active?lit:off;out.fill();
-   if(active&&flip){out.beginPath();out.arc(x-pitch*.11,y-pitch*.12,pitch*.12,0,Math.PI*2);out.fillStyle='#ffe1a0';out.fill();}
+ if(!rows.length)rows=[prefix||' '];
+ const pitch=style==='flipdot'?2.45:2.32;
+ const lineHeight=Math.max(18,Math.ceil(font*1.15)),height=rows.length*lineHeight+10;
+ raster.width=width;raster.height=height;
+ c.font='900 '+font+'px Arial, sans-serif';c.textBaseline='alphabetic';c.fillStyle='#fff';
+ rows.forEach((text,i)=>c.fillText(text,8,6+(i+1)*lineHeight-5));
+ const pixels=c.getImageData(0,0,width,height).data;
+ canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);canvas.style.width=width+'px';canvas.style.height=height+'px';
+ const o=canvas.getContext('2d');o.setTransform(dpr,0,0,dpr,0,0);
+ const flip=style==='flipdot',lit=flip?'#ffb843':'#9bffd2',off=flip?'#30332d':'#123a31';
+ o.fillStyle=flip?'#161916':'#071d1b';o.fillRect(0,0,width,height);
+ for(let y=pitch/2;y<height;y+=pitch)for(let x=pitch/2;x<width;x+=pitch){
+  let sum=0,n=0;
+  for(const dy of [-.72,0,.72])for(const dx of [-.72,0,.72]){
+   const px=Math.max(0,Math.min(width-1,Math.round(x+dx))),py=Math.max(0,Math.min(height-1,Math.round(y+dy)));sum+=pixels[(py*width+px)*4+3];n++;
   }
+  const active=sum/n>=105;
+  o.beginPath();o.arc(x,y,pitch*(active?.44:.32),0,Math.PI*2);o.fillStyle=active?lit:off;o.fill();
+  if(active&&flip){o.beginPath();o.arc(x-pitch*.10,y-pitch*.12,pitch*.14,0,Math.PI*2);o.fillStyle='#ffdc97';o.fill();}
  }
 }
 function syncDestinationSign(line,name){
@@ -1599,7 +1631,7 @@ function syncDestinationSign(line,name){
  const key=[mode,line,name,width].join('|');
  if(key!==destinationSignSignature){destinationSignSignature=key;drawDestinationSign(line,name,mode);}
 }
-window.addEventListener('resize',()=>{destinationSignSignature='';const route=currentActiveRoute();if(route){const dest=routeDestinationAt(route,activeRouteIndex);syncDestinationSign(route.line.trim(),dest?.stop?.name||'—');}});
+window.addEventListener('resize',()=>{destinationSignSignature='';const route=currentActiveRoute();if(route){const dest=routeDestinationAt(route,activeRouteIndex);const target=vdResolveDestination(route,activeRouteIndex,dest);syncDestinationSign(target.line,target.name);}});
 
 function updateTimeDisplays(){
  const route=currentActiveRoute(),schedule=route?routeSchedule(route,activeRouteStartEpoch):[],index=activeRouteIndex;
@@ -1624,7 +1656,7 @@ function updateTimeDisplays(){
  document.body.classList.toggle('route-in-progress',!!route);
  if(route){
   const dest=routeDestinationAt(route,index),destTime=dest?schedule[dest.index]?.arrival:null;
-  const destinationName=dest?.stop?.name||'—',destinationLine=route.line.trim();
+  const {name:destinationName,line:destinationLine}=vdResolveDestination(route,index,dest);
   setText('routeDestinationName',destinationName);
   setText('routeDestinationLine',destinationLine);
   $('routeDestinationLine').hidden=!destinationLine;
@@ -2178,7 +2210,7 @@ async function importGtfsFile(file){
   catch(err){updateGtfsStatus('Import zlyhal: '+err.message);}
 }
 function backupStops(){
-  const payload={format:'GPSInfo-stops-backup',version:1,savedAt:new Date().toISOString(),added:customStops,edited:editedStops,hidden:[...hiddenStops],gtfsImported:importedGtfsStops,gtfsSavedAt,routes,voiceLibrary};
+  const payload={format:'GPSInfo-stops-backup',version:1,savedAt:new Date().toISOString(),added:customStops,edited:editedStops,hidden:[...hiddenStops],gtfsImported:importedGtfsStops,gtfsSavedAt,routes,voiceLibrary,destinations:vdDestinations};
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json;charset=utf-8'});
   const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='ViaDeck-zaloha-zastavky-trasy-hlasenia.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
 }
@@ -2193,7 +2225,7 @@ async function importBackup(file){
     const hidden=new Set(data.hidden.filter(id=>seedIds.has(id)||id.startsWith('dpb:')));
     if(!confirm(`Import nahradí tvoje miestne zmeny. Načítať ${deduped.length} vlastných zastávok, upravené body, GTFS a prípadne aj trasy zo zálohy?`))return;
     if(Array.isArray(data.gtfsImported)){importedGtfsStops=data.gtfsImported.filter(validStop).slice(0,2500);for(const stop of importedGtfsStops)seedIds.add(stop.id);gtfsSavedAt=Number(data.gtfsSavedAt)||Date.now();persistGtfs();}
-    customStops=deduped;editedStops=edited;hiddenStops=hidden;saveStops();if(Array.isArray(data.routes)){routes=normalizeRoutes(data.routes);saveRoutes();if(activeRouteId&&!routeById(activeRouteId))endRoute();}if(Array.isArray(data.voiceLibrary)){voiceLibrary=normalizeVoiceLibrary(data.voiceLibrary);saveVoiceLibrary();}afterStopsChange();renderRouteLibrary();updateGtfsStatus();toast('Záloha zastávok a prípadných trás bola načítaná.');
+    customStops=deduped;editedStops=edited;hiddenStops=hidden;saveStops();if(Array.isArray(data.routes)){routes=normalizeRoutes(data.routes);saveRoutes();if(activeRouteId&&!routeById(activeRouteId))endRoute();}if(Array.isArray(data.voiceLibrary)){voiceLibrary=normalizeVoiceLibrary(data.voiceLibrary);saveVoiceLibrary();}if(Array.isArray(data.destinations)){vdDestinations=vdNormalizeDestinations(data.destinations);vdSaveDestinations();}afterStopsChange();renderRouteLibrary();updateGtfsStatus();toast('Záloha zastávok a prípadných trás bola načítaná.');
   }catch(err){toast('Nepodarilo sa importovať zálohu: '+err.message);}
 }
 // Vektorový mapový podklad (nie raster) zabraňuje posunutým štvorcovým dlaždiciam.
@@ -2461,11 +2493,11 @@ function vdLivePublicSnapshot(){
  const point=vdLive.sharePosition&&state.mode==='gps'&&state.position&&Number.isFinite(state.accuracy)&&state.accuracy<=100
    ?{lat:Number(state.position.lat.toFixed(6)),lon:Number(state.position.lon.toFixed(6)),accuracy:Math.round(state.accuracy)}:null;
  return {
-  v:1,line:route.line.slice(0,14),routeName:route.name.slice(0,80),direction:route.direction.slice(0,80),
+  v:1,line:vdResolveDestination(route,idx,dst).line.slice(0,14),routeName:route.name.slice(0,80),direction:route.direction.slice(0,80),
   index:idx,total:route.steps.length,completed:!!routeCompleted,
   nextStop:stop?.name||'—',platform:currentMeta.platform,fares:currentMeta.fares,
   planned:Number.isFinite(planned)?planned:null,
-  destination:dst?.stop?.name||'—',destinationPlatform:destMeta.platform,destinationFares:destMeta.fares,destinationPlanned:Number.isFinite(destTime)?destTime:null,
+  destination:vdResolveDestination(route,idx,dst).name,destinationPlatform:destMeta.platform,destinationFares:destMeta.fares,destinationPlanned:Number.isFinite(destTime)?destTime:null,
   destinationEstimated:Number.isFinite(destTime)&&delay>=60000?destTime+delay:null,
   stops:list,fullStops:vdLiveRouteStops(route,times),legs:vdLiveRouteLegs(route),position:point,
   speed:state.mode==='gps'&&Number.isFinite(state.speed)?Math.round(state.speed*3.6):null,
@@ -2667,7 +2699,59 @@ function init(){
     setTimeout(()=>{if(document.visibilityState==='visible'&&state.mode==='off')loadOfficialGtfs();},1500);
   }}catch{}
 }
-init();
+/* ViaDeck 0.7.0: destinations UI (user-scoped local storage, synced by viadeck-access.js). */
+let vdDestLibraryDialog=null,vdActiveDestDialog=null;
+function vdCreateDialog(id,title){const dlg=document.createElement('dialog');dlg.id=id;dlg.className='vd-dest-dialog';
+ const head=document.createElement('div');head.style.cssText='display:flex;align-items:center;justify-content:space-between;gap:15px';
+ const h=document.createElement('h2');h.textContent=title;const close=document.createElement('button');close.type='button';close.textContent='×';close.setAttribute('aria-label','Zatvoriť');close.onclick=()=>dlg.close();head.append(h,close);dlg.append(head);document.body.append(dlg);return dlg;}
+function vdOpenDestLibrary(apply=false){
+ if(!vdDestLibraryDialog)vdDestLibraryDialog=vdCreateDialog('vdDestLibraryDialog','Knižnica cieľov');
+ const d=vdDestLibraryDialog;d.replaceChildren();
+ const header=document.createElement('div');header.style.cssText='display:flex;gap:10px;align-items:center;justify-content:space-between';header.append(el('h2','','Knižnica cieľov'),routeButton('×','',()=>d.close(),'Zavrieť'));d.append(header);
+ d.append(el('p','route-help','Každý cieľ môže mať voliteľný identifikátor, linku a nápis. Údaje sa ukladajú k tvojmu Google účtu.'));
+ const form=document.createElement('form'),fields=document.createElement('div');fields.style.cssText='display:grid;gap:4px';
+ let editId=null;
+ const makeField=(title,max,placeholder)=>{const l=el('label','',title),input=document.createElement('input');input.maxLength=max;input.placeholder=placeholder;l.append(input);fields.append(l);return input;};
+ const code=makeField('Identifikátor (voliteľný)',48,'napr. D001'),line=makeField('Linka (voliteľná)',14,'napr. 93'),name=makeField('Nápis na tabuli (voliteľný)',110,'napr. Hlavná stanica');
+ const actions=document.createElement('div');actions.className='vd-dest-actions';const save=routeButton('Uložiť cieľ','',()=>{},'Uložiť cieľ');save.type='submit';const clear=routeButton('Nový','',()=>{editId=null;form.reset();save.textContent='Uložiť cieľ';});actions.append(save,clear);form.append(fields,actions);d.append(form);
+ const list=el('div','vd-dest-list');d.append(list);
+ const render=()=>{list.replaceChildren();for(const item of vdDestinations){const row=el('div','vd-dest-row'),caption=el('strong','',vdDestinationCaption(item)),tools=el('div','vd-dest-actions');
+  tools.append(routeButton('Upraviť','',()=>{editId=item.id;code.value=item.code;line.value=item.line;name.value=item.text;save.textContent='Uložiť zmeny';form.scrollIntoView({block:'nearest'});}));
+  if(apply&&currentActiveRoute())tools.append(routeButton('Použiť','',()=>{vdDestinationOverride={routeId:currentActiveRoute().id,line:item.line,text:item.text};destinationSignSignature='';update();if(vdLive.session)vdLivePublish(true);d.close();toast('Cieľ a linka nastavené pre aktuálnu jazdu.');}));
+  tools.append(routeButton('×','vd-danger',()=>{if(!confirm('Odstrániť cieľ „'+vdDestinationCaption(item)+'“ z knižnice?'))return;vdDestinations=vdDestinations.filter(x=>x.id!==item.id);vdSaveDestinations();render();}));row.append(caption,tools);list.append(row);}
+  if(!vdDestinations.length)list.append(el('p','route-help','Knižnica je zatiaľ prázdna. Pridaj prvý cieľ.'));};
+ form.onsubmit=e=>{e.preventDefault();const next={id:editId||routeUID(),code:code.value.trim(),line:line.value.trim(),text:name.value.trim()};
+  if(next.code&&vdDestinations.some(x=>x.id!==editId&&x.code.toLocaleLowerCase('sk')===next.code.toLocaleLowerCase('sk'))){toast('Tento identifikátor cieľa už existuje.');return;}
+  if(editId){vdDestinations=vdDestinations.map(x=>x.id===editId?next:x);}else{if(vdDestinations.length>=250){toast('Najviac 250 cieľov.');return;}vdDestinations.push(next);}if(vdSaveDestinations()){editId=null;form.reset();save.textContent='Uložiť cieľ';render();toast('Cieľ uložený.');}};
+ render();d.showModal();}
+function vdOpenActiveDestination(){const route=currentActiveRoute();if(!route){toast('Najskôr spusti trasu.');return;}
+ if(!vdActiveDestDialog)vdActiveDestDialog=vdCreateDialog('vdActiveDestDialog','Cieľ a linka jazdy');
+ const d=vdActiveDestDialog;d.replaceChildren();const header=el('div','vd-dest-actions');header.append(el('h2','','Aktuálny cieľ a linka'),routeButton('×','',()=>d.close()));d.append(header);
+ const selectLabel=el('label','','Zdroj cieľa'),source=document.createElement('select');source.append(new Option('Cieľ z trasy','route'),new Option('Cieľ z knižnice','library'));selectLabel.append(source);d.append(selectLabel);
+ const targetLabel=el('label','','Cieľ'),target=document.createElement('select');targetLabel.append(target);d.append(targetLabel);
+ const lineLabel=el('label','','Linka (možno prepísať)'),line=document.createElement('input');line.maxLength=14;lineLabel.append(line);d.append(lineLabel);
+ const rebuild=()=>{target.replaceChildren();if(source.value==='route'){route.steps.forEach((step,i)=>target.append(new Option((i+1)+'. '+(findStop(step.stopId)?.name||'?'),step.id)));}
+  else for(const dest of vdDestinations)target.append(new Option(vdDestinationCaption(dest),dest.id));
+  if(!target.options.length)target.append(new Option('Žiadny cieľ v knižnici',''));
+  const updateLine=()=>{const item=vdDestinations.find(x=>x.id===target.value);line.value=source.value==='library'?(item?.line||route.line):route.line;};updateLine();};
+ source.onchange=rebuild;target.onchange=()=>{if(source.value==='library')line.value=vdDestinations.find(x=>x.id===target.value)?.line||route.line;};rebuild();
+ d.append(routeButton('Použiť počas tejto jazdy','',()=>{let name='';
+  if(source.value==='route'){const step=route.steps.find(x=>x.id===target.value);name=findStop(step?.stopId)?.name||'';}
+  else{name=vdDestinations.find(x=>x.id===target.value)?.text||'';}
+  if(!name.trim()&&!line.value.trim()&&!confirm('Zobraziť prázdny cieľ a linku?'))return;
+  vdDestinationOverride={routeId:route.id,line:line.value.trim(),text:name};destinationSignSignature='';update();if(vdLive.session)vdLivePublish(true);d.close();toast('Cieľ a linka zmenené.');}));
+ d.append(routeButton('Vrátiť cieľ z trasy','',()=>{vdDestinationOverride=null;destinationSignSignature='';update();if(vdLive.session)vdLivePublish(true);d.close();}));
+ d.append(routeButton('Upraviť knižnicu cieľov','',()=>{d.close();vdOpenDestLibrary(false);}));d.showModal();}
+function vdAddVoiceAt(index){if(!routeDraft)return;if(!voiceLibrary.length){toast('Najprv si vytvor hlásenie v knižnici.');openVoiceLibrary();return;}
+ const before=routeDraft.announcements.length;addRouteAnnouncement();if(routeDraft.announcements.length===before)return;
+ const announce=routeDraft.announcements.at(-1),previous=routeDraft.steps[Math.max(0,index-1)];announce.kind='after-stop';announce.afterStepId=previous?.id||null;routeDraftDirty=true;renderRouteAnnouncements();toast('Hlasový bod sa pridal po zastávke '+(findStop(previous?.stopId)?.name||'')+'.');}
+function vdInit070(){
+ $('vdDestinationLibraryBtn').addEventListener('click',()=>vdOpenDestLibrary(false));
+ $('vdActiveDestinationBtn').addEventListener('click',vdOpenActiveDestination);
+ $('vdGeomTop').addEventListener('click',()=>{if(routeDraft)beginRouteGeometry();});
+ $('vdVoiceTop').addEventListener('click',()=>{if(routeDraft)addRouteAnnouncement();});
+}
+init();vdInit070();
 </script>
-<script src="./viadeck-access.js?v=0.6.1"></script>
+<script src="./viadeck-access.js?v=0.7.0"></script>
 </body></html>
