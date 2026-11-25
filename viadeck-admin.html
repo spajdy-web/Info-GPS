@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07131e"><title>ViaDeck Admin · 0.7.0</title>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#07131e"><title>ViaDeck Admin · 0.7.1</title>
 <style>
 :root{font:14px/1.45 Inter,system-ui,-apple-system,sans-serif;background:#07131e;color:#edf9ff}*{box-sizing:border-box}body{margin:0;padding:17px 12px 50px;background:radial-gradient(ellipse at top right,#13394d,transparent 80%),#07131e}.wrap{max-width:860px;margin:auto}a{color:#75d9f2}header{display:flex;align-items:center;gap:12px;justify-content:space-between;border-bottom:1px solid #31516a;padding-bottom:16px}header h1{margin:0;font-size:23px}h2{font-size:18px;margin:0 0 10px}.panel{background:#112838;border:1px solid #35586b;padding:19px;border-radius:17px;margin-top:17px}.muted{color:#a1bece}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}.entry{padding:12px 0;border-bottom:1px solid #294353}.entry:last-child{border:0}input{background:#091d2c;border:1px solid #46728a;color:#effaff;font:inherit;padding:12px;border-radius:9px;width:100%;margin:8px 0}.button{text-decoration:none;display:inline-block}.button{padding:10px 12px;border:1px solid #4d96b4;border-radius:10px;background:#1d83bf;color:white;font-weight:700;cursor:pointer;margin:4px 3px 4px 0}.button.alt{background:#244153;color:#d2eefa}.button.danger{background:#6d333d;border-color:#a66575}.button:disabled{opacity:.5}small{color:#9eb9c8}.status{white-space:pre-wrap;background:#082d38;border:1px solid #36637c;border-radius:12px;padding:11px;margin-top:12px}.two{display:grid;grid-template-columns:1fr 1fr;gap:15px}.shared-stops{max-height:450px;overflow:auto}.shared-stops .entry{display:flex;align-items:center;gap:12px;justify-content:space-between}.shared-stops .entry-main{flex:1;min-width:0;overflow-wrap:anywhere}.shared-stops .entry-main small{display:block}.shared-stops .entry a{white-space:nowrap}@media(max-width:650px){.two{grid-template-columns:1fr}}
 
@@ -19,7 +19,9 @@
  <section class="panel"><h2>Používatelia</h2><p class="muted">Pozastavenie účtu okamžite zablokuje prístup k online dátam. Lokálne dáta sa na jeho zariadení neodstraňujú.</p><div id="members"></div></section>
 </div>
 <section class="panel"><h2>Návrhy spoločných trás</h2><p class="muted">Návrhy sa uchovávajú maximálne 30 dní po vytvorení; pri otvorení administrácie sa staršie záznamy čistia. Na nepretržité vynucovanie lehoty treba plánované čistenie na serveri. Neodsúhlasené návrhy môžeš zmazať aj ručne. </p><p class="muted">Schválením sa vytvorí nezávislá spoločná kópia. Zastávky potrebné pre trasu sa pridajú do spoločnej databázy, ak tam ešte nie sú. Osobné hlasové hlásenia sa nepublikujú.</p><div id="proposals"></div></section>
-<section class="panel"><h2>Spoločné zastávky a trasy</h2>
+<section class="panel" id="vd-admin-routes"><h2>Správa spoločných trás</h2><p class="muted">Skryté trasy sa neponúkajú novým používateľom. Už pripravené služby obsahujú vlastnú kópiu trasy. Archivované trasy môžeš obnoviť alebo po kontrole závislostí vymazať.</p><div id="vd071-sharedRoutes"></div></section>
+ <section class="panel" id="vd-admin-services"><h2>Správa spoločných služieb</h2><p class="muted">Vodiči používajú zverejnené služby. Úpravy spoločnej služby vykonáš v tom istom editore ako osobnú službu.</p><div id="vd071-sharedServices"></div></section>
+ <section class="panel"><h2>Spoločné zastávky a trasy</h2>
  <div id="sharedInfo" class="muted">Načítavam…</div>
  <p class="muted">Na tvorbu a úpravu používame <strong>rovnaký editor ako vo ViaDecku</strong>: nástupištia, tarifné systémy, GPS body, výber z mapy. Po uložení sa spoločná zastávka publikuje všetkým schváleným vodičom.</p>
  <div class="row"><a class="button" href="./index.html#vd-shared-new">＋ Vytvoriť spoločnú zastávku</a><a class="button alt" href="./index.html#vd-shared-select">☑ Vybrať existujúce zastávky</a></div>
@@ -62,7 +64,7 @@ async function init(){
     db.ref('members').on('value',s=>{membersCache=s.val()||{};renderMembers(membersCache);},error);
     db.ref('profiles').on('value',s=>{profilesCache=s.val()||{};renderMembers(membersCache);},()=>{});
     db.ref('proposals').on('value',s=>{const items=s.val()||{};void pruneOldProposals(items);renderProposals(items);},error);
-    db.ref('shared').on('value',s=>{sharedCache=s.val()||{};$('sharedInfo').textContent='Spoločné zastávky: '+Object.keys(sharedCache.stops||{}).length+' · spoločné trasy: '+Object.keys(sharedCache.routes||{}).length;renderSharedStops();},error);
+    db.ref('shared').on('value',s=>{sharedCache=s.val()||{};$('sharedInfo').textContent='Spoločné zastávky: '+Object.keys(sharedCache.stops||{}).length+' · spoločné trasy: '+Object.keys(sharedCache.routes||{}).length;renderSharedStops();vd071RenderSharedRoutes();vd071RenderSharedServices();},error);
    }catch(e){$('access').textContent='Prístup odmietnutý: '+String(e.message||e);}
   });
   $('sharedSearch').addEventListener('input',renderSharedStops);
@@ -166,7 +168,7 @@ async function approve(id,item){
  const updates={};for(const st of stops){if(snapshot[st.id])continue;updates['shared/stops/'+st.id]={json:JSON.stringify(st),updatedAt:firebase.database.ServerValue.TIMESTAMP};}
  const idRoute='shared-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,10);
  const approved={...route,id:idRoute,announcements:[]};
- updates['shared/routes/'+idRoute]={json:JSON.stringify(approved),updatedAt:firebase.database.ServerValue.TIMESTAMP,version:1};
+ updates['shared/routes/'+idRoute]={json:JSON.stringify(approved),updatedAt:firebase.database.ServerValue.TIMESTAMP,version:1,status:'published'};
  updates['proposals/'+id+'/status']='approved';updates['proposals/'+id+'/reviewedAt']=firebase.database.ServerValue.TIMESTAMP;
  await db.ref().update(updates);status('Spoločná trasa bola schválená a publikovaná.');
 }
@@ -187,5 +189,40 @@ function renderProposals(items){const host=$('proposals');host.replaceChildren()
   host.append(row);
  }
 }
+
+/* ViaDeck 0.7.1 – owner management of published/hidden/archived routes and services */
+function vd071SharedState(record){return record?.status==='hidden'?'hidden':record?.status==='archived'?'archived':'published';}
+function vd071ManageButtons(row,path,item,name,type){
+ const actions=node('div','entry-actions'),state=vd071SharedState(item);
+ const edit=node('a','button alt','Upraviť');edit.href='./index.html#vd-shared-'+type+'-edit='+encodeURIComponent(path.split('/').pop());actions.append(edit);
+ if(state!=='published')actions.append(btn('Zverejniť',async()=>{await db.ref(path+'/status').set('published');status('Zverejnené: '+name);},'button'));
+ if(state==='published')actions.append(btn('Skryť',async()=>{await db.ref(path+'/status').set('hidden');status('Skryté: '+name);},'button alt'));
+ if(state!=='archived')actions.append(btn('Archivovať',async()=>{if(!confirm('Archivovať „'+name+'“? Prestane sa ponúkať pri novom výbere.'))return;await db.ref(path+'/status').set('archived');status('Archivované: '+name);},'button alt'));
+ if(state==='archived')actions.append(deleteIcon('Trvalo vymazať',async()=>{
+  if(type==='route'){
+   const used=Object.values(sharedCache.services||{}).some(x=>{const s=safeJson(x?.json);return s?.items?.some(e=>e.routeId===path.split('/').pop());});
+   if(used){status('Trasa sa používa v spoločnej službe. Najprv uprav alebo archivuj službu, prípadne z nej odstráň trasu.');return;}
+  }
+  if(!confirm('NATRVALO odstrániť '+(type==='route'?'spoločnú trasu':'spoločnú službu')+' „'+name+'“ z Firebase?'))return;
+  if(!confirm('Naozaj vymazať? Táto operácia sa nedá vrátiť. Osobné kópie a snímky v službách sa nemažú.'))return;
+  await db.ref(path).remove();status('Vymazané: '+name);
+ }));
+ row.append(actions);
+}
+function vd071RenderSharedRoutes(){
+ const host=$('vd071-sharedRoutes');if(!host)return;host.replaceChildren();
+ const entries=Object.entries(sharedCache.routes||{}).map(([id,x])=>({id,record:x,route:safeJson(x?.json)})).filter(x=>x.route&&validKey(x.id)).sort((a,b)=>String(a.route.name).localeCompare(String(b.route.name),'sk'));
+ if(!entries.length){host.append(node('p','muted','Žiadne spoločné trasy.'));return;}
+ for(const {id,record,route} of entries){const row=node('article','entry');row.append(node('strong','',route.name||id),node('div','muted','Linka '+(route.line||'—')+' · '+(route.steps?.length||0)+' zastávok · verzia '+(record.version||1)+' · '+({published:'Zverejnená',hidden:'Skrytá',archived:'Archivovaná'}[vd071SharedState(record)])));
+ vd071ManageButtons(row,'shared/routes/'+id,record,route.name||id,'route');host.append(row);}
+}
+function vd071RenderSharedServices(){
+ const host=$('vd071-sharedServices');if(!host)return;host.replaceChildren();
+ const entries=Object.entries(sharedCache.services||{}).map(([id,x])=>({id,record:x,service:safeJson(x?.json)})).filter(x=>x.service&&validKey(x.id)).sort((a,b)=>String(a.service.name).localeCompare(String(b.service.name),'sk'));
+ if(!entries.length){host.append(node('p','muted','Žiadne spoločné služby. Vytvor osobnú službu a v jej zozname stlač Zverejniť.'));return;}
+ for(const {id,record,service} of entries){const row=node('article','entry');row.append(node('strong','',service.name||id),node('div','muted',(service.items?.length||0)+' trás · verzia '+(record.version||1)+' · '+({published:'Zverejnená',hidden:'Skrytá',archived:'Archivovaná'}[vd071SharedState(record)])));
+ vd071ManageButtons(row,'shared/services/'+id,record,service.name||id,'service');host.append(row);}
+}
+
 init();
 </script></body></html>

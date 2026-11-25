@@ -1,4 +1,4 @@
-/* ViaDeck 0.7.0 – Google login / scoped data / invitation / sync.
+/* ViaDeck 0.7.1 – Google login / scoped data / invitation / sync.
  * Loaded AFTER the inert ViaDeck core. No app code executes until access is granted.
  * Browser-side access gate is UX only: database rules provide authorization.
  */
@@ -14,6 +14,7 @@ const KEYS={
  'gps-info-v05-routes':'routes',
  'gps-info-v054-voice-library':'voice',
  'gps-info-v07-destinations':'destinations',
+ 'gps-info-v071-services':'services',
  'gps-info-v055-open-settings':'accordion'
 };
 const $=id=>document.getElementById(id);
@@ -163,10 +164,10 @@ function monitorUserData(){
   }
  },e=>console.warn('[ViaDeck] Synchronizácia zariadení',e));
 }
-function safeList(node,max){return Object.values(node||{}).slice(0,max).flatMap(x=>{try{return [JSON.parse(x.json)];}catch{return [];}});}
+function safeList(node,max){return Object.values(node||{}).filter(x=>!x?.status||x.status==='published').slice(0,max).flatMap(x=>{try{return [JSON.parse(x.json)];}catch{return [];}});}
 async function loadShared(){
  const snapshot=await database.ref('shared').once('value'),data=snapshot.val()||{};
- return {stops:safeList(data.stops,3000),routes:safeList(data.routes,200)};
+ return {stops:safeList(data.stops,3000),routes:safeList(data.routes,200),services:safeList(data.services,150)};
 }
 async function proposeRoute(route,stops){
  if(!database||!activeUid)throw Error('Nie si prihlásený.');
@@ -299,7 +300,8 @@ function handleAdminStopLink(){
 function launchCore(){
  if(sessionActive)return;sessionActive=true;
  const core=$('viadeck-core');if(!core)throw Error('V súbore index.html chýba ViaDeck core (viadeck-core).');
- const script=document.createElement('script');script.textContent=core.textContent;document.body.appendChild(script);
+  const script=document.createElement('script');script.textContent=core.textContent;document.body.appendChild(script);
+ const serviceScript=document.createElement('script');serviceScript.src='./viadeck-services.js?v=0.7.1';serviceScript.onerror=()=>console.error('ViaDeck Služby sa nepodarilo načítať.');document.body.appendChild(serviceScript);
  document.body.classList.remove('vd-access-locked');appRoot.hidden=true;
  const toolbar=document.createElement('div');toolbar.id='vd-account-toolbar';
  const profile=headerIcon('profile','Účet vodiča');profile.title=auth.currentUser?.email||'Účet';profile.onclick=showProfile;toolbar.append(profile);
@@ -307,7 +309,7 @@ function launchCore(){
  const actions=document.querySelector('.wrap > header .head-actions');
  if(actions)actions.prepend(toolbar);else document.querySelector('.wrap > header')?.append(toolbar);
  installSharedEditorSave();
- document.title=document.title.replace('0.6.0','0.7.0').replace('0.6.1','0.7.0');
+ document.title=document.title.replace(/0\.6\.[01]|0\.7\.0/g,'0.7.1');
  handleAdminStopLink();
 }
 async function proceed(user){
@@ -328,8 +330,8 @@ async function proceed(user){
  if(!status.offline)oldSet.call(localStorage,cacheKey(user.uid),JSON.stringify({email:user.email,expires:Date.now()+7*86400000,owner:status.owner}));
  await initStorage();
  await readDriverProfile();
- const shared=status.offline?{stops:[],routes:[]}:await loadShared();
- window.VD_ACCESS={uid:user.uid,email:user.email,owner:status.owner,app,database,auth,sharedStops:shared.stops,sharedRoutes:shared.routes,proposeRoute,publishSharedStop,signOut:googleSignOut,getDisplayName:()=>driverProfile.displayName||user.displayName||''};
+ const shared=status.offline?{stops:[],routes:[],services:[]}:await loadShared();
+ window.VD_ACCESS={uid:user.uid,email:user.email,owner:status.owner,app,database,auth,sharedStops:shared.stops,sharedRoutes:shared.routes,sharedServices:shared.services,proposeRoute,publishSharedStop,signOut:googleSignOut,getDisplayName:()=>driverProfile.displayName||user.displayName||''};
  launchCore();
  if(!status.offline)monitorUserData();
  if(!status.owner&&!status.offline)database.ref('members/'+user.uid+'/status').on('value',snap=>{
@@ -340,9 +342,9 @@ async function proceed(user){
  },e=>console.warn('[ViaDeck] Stav členstva',e));
  if(!status.offline){database.ref('shared').on('value',snap=>{
   const data=snap.val()||{};
-  const next={stops:safeList(data.stops,3000),routes:safeList(data.routes,200)};
-  if(JSON.stringify(next)!==JSON.stringify({stops:window.VD_ACCESS.sharedStops,routes:window.VD_ACCESS.sharedRoutes})){
-   window.VD_ACCESS.sharedStops=next.stops;window.VD_ACCESS.sharedRoutes=next.routes;
+  const next={stops:safeList(data.stops,3000),routes:safeList(data.routes,200),services:safeList(data.services,150)};
+  if(JSON.stringify(next)!==JSON.stringify({stops:window.VD_ACCESS.sharedStops,routes:window.VD_ACCESS.sharedRoutes,services:window.VD_ACCESS.sharedServices})){
+   window.VD_ACCESS.sharedStops=next.stops;window.VD_ACCESS.sharedRoutes=next.routes;window.VD_ACCESS.sharedServices=next.services;window.VD071?.renderServices?.();
    if(!sessionStorage.getItem('vd060-notice')){sessionStorage.setItem('vd060-notice','1');const box=document.createElement('div');box.style.cssText='position:fixed;bottom:96px;right:12px;max-width:300px;z-index:1900;background:#0d3042;color:white;border:1px solid #5fb1d0;border-radius:12px;padding:13px;box-shadow:0 8px 30px #0007';box.textContent='Zmenili sa spoločné trasy alebo zastávky. Aktualizuj stránku po skončení jazdy.';document.body.append(box);setTimeout(()=>box.remove(),9000);}
   }
  },e=>console.warn('[ViaDeck] Zmeny spoločnej databázy',e));}
