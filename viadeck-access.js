@@ -207,6 +207,7 @@ function showProfile(){
  const current=auth.currentUser;
  const panel=ui('Účet vodiča','Google účet: '+(current?.email||'—'));
  appRoot.hidden=false;
+ window.VD_COMPANY_NAV?.renderProfile?.(panel);
  const form=document.createElement('form');
  const label=document.createElement('label');label.textContent='Zobrazované meno vodiča';label.htmlFor='vd-display-name';
  const field=document.createElement('input');field.id='vd-display-name';field.maxLength=60;field.minLength=2;field.required=true;field.value=driverProfile.displayName||current?.displayName||'';field.placeholder='Meno zobrazované vo ViaDecku';
@@ -303,7 +304,7 @@ function launchCore(){
  if(sessionActive)return;sessionActive=true;
  const core=$('viadeck-core');if(!core)throw Error('V súbore index.html chýba ViaDeck core (viadeck-core).');
   const script=document.createElement('script');script.textContent=core.textContent;document.body.appendChild(script);
- const serviceScript=document.createElement('script');serviceScript.src='./viadeck-services.js?v=0.7.1.3';serviceScript.onerror=()=>console.error('ViaDeck Služby sa nepodarilo načítať.');document.body.appendChild(serviceScript);
+ const serviceScript=document.createElement('script');serviceScript.src='./viadeck-services.js?v=0.8.0';serviceScript.onerror=()=>console.error('ViaDeck Služby sa nepodarilo načítať.');document.body.appendChild(serviceScript);
  document.body.classList.remove('vd-access-locked');appRoot.hidden=true;
  const toolbar=document.createElement('div');toolbar.id='vd-account-toolbar';
  const profile=headerIcon('profile','Účet vodiča');profile.title=auth.currentUser?.email||'Účet';profile.onclick=showProfile;toolbar.append(profile);
@@ -314,6 +315,7 @@ function launchCore(){
  document.title=document.title.replace(/0\.6\.[01]|0\.7\.0/g,'0.7.1');
  handleAdminStopLink();
  const channelScript=document.createElement('script');channelScript.src='./viadeck-panel-channel.js?v=0.7.2';channelScript.onerror=()=>console.error('[ViaDeck] Panel channel script missing');document.body.appendChild(channelScript);
+ const companyScript=document.createElement('script');companyScript.src='./viadeck-company-nav.js?v=0.8.0';companyScript.onerror=()=>console.error('[ViaDeck] Company modul sa nenačítal.');document.body.appendChild(companyScript);
 }
 async function proceed(user){
  if(!isGoogle(user)){ui('Nepodporované prihlásenie','ViaDeck vyžaduje overený Google účet.',[{label:'Odhlásiť sa',run:googleSignOut}]);return;}
